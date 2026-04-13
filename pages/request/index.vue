@@ -9,7 +9,7 @@
         <h1 class="text-h4 font-weight-bold mb-2">{{ $t('request.title') }}</h1>
         <p class="text-medium-emphasis mb-8">{{ $t('request.subtitle') }}</p>
 
-        <VForm @submit.prevent="submit">
+        <VForm v-if="!success" ref="formRef" @submit.prevent="submit">
           <div class="mt-1">
             <label class="label text-grey-darken-2">{{ $t('request.name') }}</label>
             <VTextField v-model="form.name" :rules="[ruleRequired]" prepend-inner-icon="fluent:person-24-regular" />
@@ -30,6 +30,11 @@
             <label class="label text-grey-darken-2">{{ $t('request.notes') }}</label>
             <VTextarea v-model="form.notes" rows="3" />
           </div>
+
+          <VAlert v-if="error" type="error" variant="tonal" class="mt-4">
+            {{ $t('common.error') }}
+          </VAlert>
+
           <div class="mt-6">
             <VBtn type="submit" block min-height="44" class="gradient primary" :loading="loading">
               {{ $t('request.submit') }}
@@ -37,7 +42,7 @@
           </div>
         </VForm>
 
-        <VAlert v-if="success" type="success" class="mt-6">
+        <VAlert v-else type="success" class="mt-4">
           {{ $t('request.success') }}
         </VAlert>
       </VCol>
@@ -49,9 +54,12 @@
 definePageMeta({ layout: "default" });
 
 const { ruleRequired } = useFormRules();
+const { createBooking } = useBookings();
 
 const loading = ref(false);
 const success = ref(false);
+const error = ref(false);
+const formRef = ref();
 
 const form = reactive({
   name: "",
@@ -62,6 +70,26 @@ const form = reactive({
 });
 
 const submit = async () => {
-  // TODO: save to Firestore
+  const { valid } = await formRef.value.validate();
+  if (!valid) return;
+  loading.value = true;
+  error.value = false;
+  try {
+    await createBooking({
+      guestName: form.name,
+      guestContact: form.contact,
+      startDate: form.startDate,
+      endDate: form.endDate,
+      notes: form.notes,
+      status: "pending",
+      source: "request",
+      guestId: null,
+    });
+    success.value = true;
+  } catch {
+    error.value = true;
+  } finally {
+    loading.value = false;
+  }
 };
 </script>

@@ -2,7 +2,7 @@
   <div>
     <h1 class="text-h5 font-weight-bold mb-6">{{ $t('settings.title') }}</h1>
 
-    <VForm @submit.prevent="save">
+    <VForm ref="formRef" @submit.prevent="save">
       <div class="mt-1">
         <label class="label text-grey-darken-2">{{ $t('settings.name') }}</label>
         <VTextField v-model="form.title" :rules="[ruleRequired]" />
@@ -28,7 +28,9 @@
       </div>
     </VForm>
 
-    <VAlert v-if="success" type="success" class="mt-6">{{ $t('settings.saved') }}</VAlert>
+    <VAlert v-if="success" type="success" class="mt-6" closable @click:close="success = false">
+      {{ $t('settings.saved') }}
+    </VAlert>
   </div>
 </template>
 
@@ -36,9 +38,11 @@
 definePageMeta({ layout: "admin", middleware: "auth" });
 
 const { ruleRequired } = useFormRules();
+const { apartment, fetchApartment, saveApartment } = useApartment();
 
 const loading = ref(false);
 const success = ref(false);
+const formRef = ref();
 
 const form = reactive({
   title: "",
@@ -48,7 +52,21 @@ const form = reactive({
   rules: "",
 });
 
+watch(apartment, (val) => {
+  if (val) Object.assign(form, val);
+}, { immediate: true });
+
 const save = async () => {
-  // TODO: save to Firestore
+  const { valid } = await formRef.value.validate();
+  if (!valid) return;
+  loading.value = true;
+  try {
+    await saveApartment({ ...form });
+    success.value = true;
+  } finally {
+    loading.value = false;
+  }
 };
+
+onMounted(fetchApartment);
 </script>

@@ -61,6 +61,21 @@
       "confirmed": "Bestätigt",
       "blocked": "Gesperrt"
     },
+    "sources": {
+      "admin": "Manuell",
+      "request": "Anfrage"
+    },
+    "actions": {
+      "confirm": "Bestätigen",
+      "delete": "Löschen"
+    },
+    "table": {
+      "guest": "Gast",
+      "dates": "Termine",
+      "status": "Status",
+      "source": "Quelle",
+      "notes": "Anmerkungen"
+    },
     "form": {
       "title": "Neue Buchung",
       "guest": "Gast",
@@ -77,6 +92,12 @@
     "title": "Gästebuch",
     "add": "Gast hinzufügen",
     "empty": "Keine Gäste",
+    "table": {
+      "name": "Name",
+      "phone": "Telefon",
+      "email": "E-Mail",
+      "notes": "Anmerkungen"
+    },
     "form": {
       "title": "Neuer Gast",
       "name": "Name",
@@ -100,6 +121,10 @@
   "common": {
     "cancel": "Abbrechen",
     "save": "Speichern",
-    "add": "Hinzufügen"
+    "add": "Hinzufügen",
+    "delete": "Löschen",
+    "deleteConfirmTitle": "Eintrag löschen?",
+    "deleteConfirmText": "Diese Aktion kann nicht rückgängig gemacht werden.",
+    "error": "Etwas ist schiefgelaufen. Bitte versuche es erneut."
   }
 }

@@ -1,0 +1,27 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Bookings:
+    // - Anyone can read (UI controls what's shown publicly — only status+dates)
+    // - Anyone can create (public request form)
+    // - Only auth users can update or delete
+    match /bookings/{bookingId} {
+      allow read: if true;
+      allow create: if true;
+      allow update, delete: if request.auth != null;
+    }
+
+    // Guests: auth only
+    match /guests/{guestId} {
+      allow read, write: if request.auth != null;
+    }
+
+    // Apartment info: anyone can read, only auth can write
+    match /apartment/{docId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+  }
+}

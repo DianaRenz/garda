@@ -61,6 +61,21 @@
       "confirmed": "Confirmed",
       "blocked": "Blocked"
     },
+    "sources": {
+      "admin": "Manual",
+      "request": "Request"
+    },
+    "actions": {
+      "confirm": "Confirm",
+      "delete": "Delete"
+    },
+    "table": {
+      "guest": "Guest",
+      "dates": "Dates",
+      "status": "Status",
+      "source": "Source",
+      "notes": "Notes"
+    },
     "form": {
       "title": "New booking",
       "guest": "Guest",
@@ -77,6 +92,12 @@
     "title": "Guest book",
     "add": "Add guest",
     "empty": "No guests",
+    "table": {
+      "name": "Name",
+      "phone": "Phone",
+      "email": "Email",
+      "notes": "Notes"
+    },
     "form": {
       "title": "New guest",
       "name": "Name",
@@ -100,6 +121,10 @@
   "common": {
     "cancel": "Cancel",
     "save": "Save",
-    "add": "Add"
+    "add": "Add",
+    "delete": "Delete",
+    "deleteConfirmTitle": "Delete entry?",
+    "deleteConfirmText": "This action cannot be undone.",
+    "error": "Something went wrong. Please try again."
   }
 }
