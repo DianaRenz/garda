@@ -1,0 +1,105 @@
+{
+  "nav": {
+    "dashboard": "Dashboard",
+    "calendar": "Kalender",
+    "bookings": "Buchungen",
+    "guests": "Gäste",
+    "settings": "Einstellungen",
+    "logout": "Abmelden"
+  },
+  "home": {
+    "subtitle": "Unsere Wohnung am Gardasee — in den Bergen, mit Blick auf den See.",
+    "cta": "Kalender ansehen"
+  },
+  "calendar": {
+    "title": "Kalender",
+    "subtitle": "Verfügbare Termine prüfen",
+    "legend": {
+      "available": "Frei",
+      "pending": "Angefragt",
+      "confirmed": "Belegt",
+      "blocked": "Nicht verfügbar"
+    },
+    "requestBtn": "Termin anfragen"
+  },
+  "request": {
+    "title": "Termin anfragen",
+    "subtitle": "Füllen Sie das Formular aus und wir melden uns zur Bestätigung.",
+    "back": "← Zurück zum Kalender",
+    "name": "Ihr Name",
+    "contact": "Kontakt (Telefon oder E-Mail)",
+    "startDate": "Anreisedatum",
+    "endDate": "Abreisedatum",
+    "notes": "Anmerkung (optional)",
+    "submit": "Anfrage senden",
+    "success": "Anfrage gesendet! Wir melden uns zur Bestätigung."
+  },
+  "login": {
+    "subtitle": "Anmeldung für Eigentümer",
+    "email": "E-Mail",
+    "password": "Passwort",
+    "submit": "Anmelden",
+    "forgotPassword": "Passwort vergessen?",
+    "error": "Falsche E-Mail oder falsches Passwort"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "upcomingVisits": "Bevorstehende Besuche",
+    "pendingConfirm": "Warten auf Bestätigung",
+    "visitsThisYear": "Besuche dieses Jahr",
+    "totalGuests": "Gäste gesamt",
+    "upcomingBookings": "Bevorstehende Buchungen",
+    "noUpcoming": "Keine bevorstehenden Buchungen"
+  },
+  "bookings": {
+    "title": "Buchungen",
+    "add": "Hinzufügen",
+    "empty": "Keine Buchungen",
+    "statuses": {
+      "all": "Alle",
+      "pending": "Ausstehend",
+      "confirmed": "Bestätigt",
+      "blocked": "Gesperrt"
+    },
+    "form": {
+      "title": "Neue Buchung",
+      "guest": "Gast",
+      "contact": "Kontakt",
+      "startDate": "Anreisedatum",
+      "endDate": "Abreisedatum",
+      "status": "Status",
+      "notes": "Anmerkungen",
+      "cancel": "Abbrechen",
+      "save": "Speichern"
+    }
+  },
+  "guests": {
+    "title": "Gästebuch",
+    "add": "Gast hinzufügen",
+    "empty": "Keine Gäste",
+    "form": {
+      "title": "Neuer Gast",
+      "name": "Name",
+      "phone": "Telefon",
+      "email": "E-Mail",
+      "notes": "Anmerkungen",
+      "cancel": "Abbrechen",
+      "save": "Speichern"
+    }
+  },
+  "settings": {
+    "title": "Wohnungseinstellungen",
+    "name": "Name",
+    "description": "Beschreibung",
+    "address": "Adresse",
+    "directions": "Anfahrt",
+    "rules": "Hausregeln",
+    "save": "Speichern",
+    "saved": "Gespeichert"
+  },
+  "common": {
+    "cancel": "Abbrechen",
+    "save": "Speichern",
+    "add": "Hinzufügen"
+  }
+}

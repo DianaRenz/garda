@@ -1,66 +1,76 @@
 <template>
-  <VContainer fluid class="fill-height">
-    <VRow no-gutters align="center" justify="center" class="fill-height">
-      <VCol cols="12" md="6" lg="5" sm="6">
-        <VRow no-gutters align="center" justify="center">
-          <VCol cols="12" md="6">
-            <h1>Sign In</h1>
-            <p class="text-medium-emphasis">Enter your details to get started</p>
-
-            <VForm @submit.prevent="submit" class="mt-7">
-              <div class="mt-1">
-                <label class="label text-grey-darken-2" for="email">Email</label>
-                <VTextField
-                  :rules="[ruleRequired, ruleEmail]"
-                  v-model="email"
-                  prepend-inner-icon="fluent:mail-24-regular"
-                  id="email"
-                  name="email"
-                  type="email"
-                />
-              </div>
-              <div class="mt-1">
-                <label class="label text-grey-darken-2" for="password">Password</label>
-                <VTextField
-                  :rules="[ruleRequired, rulePassLen]"
-                  v-model="password"
-                  prepend-inner-icon="fluent:password-20-regular"
-                  id="password"
-                  name="password"
-                  type="password"
-                />
-              </div>
-              <div class="mt-5">
-                <VBtn type="submit" block min-height="44" class="gradient primary">Sign In</VBtn>
-              </div>
-            </VForm>
-            <p class="text-body-2 mt-10">
-              <NuxtLink to="/reset-password" class="font-weight-bold text-primary">Forgot password?</NuxtLink>
-            </p>
-            <p class="text-body-2 mt-4">
-              Don't have an account?
-              <NuxtLink to="/signup" class="font-weight-bold text-primary">Sign Up</NuxtLink>
-            </p>
-          </VCol>
-        </VRow>
-      </VCol>
-      <VCol class="hidden-md-and-down fill-height" md="6" lg="7">
-        <div class="gradient primary fill-height rounded-xl d-flex align-center justify-center">
-          <div class="text-center px-8 text-white">
-            <h2 class="mb-4">Start your journey today</h2>
-            <p>A short tagline or value proposition for your app goes here.</p>
-          </div>
+  <VContainer class="fill-height">
+    <VRow justify="center" align="center" class="fill-height">
+      <VCol cols="12" sm="8" md="5" lg="4">
+        <div class="text-center mb-8">
+          <h1 class="text-h5 font-weight-bold">Garda</h1>
+          <p class="text-medium-emphasis text-body-2 mt-1">{{ $t('login.subtitle') }}</p>
         </div>
+
+        <VForm @submit.prevent="submit">
+          <div class="mt-1">
+            <label class="label text-grey-darken-2" for="email">{{ $t('login.email') }}</label>
+            <VTextField
+              :rules="[ruleRequired, ruleEmail]"
+              v-model="email"
+              prepend-inner-icon="fluent:mail-24-regular"
+              id="email"
+              type="email"
+            />
+          </div>
+          <div class="mt-1">
+            <label class="label text-grey-darken-2" for="password">{{ $t('login.password') }}</label>
+            <VTextField
+              :rules="[ruleRequired]"
+              v-model="password"
+              prepend-inner-icon="fluent:password-20-regular"
+              id="password"
+              type="password"
+            />
+          </div>
+
+          <VAlert v-if="error" type="error" class="mt-4" variant="tonal">
+            {{ $t('login.error') }}
+          </VAlert>
+
+          <div class="mt-6">
+            <VBtn type="submit" block min-height="44" class="gradient primary" :loading="loading">
+              {{ $t('login.submit') }}
+            </VBtn>
+          </div>
+        </VForm>
+
+        <p class="text-body-2 mt-6 text-center">
+          <NuxtLink to="/reset-password" class="font-weight-bold text-primary">
+            {{ $t('login.forgotPassword') }}
+          </NuxtLink>
+        </p>
       </VCol>
     </VRow>
   </VContainer>
 </template>
 
 <script setup lang="ts">
+definePageMeta({ layout: "default" });
+
 const email = ref("");
 const password = ref("");
+const loading = ref(false);
+const error = ref(false);
 
-const { ruleEmail, rulePassLen, ruleRequired } = useFormRules();
+const { ruleRequired, ruleEmail } = useFormRules();
+const { login } = useAuth();
 
-const submit = async () => {};
+const submit = async () => {
+  loading.value = true;
+  error.value = false;
+  try {
+    await login(email.value, password.value);
+    await navigateTo("/admin");
+  } catch {
+    error.value = true;
+  } finally {
+    loading.value = false;
+  }
+};
 </script>

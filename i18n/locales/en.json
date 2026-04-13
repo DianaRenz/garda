@@ -1,0 +1,105 @@
+{
+  "nav": {
+    "dashboard": "Dashboard",
+    "calendar": "Calendar",
+    "bookings": "Bookings",
+    "guests": "Guests",
+    "settings": "Settings",
+    "logout": "Logout"
+  },
+  "home": {
+    "subtitle": "Our apartment at Lake Garda — in the mountains, with a view of the lake.",
+    "cta": "View calendar"
+  },
+  "calendar": {
+    "title": "Calendar",
+    "subtitle": "Check available dates",
+    "legend": {
+      "available": "Available",
+      "pending": "Requested",
+      "confirmed": "Occupied",
+      "blocked": "Unavailable"
+    },
+    "requestBtn": "Request dates"
+  },
+  "request": {
+    "title": "Request dates",
+    "subtitle": "Fill in the form and we will get back to you to confirm.",
+    "back": "← Back to calendar",
+    "name": "Your name",
+    "contact": "Contact (phone or email)",
+    "startDate": "Check-in date",
+    "endDate": "Check-out date",
+    "notes": "Note (optional)",
+    "submit": "Send request",
+    "success": "Request sent! We will contact you to confirm."
+  },
+  "login": {
+    "subtitle": "Owner login",
+    "email": "Email",
+    "password": "Password",
+    "submit": "Sign in",
+    "forgotPassword": "Forgot password?",
+    "error": "Invalid email or password"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "upcomingVisits": "Upcoming visits",
+    "pendingConfirm": "Pending confirmation",
+    "visitsThisYear": "Visits this year",
+    "totalGuests": "Total guests",
+    "upcomingBookings": "Upcoming bookings",
+    "noUpcoming": "No upcoming bookings"
+  },
+  "bookings": {
+    "title": "Bookings",
+    "add": "Add",
+    "empty": "No bookings",
+    "statuses": {
+      "all": "All",
+      "pending": "Pending",
+      "confirmed": "Confirmed",
+      "blocked": "Blocked"
+    },
+    "form": {
+      "title": "New booking",
+      "guest": "Guest",
+      "contact": "Contact",
+      "startDate": "Check-in date",
+      "endDate": "Check-out date",
+      "status": "Status",
+      "notes": "Notes",
+      "cancel": "Cancel",
+      "save": "Save"
+    }
+  },
+  "guests": {
+    "title": "Guest book",
+    "add": "Add guest",
+    "empty": "No guests",
+    "form": {
+      "title": "New guest",
+      "name": "Name",
+      "phone": "Phone",
+      "email": "Email",
+      "notes": "Notes",
+      "cancel": "Cancel",
+      "save": "Save"
+    }
+  },
+  "settings": {
+    "title": "Apartment settings",
+    "name": "Name",
+    "description": "Description",
+    "address": "Address",
+    "directions": "How to get there",
+    "rules": "House rules",
+    "save": "Save",
+    "saved": "Saved"
+  },
+  "common": {
+    "cancel": "Cancel",
+    "save": "Save",
+    "add": "Add"
+  }
+}

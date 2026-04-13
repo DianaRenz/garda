@@ -1,8 +1,7 @@
 import vuetify from "vite-plugin-vuetify";
 
-// Update these values when starting a new project
-const title = "My App";
-const description = "My app description";
+const title = "Garda";
+const description = "Наша квартира на озере Гарда";
 const url = "https://example.com";
 const image = `${url}/og-image.png`;
 
@@ -16,7 +15,30 @@ export default defineNuxtConfig({
 
   build: { transpile: ["vuetify"] },
 
+  runtimeConfig: {
+    public: {
+      firebaseApiKey: "",
+      firebaseAuthDomain: "",
+      firebaseProjectId: "",
+      firebaseStorageBucket: "",
+      firebaseMessagingSenderId: "",
+      firebaseAppId: "",
+    },
+  },
+
+  i18n: {
+    locales: [
+      { code: "ru", name: "Русский", file: "ru.json" },
+      { code: "en", name: "English", file: "en.json" },
+      { code: "de", name: "Deutsch", file: "de.json" },
+    ],
+    defaultLocale: "ru",
+    lazy: true,
+    strategy: "no_prefix",
+  },
+
   modules: [
+    "@nuxtjs/i18n",
     "@vite-pwa/nuxt",
     async (_options, nuxt) => {
       nuxt.hooks.hook("vite:extendConfig", (config) => {
