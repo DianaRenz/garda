@@ -52,6 +52,7 @@ NUXT_PUBLIC_FIREBASE_APP_ID=
 | `/calendar` | Публичный | Анонимный календарь (цвета по статусу) |
 | `/request` | Публичный | Форма запроса дат |
 | `/login` | Публичный | Вход для владельцев |
+| `/register/[token]` | По инвайту | Регистрация по одноразовой ссылке |
 | `/admin` | Владельцы | Дашборд |
 | `/admin/calendar` | Владельцы | Полный календарь с именами |
 | `/admin/bookings` | Владельцы | Список всех бронирований |
@@ -65,6 +66,8 @@ assets/
   main.scss            # Глобальные стили
 composables/
   rules.ts             # useFormRules() — валидация форм
+  useAuth.ts           # login, logout, user state
+  useInvite.ts         # generateInvite, validateToken, markTokenUsed
 layouts/
   default.vue          # Базовый layout: VApp > VMain > slot
 pages/
@@ -72,6 +75,7 @@ pages/
   calendar/            # Публичный календарь
   request/             # Форма запроса дат
   login/               # Вход для владельцев
+  register/[token].vue # Регистрация по инвайт-ссылке
   admin/               # Защищённая админка
 plugins/
   vuetify.ts           # Vuetify

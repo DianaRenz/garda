@@ -87,6 +87,13 @@
 ### Firestore Collections
 
 ```
+/invites/{token}        // UUID как ID документа
+  token: string          // дублируется для удобства
+  createdAt: Timestamp
+  expiresAt: Timestamp   // +7 дней от createdAt
+  used: boolean
+  usedAt: Timestamp | null
+
 /bookings/{bookingId}
   guestId: string | null   // null если запрос пришёл через форму (гость ещё не в гостевой книге)
   guestName: string        // денормализовано для скорости
@@ -137,6 +144,7 @@
 /calendar                → публичный календарь
 /request                 → форма запроса дат (публичная)
 /login                   → логин для владельцев
+/register/[token]        → регистрация по инвайт-ссылке (одноразовый UUID-токен, 7 дней)
 
 /admin                   → дашборд (protected)
 /admin/calendar          → полный календарь (protected)
@@ -166,6 +174,8 @@
 ## Фазы разработки
 
 ### Фаза 0 — Инфраструктура (завершено)
+- [x] Инвайт-система: `composables/useInvite.ts` + `pages/register/[token].vue` + секция генерации ссылки в `/admin/settings`
+
 - [x] Настроен Nuxt 4 + Vuetify 4 + i18n (ru/en/de)
 - [x] Исправлена смена языков: добавлен `langDir: 'i18n/locales'` в конфиг `@nuxtjs/i18n` v10 (без него модуль не находил файлы переводов); убрана устаревшая опция `lazy` (в v10 lazy loading автоматический)
 - [x] Skeleton-страницы для всех роутов
@@ -198,6 +208,7 @@
 - **Запрос дат:** два способа — друзья могут сами отправить запрос через форму на сайте (статус `pending`), либо владелец добавляет бронирование вручную из админки
 - **Уведомления:** nice-to-have, в MVP не входит
 - **Доступ:** один общий аккаунт (муж + жена), несколько владельцев не нужно
+- **Регистрация:** закрытая, только по одноразовой инвайт-ссылке (`/register/[token]`). Токен генерируется из `/admin/settings`, хранится в Firestore коллекции `invites`, действует 7 дней, помечается как `used: true` после регистрации. Реализовано в `composables/useInvite.ts`
 
 ---
 

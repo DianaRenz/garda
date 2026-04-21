@@ -52,3 +52,11 @@ This is a Nuxt 4 + Vuetify 4 starter template. Vuetify is loaded via `vite-plugi
 **Styling:** Global styles in `assets/main.scss`, imported via `nuxt.config.ts`. Contains Inter font setup, Vuetify overrides (text field border radius, button font weight), `.label` class for form labels, and `.gradient` utility classes (`primary`, `success`, `info`, `warn`, `error`, `gray`, `cancel`).
 
 **PWA:** Configured via `@kevinmarrec/nuxt-pwa` in `nuxt.config.ts`. Replace `public/favicon.ico` and `public/icon.png` for a new app.
+
+**Firebase:** `plugins/firebase.ts` initializes Firebase and provides `$auth`, `$db`, `$storage` via `useNuxtApp()`. Auth composable is `composables/useAuth.ts`. Admin routes protected by `middleware/auth.ts`.
+
+**Invite system:** Registration is closed — only via one-time invite links (`/register/[token]`). Tokens are generated in `/admin/settings` using `composables/useInvite.ts` (`generateInvite`, `validateToken`, `markTokenUsed`). Stored in Firestore `invites` collection, expire in 7 days, marked `used: true` after registration.
+
+**i18n:** Locale files at `i18n/locales/{ru,en,de}.json`. Always add keys to all three files. Use `$t('key')` in templates, `useI18n().t('key')` in `<script setup>`. Import types from Vuetify with `import type` to avoid runtime errors.
+
+**Always update PLAN.md and CLAUDE.md** after implementing significant features.

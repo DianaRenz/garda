@@ -118,6 +118,25 @@
     "save": "Save",
     "saved": "Saved"
   },
+  "register": {
+    "title": "Create account",
+    "subtitle": "Fill in your login details",
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm password",
+    "submit": "Create account",
+    "invalidToken": "This link is invalid or has already been used.",
+    "expiredToken": "This invite link has expired.",
+    "error": "Something went wrong. Please try again.",
+    "passwordMismatch": "Passwords do not match"
+  },
+  "invite": {
+    "title": "Invite link",
+    "generate": "Generate link",
+    "copy": "Copy",
+    "copied": "Copied!",
+    "expires": "Link is valid for 7 days"
+  },
   "common": {
     "cancel": "Cancel",
     "save": "Save",

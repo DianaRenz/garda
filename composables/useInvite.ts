@@ -1,0 +1,47 @@
+import {
+  collection,
+  doc,
+  setDoc,
+  getDoc,
+  updateDoc,
+  Timestamp,
+} from "firebase/firestore";
+
+export const useInvite = () => {
+  const { $db } = useNuxtApp();
+
+  const generateInvite = async (): Promise<string> => {
+    const token = crypto.randomUUID();
+    const ref = doc(collection($db, "invites"), token);
+    await setDoc(ref, {
+      token,
+      createdAt: Timestamp.now(),
+      expiresAt: Timestamp.fromDate(
+        new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+      ),
+      used: false,
+      usedAt: null,
+    });
+    return token;
+  };
+
+  const validateToken = async (
+    token: string
+  ): Promise<{ valid: boolean; error?: "not_found" | "used" | "expired" }> => {
+    const ref = doc($db, "invites", token);
+    const snap = await getDoc(ref);
+    if (!snap.exists()) return { valid: false, error: "not_found" };
+    const data = snap.data();
+    if (data.used) return { valid: false, error: "used" };
+    if (data.expiresAt.toDate() < new Date())
+      return { valid: false, error: "expired" };
+    return { valid: true };
+  };
+
+  const markTokenUsed = async (token: string) => {
+    const ref = doc($db, "invites", token);
+    await updateDoc(ref, { used: true, usedAt: Timestamp.now() });
+  };
+
+  return { generateInvite, validateToken, markTokenUsed };
+};

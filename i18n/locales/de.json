@@ -118,6 +118,25 @@
     "save": "Speichern",
     "saved": "Gespeichert"
   },
+  "register": {
+    "title": "Konto erstellen",
+    "subtitle": "Geben Sie Ihre Anmeldedaten ein",
+    "email": "E-Mail",
+    "password": "Passwort",
+    "confirmPassword": "Passwort bestätigen",
+    "submit": "Konto erstellen",
+    "invalidToken": "Dieser Link ist ungültig oder wurde bereits verwendet.",
+    "expiredToken": "Dieser Einladungslink ist abgelaufen.",
+    "error": "Etwas ist schiefgelaufen. Bitte versuche es erneut.",
+    "passwordMismatch": "Passwörter stimmen nicht überein"
+  },
+  "invite": {
+    "title": "Einladungslink",
+    "generate": "Link erstellen",
+    "copy": "Kopieren",
+    "copied": "Kopiert!",
+    "expires": "Link ist 7 Tage gültig"
+  },
   "common": {
     "cancel": "Abbrechen",
     "save": "Speichern",
