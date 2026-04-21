@@ -165,6 +165,13 @@
 
 ## Фазы разработки
 
+### Фаза 0 — Инфраструктура (завершено)
+- [x] Настроен Nuxt 4 + Vuetify 4 + i18n (ru/en/de)
+- [x] Исправлена смена языков: добавлен `langDir: 'i18n/locales'` в конфиг `@nuxtjs/i18n` v10 (без него модуль не находил файлы переводов); убрана устаревшая опция `lazy` (в v10 lazy loading автоматический)
+- [x] Skeleton-страницы для всех роутов
+- [x] Auth middleware для `/admin`
+- [x] Firebase конфиг через runtimeConfig
+
 ### Фаза 1 — Ядро (MVP)
 - [ ] Firebase подключение (auth + firestore)
 - [ ] Auth middleware для `/admin`

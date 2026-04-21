@@ -33,7 +33,7 @@ export default defineNuxtConfig({
       { code: "de", name: "Deutsch", file: "de.json" },
     ],
     defaultLocale: "ru",
-    lazy: true,
+    langDir: "locales",
     strategy: "no_prefix",
   },
 
