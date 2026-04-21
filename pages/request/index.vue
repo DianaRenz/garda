@@ -51,8 +51,12 @@
 </template>
 
 <script setup lang="ts">
+import { onAuthStateChanged } from "firebase/auth";
+import { doc, getDoc } from "firebase/firestore";
+
 definePageMeta({ layout: "default" });
 
+const { $auth, $db } = useNuxtApp();
 const { ruleRequired } = useFormRules();
 const { createBooking } = useBookings();
 
@@ -60,6 +64,7 @@ const loading = ref(false);
 const success = ref(false);
 const error = ref(false);
 const formRef = ref();
+const currentUserId = ref<string | null>(null);
 
 const form = reactive({
   name: "",
@@ -67,6 +72,26 @@ const form = reactive({
   startDate: "",
   endDate: "",
   notes: "",
+});
+
+onMounted(async () => {
+  if (import.meta.server) return;
+  const user = await new Promise<any>((resolve) => {
+    const unsub = onAuthStateChanged($auth, (u) => { unsub(); resolve(u); });
+  });
+  if (!user) return;
+  currentUserId.value = user.uid;
+  try {
+    const snap = await getDoc(doc($db, "users", user.uid));
+    if (snap.exists()) {
+      const data = snap.data();
+      if (data.name) form.name = data.name;
+      if (data.phone) form.contact = data.phone;
+      else if (data.email) form.contact = data.email;
+    }
+  } catch {
+    // ignore — pre-fill is best-effort
+  }
 });
 
 const submit = async () => {
@@ -84,6 +109,7 @@ const submit = async () => {
       status: "pending",
       source: "request",
       guestId: null,
+      userId: currentUserId.value,
     });
     success.value = true;
   } catch {

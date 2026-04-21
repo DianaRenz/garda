@@ -10,11 +10,12 @@ import {
 export const useInvite = () => {
   const { $db } = useNuxtApp();
 
-  const generateInvite = async (): Promise<string> => {
+  const generateInvite = async (type: "admin" | "guest"): Promise<string> => {
     const token = crypto.randomUUID();
     const ref = doc(collection($db, "invites"), token);
     await setDoc(ref, {
       token,
+      type,
       createdAt: Timestamp.now(),
       expiresAt: Timestamp.fromDate(
         new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
@@ -27,7 +28,7 @@ export const useInvite = () => {
 
   const validateToken = async (
     token: string
-  ): Promise<{ valid: boolean; error?: "not_found" | "used" | "expired" }> => {
+  ): Promise<{ valid: boolean; type?: "admin" | "guest"; error?: "not_found" | "used" | "expired" }> => {
     const ref = doc($db, "invites", token);
     const snap = await getDoc(ref);
     if (!snap.exists()) return { valid: false, error: "not_found" };
@@ -35,7 +36,7 @@ export const useInvite = () => {
     if (data.used) return { valid: false, error: "used" };
     if (data.expiresAt.toDate() < new Date())
       return { valid: false, error: "expired" };
-    return { valid: true };
+    return { valid: true, type: data.type ?? "admin" };
   };
 
   const markTokenUsed = async (token: string) => {

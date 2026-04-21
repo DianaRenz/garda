@@ -121,6 +121,8 @@
   "register": {
     "title": "Create account",
     "subtitle": "Fill in your login details",
+    "name": "Your name",
+    "phone": "Phone",
     "email": "Email",
     "password": "Password",
     "confirmPassword": "Confirm password",
@@ -131,11 +133,18 @@
     "passwordMismatch": "Passwords do not match"
   },
   "invite": {
-    "title": "Invite link",
-    "generate": "Generate link",
+    "title": "Invite links",
+    "generateAdmin": "Invite administrator",
+    "generateGuest": "Invite guest",
     "copy": "Copy",
     "copied": "Copied!",
     "expires": "Link is valid for 7 days"
+  },
+  "account": {
+    "title": "My account",
+    "myBookings": "My bookings",
+    "noBookings": "You have no bookings yet",
+    "requestDates": "Request dates"
   },
   "common": {
     "cancel": "Cancel",

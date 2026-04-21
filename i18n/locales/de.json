@@ -121,6 +121,8 @@
   "register": {
     "title": "Konto erstellen",
     "subtitle": "Geben Sie Ihre Anmeldedaten ein",
+    "name": "Ihr Name",
+    "phone": "Telefon",
     "email": "E-Mail",
     "password": "Passwort",
     "confirmPassword": "Passwort bestätigen",
@@ -131,11 +133,18 @@
     "passwordMismatch": "Passwörter stimmen nicht überein"
   },
   "invite": {
-    "title": "Einladungslink",
-    "generate": "Link erstellen",
+    "title": "Einladungslinks",
+    "generateAdmin": "Administrator einladen",
+    "generateGuest": "Gast einladen",
     "copy": "Kopieren",
     "copied": "Kopiert!",
     "expires": "Link ist 7 Tage gültig"
+  },
+  "account": {
+    "title": "Mein Konto",
+    "myBookings": "Meine Buchungen",
+    "noBookings": "Sie haben noch keine Buchungen",
+    "requestDates": "Termin anfragen"
   },
   "common": {
     "cancel": "Abbrechen",

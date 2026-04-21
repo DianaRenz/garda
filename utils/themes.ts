@@ -8,12 +8,13 @@ export const light: ThemeDefinition = {
   colors: {
     background: "#FFFFFF",
     surface: "#FFFFFF",
+    "surface-variant": twColors.slate[50],
     primary: twColors.indigo[600],
     secondary: twColors.purple[600],
     error: twColors.red[500],
     info: twColors.blue[500],
     success: twColors.emerald[500],
-    warning: twColors.amber[500],
+    warning: twColors.amber[600],
   },
 };
 
@@ -25,11 +26,12 @@ export const dark: ThemeDefinition = {
   colors: {
     background: twColors.slate[950],
     surface: twColors.slate[900],
-    primary: twColors.indigo[500],
-    secondary: twColors.purple[500],
-    error: twColors.red[500],
-    info: twColors.blue[500],
-    success: twColors.emerald[500],
-    warning: twColors.amber[500],
+    "surface-variant": twColors.slate[800],
+    primary: twColors.indigo[400],
+    secondary: twColors.purple[400],
+    error: twColors.red[400],
+    info: twColors.blue[400],
+    success: twColors.emerald[400],
+    warning: twColors.amber[400],
   },
 };

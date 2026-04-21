@@ -1,11 +1,12 @@
 import {
   collection, addDoc, updateDoc, deleteDoc, doc,
-  query, orderBy, onSnapshot, serverTimestamp, Timestamp,
+  query, orderBy, where, onSnapshot, serverTimestamp, Timestamp,
 } from "firebase/firestore";
 
 export interface Booking {
   id: string;
   guestId: string | null;
+  userId: string | null;
   guestName: string;
   guestContact: string;
   startDate: Timestamp;
@@ -19,6 +20,7 @@ export interface Booking {
 
 export interface BookingForm {
   guestId?: string | null;
+  userId?: string | null;
   guestName: string;
   guestContact: string;
   startDate: string; // YYYY-MM-DD
@@ -39,9 +41,21 @@ export const useBookings = () => {
     });
   };
 
+  const subscribeByUser = (uid: string) => {
+    const q = query(
+      collection($db, "bookings"),
+      where("userId", "==", uid),
+      orderBy("startDate", "asc")
+    );
+    return onSnapshot(q, (snap) => {
+      bookings.value = snap.docs.map((d) => ({ id: d.id, ...d.data() } as Booking));
+    });
+  };
+
   const createBooking = async (form: BookingForm) => {
     await addDoc(collection($db, "bookings"), {
       guestId: form.guestId ?? null,
+      userId: form.userId ?? null,
       guestName: form.guestName,
       guestContact: form.guestContact,
       startDate: Timestamp.fromDate(new Date(form.startDate)),
@@ -80,5 +94,5 @@ export const useBookings = () => {
     blocked: "error",
   };
 
-  return { bookings, subscribe, createBooking, updateBooking, deleteBooking, formatDate, statusColor };
+  return { bookings, subscribe, subscribeByUser, createBooking, updateBooking, deleteBooking, formatDate, statusColor };
 };

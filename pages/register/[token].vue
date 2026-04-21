@@ -19,6 +19,27 @@
 
         <!-- Registration form -->
         <VForm v-else ref="formRef" @submit.prevent="submit">
+          <!-- Guest-only: name and phone -->
+          <template v-if="inviteType === 'guest'">
+            <div class="mt-1">
+              <label class="label text-grey-darken-2" for="name">{{ $t('register.name') }}</label>
+              <VTextField
+                :rules="[ruleRequired]"
+                v-model="name"
+                prepend-inner-icon="fluent:person-24-regular"
+                id="name"
+              />
+            </div>
+            <div class="mt-1">
+              <label class="label text-grey-darken-2" for="phone">{{ $t('register.phone') }}</label>
+              <VTextField
+                v-model="phone"
+                prepend-inner-icon="fluent:phone-24-regular"
+                id="phone"
+              />
+            </div>
+          </template>
+
           <div class="mt-1">
             <label class="label text-grey-darken-2" for="email">{{ $t('register.email') }}</label>
             <VTextField
@@ -67,10 +88,11 @@
 
 <script setup lang="ts">
 import { createUserWithEmailAndPassword } from "firebase/auth";
+import { doc, setDoc, Timestamp } from "firebase/firestore";
 
 definePageMeta({ layout: "default" });
 
-const { $auth } = useNuxtApp();
+const { $auth, $db } = useNuxtApp();
 const route = useRoute();
 const token = route.params.token as string;
 
@@ -79,10 +101,13 @@ const { ruleRequired, ruleEmail, rulePassLen } = useFormRules();
 
 const validating = ref(true);
 const tokenError = ref<string | null>(null);
+const inviteType = ref<"admin" | "guest">("admin");
 const loading = ref(false);
 const submitError = ref(false);
 const formRef = ref();
 
+const name = ref("");
+const phone = ref("");
 const email = ref("");
 const password = ref("");
 const confirmPassword = ref("");
@@ -96,6 +121,8 @@ onMounted(async () => {
   const result = await validateToken(token);
   if (!result.valid) {
     tokenError.value = result.error ?? "not_found";
+  } else {
+    inviteType.value = result.type ?? "admin";
   }
   validating.value = false;
 });
@@ -107,9 +134,16 @@ const submit = async () => {
   loading.value = true;
   submitError.value = false;
   try {
-    await createUserWithEmailAndPassword($auth, email.value, password.value);
+    const credential = await createUserWithEmailAndPassword($auth, email.value, password.value);
+    await setDoc(doc($db, "users", credential.user.uid), {
+      role: inviteType.value,
+      email: email.value,
+      name: inviteType.value === "guest" ? name.value : null,
+      phone: inviteType.value === "guest" ? phone.value : null,
+      createdAt: Timestamp.now(),
+    });
     await markTokenUsed(token);
-    await navigateTo("/admin");
+    await navigateTo(inviteType.value === "guest" ? "/account" : "/admin");
   } catch {
     submitError.value = true;
   } finally {

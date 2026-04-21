@@ -36,29 +36,58 @@
 
     <h2 class="text-h6 font-weight-bold mb-4">{{ $t('invite.title') }}</h2>
     <p class="text-body-2 text-medium-emphasis mb-4">{{ $t('invite.expires') }}</p>
-    <div class="d-flex align-center gap-3">
+
+    <!-- Admin invite -->
+    <div class="d-flex align-center gap-3 mb-2">
       <VBtn
         class="gradient primary"
-        :loading="inviteLoading"
-        prepend-icon="fluent:link-24-regular"
-        @click="createInvite"
+        :loading="adminInviteLoading"
+        prepend-icon="fluent:shield-person-24-regular"
+        @click="createAdminInvite"
       >
-        {{ $t('invite.generate') }}
+        {{ $t('invite.generateAdmin') }}
       </VBtn>
       <VBtn
-        v-if="inviteLink"
+        v-if="adminInviteLink"
         variant="outlined"
         prepend-icon="fluent:copy-24-regular"
-        @click="copyInvite"
+        @click="copyLink(adminInviteLink, 'admin')"
       >
-        {{ copied ? $t('invite.copied') : $t('invite.copy') }}
+        {{ copiedAdmin ? $t('invite.copied') : $t('invite.copy') }}
       </VBtn>
     </div>
     <VTextField
-      v-if="inviteLink"
-      :model-value="inviteLink"
+      v-if="adminInviteLink"
+      :model-value="adminInviteLink"
       readonly
-      class="mt-4"
+      class="mt-2 mb-6"
+      density="compact"
+    />
+
+    <!-- Guest invite -->
+    <div class="d-flex align-center gap-3 mb-2">
+      <VBtn
+        variant="tonal"
+        :loading="guestInviteLoading"
+        prepend-icon="fluent:person-add-24-regular"
+        @click="createGuestInvite"
+      >
+        {{ $t('invite.generateGuest') }}
+      </VBtn>
+      <VBtn
+        v-if="guestInviteLink"
+        variant="outlined"
+        prepend-icon="fluent:copy-24-regular"
+        @click="copyLink(guestInviteLink, 'guest')"
+      >
+        {{ copiedGuest ? $t('invite.copied') : $t('invite.copy') }}
+      </VBtn>
+    </div>
+    <VTextField
+      v-if="guestInviteLink"
+      :model-value="guestInviteLink"
+      readonly
+      class="mt-2"
       density="compact"
     />
   </div>
@@ -101,24 +130,45 @@ const save = async () => {
 onMounted(fetchApartment);
 
 const { generateInvite } = useInvite();
-const inviteLoading = ref(false);
-const inviteLink = ref("");
-const copied = ref(false);
 
-const createInvite = async () => {
-  inviteLoading.value = true;
+const adminInviteLoading = ref(false);
+const adminInviteLink = ref("");
+const copiedAdmin = ref(false);
+
+const guestInviteLoading = ref(false);
+const guestInviteLink = ref("");
+const copiedGuest = ref(false);
+
+const createAdminInvite = async () => {
+  adminInviteLoading.value = true;
   try {
-    const token = await generateInvite();
-    inviteLink.value = `${window.location.origin}/register/${token}`;
-    copied.value = false;
+    const token = await generateInvite("admin");
+    adminInviteLink.value = `${window.location.origin}/register/${token}`;
+    copiedAdmin.value = false;
   } finally {
-    inviteLoading.value = false;
+    adminInviteLoading.value = false;
   }
 };
 
-const copyInvite = async () => {
-  await navigator.clipboard.writeText(inviteLink.value);
-  copied.value = true;
-  setTimeout(() => (copied.value = false), 2000);
+const createGuestInvite = async () => {
+  guestInviteLoading.value = true;
+  try {
+    const token = await generateInvite("guest");
+    guestInviteLink.value = `${window.location.origin}/register/${token}`;
+    copiedGuest.value = false;
+  } finally {
+    guestInviteLoading.value = false;
+  }
+};
+
+const copyLink = async (link: string, type: "admin" | "guest") => {
+  await navigator.clipboard.writeText(link);
+  if (type === "admin") {
+    copiedAdmin.value = true;
+    setTimeout(() => (copiedAdmin.value = false), 2000);
+  } else {
+    copiedGuest.value = true;
+    setTimeout(() => (copiedGuest.value = false), 2000);
+  }
 };
 </script>

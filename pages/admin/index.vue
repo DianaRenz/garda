@@ -3,52 +3,40 @@
     <h1 class="text-h5 font-weight-bold mb-6">{{ $t('dashboard.title') }}</h1>
 
     <VRow>
-      <VCol cols="12" sm="6" md="3">
-        <VCard variant="outlined" class="pa-4 text-center">
-          <div class="text-h4 font-weight-bold text-primary">{{ stats.upcoming }}</div>
-          <div class="text-body-2 text-medium-emphasis mt-1">{{ $t('dashboard.upcomingVisits') }}</div>
-        </VCard>
-      </VCol>
-      <VCol cols="12" sm="6" md="3">
-        <VCard variant="outlined" class="pa-4 text-center">
-          <div class="text-h4 font-weight-bold text-warning">{{ stats.pending }}</div>
-          <div class="text-body-2 text-medium-emphasis mt-1">{{ $t('dashboard.pendingConfirm') }}</div>
-        </VCard>
-      </VCol>
-      <VCol cols="12" sm="6" md="3">
-        <VCard variant="outlined" class="pa-4 text-center">
-          <div class="text-h4 font-weight-bold">{{ stats.thisYear }}</div>
-          <div class="text-body-2 text-medium-emphasis mt-1">{{ $t('dashboard.visitsThisYear') }}</div>
-        </VCard>
-      </VCol>
-      <VCol cols="12" sm="6" md="3">
-        <VCard variant="outlined" class="pa-4 text-center">
-          <div class="text-h4 font-weight-bold">{{ guests.length }}</div>
-          <div class="text-body-2 text-medium-emphasis mt-1">{{ $t('dashboard.totalGuests') }}</div>
+      <VCol v-for="stat in statCards" :key="stat.key" cols="6" md="3">
+        <VCard variant="outlined" rounded="lg" class="pa-4" height="100%">
+          <div class="d-flex align-center justify-space-between mb-4">
+            <span class="text-caption text-medium-emphasis">{{ stat.label }}</span>
+            <VIcon :icon="stat.icon" :color="stat.color || undefined" size="16" />
+          </div>
+          <div class="text-h4 font-weight-bold">{{ stat.value }}</div>
         </VCard>
       </VCol>
     </VRow>
 
-    <h2 class="text-h6 font-weight-bold mt-8 mb-4">{{ $t('dashboard.upcomingBookings') }}</h2>
+    <h2 class="text-body-2 font-weight-medium text-medium-emphasis mt-8 mb-3">
+      {{ $t('dashboard.upcomingBookings') }}
+    </h2>
 
-    <VCard variant="outlined">
-      <VList v-if="upcomingBookings.length" lines="two">
-        <VListItem
-          v-for="b in upcomingBookings"
-          :key="b.id"
-          :subtitle="`${formatDate(b.startDate)} — ${formatDate(b.endDate)}`"
-        >
-          <template #title>
-            <span class="font-weight-medium">{{ b.guestName }}</span>
-          </template>
-          <template #append>
+    <VCard variant="outlined" rounded="lg">
+      <template v-if="upcomingBookings.length">
+        <div v-for="(b, i) in upcomingBookings" :key="b.id">
+          <VDivider v-if="i > 0" />
+          <div class="d-flex align-center justify-space-between px-4 py-3">
+            <div>
+              <div class="text-body-2 font-weight-medium">{{ b.guestName }}</div>
+              <div class="text-caption text-medium-emphasis mt-1">
+                {{ formatDate(b.startDate) }} — {{ formatDate(b.endDate) }}
+              </div>
+            </div>
             <VChip :color="statusColor[b.status]" size="small" variant="tonal">
               {{ $t(`bookings.statuses.${b.status}`) }}
             </VChip>
-          </template>
-        </VListItem>
-      </VList>
-      <div v-else class="pa-6 text-center text-medium-emphasis">
+          </div>
+        </div>
+      </template>
+      <div v-else class="py-10 text-center text-medium-emphasis text-caption">
+        <VIcon icon="fluent:calendar-empty-24-regular" size="24" class="mb-2 d-block mx-auto" style="opacity: 0.4" />
         {{ $t('dashboard.noUpcoming') }}
       </div>
     </VCard>
@@ -56,12 +44,11 @@
 </template>
 
 <script setup lang="ts">
-import { Timestamp } from "firebase/firestore";
-
 definePageMeta({ layout: "admin", middleware: "auth" });
 
 const { bookings, subscribe, formatDate, statusColor } = useBookings();
 const { guests, subscribe: subscribeGuests } = useGuests();
+const { t } = useI18n();
 
 const now = new Date();
 const yearStart = new Date(now.getFullYear(), 0, 1);
@@ -77,6 +64,37 @@ const stats = computed(() => {
     }).length,
   };
 });
+
+const statCards = computed(() => [
+  {
+    key: "upcoming",
+    value: stats.value.upcoming,
+    label: t("dashboard.upcomingVisits"),
+    icon: "fluent:calendar-arrow-right-24-regular",
+    color: "primary",
+  },
+  {
+    key: "pending",
+    value: stats.value.pending,
+    label: t("dashboard.pendingConfirm"),
+    icon: "fluent:clock-24-regular",
+    color: "warning",
+  },
+  {
+    key: "thisYear",
+    value: stats.value.thisYear,
+    label: t("dashboard.visitsThisYear"),
+    icon: "fluent:calendar-checkmark-24-regular",
+    color: null,
+  },
+  {
+    key: "guests",
+    value: guests.value.length,
+    label: t("dashboard.totalGuests"),
+    icon: "fluent:people-24-regular",
+    color: null,
+  },
+]);
 
 const upcomingBookings = computed(() =>
   bookings.value
