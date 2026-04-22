@@ -42,17 +42,25 @@
 
       <template #append>
         <VDivider />
-        <div v-if="!rail || mobile" class="d-flex justify-center ga-1 py-2">
-          <VBtn
-            v-for="loc in locales"
-            :key="loc.code"
-            variant="text"
-            size="small"
-            :color="locale === loc.code ? 'primary' : 'default'"
-            @click="setLocale(loc.code)"
-          >
-            {{ loc.code.toUpperCase() }}
-          </VBtn>
+        <div v-if="!rail || mobile" class="d-flex justify-center py-2">
+          <VMenu>
+            <template #activator="{ props }">
+              <VBtn v-bind="props" variant="text" size="small" append-icon="fluent:chevron-down-20-regular">
+                {{ locale.toUpperCase() }}
+              </VBtn>
+            </template>
+            <VList density="compact" min-width="100">
+              <VListItem
+                v-for="loc in locales"
+                :key="loc.code"
+                :title="loc.name"
+                :active="locale === loc.code"
+                active-color="primary"
+                rounded="lg"
+                @click="setLocale(loc.code)"
+              />
+            </VList>
+          </VMenu>
         </div>
         <VDivider />
         <VList density="compact" nav class="my-2">

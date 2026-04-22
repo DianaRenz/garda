@@ -2,8 +2,8 @@
   <VContainer class="py-8">
     <VRow justify="center">
       <VCol cols="12" sm="8" md="6">
-        <NuxtLink to="/calendar" class="text-body-2 text-medium-emphasis d-flex align-center ga-1 mb-6">
-          {{ $t('request.back') }}
+        <NuxtLink :to="backTo" class="text-body-2 text-medium-emphasis d-flex align-center ga-1 mb-6">
+          {{ $t(backLabel) }}
         </NuxtLink>
 
         <h1 class="text-h4 font-weight-bold mb-2">{{ $t('request.title') }}</h1>
@@ -31,7 +31,7 @@
             <VTextarea v-model="form.notes" rows="3" />
           </div>
 
-          <VAlert v-if="error" type="error" variant="tonal" class="mt-4">
+          <VAlert v-if="submitError" type="error" variant="tonal" class="mt-4">
             {{ $t('common.error') }}
           </VAlert>
 
@@ -42,29 +42,37 @@
           </div>
         </VForm>
 
-        <VAlert v-else type="success" class="mt-4">
-          {{ $t('request.success') }}
-        </VAlert>
+        <template v-else>
+          <VAlert type="success" variant="tonal" class="mb-6">
+            {{ $t('request.success') }}
+          </VAlert>
+          <VBtn :to="backTo" variant="outlined">
+            {{ $t(backLabel) }}
+          </VBtn>
+        </template>
       </VCol>
     </VRow>
   </VContainer>
 </template>
 
 <script setup lang="ts">
-import { onAuthStateChanged } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
 
 definePageMeta({ layout: "default" });
 
-const { $auth, $db } = useNuxtApp();
+const { $db } = useNuxtApp();
+const { user } = useAuth();
 const { ruleRequired } = useFormRules();
 const { createBooking } = useBookings();
 
 const loading = ref(false);
 const success = ref(false);
-const error = ref(false);
+const submitError = ref(false);
 const formRef = ref();
 const currentUserId = ref<string | null>(null);
+
+const backTo = computed(() => user.value ? "/account" : "/calendar");
+const backLabel = computed(() => user.value ? "request.backToAccount" : "request.back");
 
 const form = reactive({
   name: "",
@@ -74,15 +82,12 @@ const form = reactive({
   notes: "",
 });
 
-onMounted(async () => {
-  if (import.meta.server) return;
-  const user = await new Promise<any>((resolve) => {
-    const unsub = onAuthStateChanged($auth, (u) => { unsub(); resolve(u); });
-  });
-  if (!user) return;
-  currentUserId.value = user.uid;
+// Pre-fill from user profile when available
+watch(user, async (u) => {
+  if (!u || currentUserId.value) return;
+  currentUserId.value = u.uid;
   try {
-    const snap = await getDoc(doc($db, "users", user.uid));
+    const snap = await getDoc(doc($db, "users", u.uid));
     if (snap.exists()) {
       const data = snap.data();
       if (data.name) form.name = data.name;
@@ -90,15 +95,15 @@ onMounted(async () => {
       else if (data.email) form.contact = data.email;
     }
   } catch {
-    // ignore — pre-fill is best-effort
+    // pre-fill is best-effort
   }
-});
+}, { immediate: true });
 
 const submit = async () => {
   const { valid } = await formRef.value.validate();
   if (!valid) return;
   loading.value = true;
-  error.value = false;
+  submitError.value = false;
   try {
     await createBooking({
       guestName: form.name,
@@ -113,7 +118,7 @@ const submit = async () => {
     });
     success.value = true;
   } catch {
-    error.value = true;
+    submitError.value = true;
   } finally {
     loading.value = false;
   }

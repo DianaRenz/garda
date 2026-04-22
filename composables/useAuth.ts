@@ -4,14 +4,26 @@ import {
   onAuthStateChanged,
   type User,
 } from "firebase/auth";
+import { doc, getDoc } from "firebase/firestore";
 
 export const useAuth = () => {
-  const { $auth } = useNuxtApp();
+  const { $auth, $db } = useNuxtApp();
   const user = useState<User | null>("auth-user", () => null);
+  const userRole = useState<"admin" | "guest" | null>("auth-role", () => null);
 
   const init = () => {
-    onAuthStateChanged($auth, (u) => {
+    onAuthStateChanged($auth, async (u) => {
       user.value = u;
+      if (u) {
+        try {
+          const snap = await getDoc(doc($db, "users", u.uid));
+          userRole.value = (snap.data()?.role as "admin" | "guest") ?? null;
+        } catch {
+          userRole.value = null;
+        }
+      } else {
+        userRole.value = null;
+      }
     });
   };
 
@@ -26,5 +38,5 @@ export const useAuth = () => {
 
   const isLoggedIn = computed(() => !!user.value);
 
-  return { user, isLoggedIn, init, login, logout };
+  return { user, userRole, isLoggedIn, init, login, logout };
 };

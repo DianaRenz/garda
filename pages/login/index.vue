@@ -7,7 +7,7 @@
           <p class="text-medium-emphasis text-body-2 mt-1">{{ $t('login.subtitle') }}</p>
         </div>
 
-        <VForm @submit.prevent="submit">
+        <VForm ref="formRef" @submit.prevent="submit">
           <div class="mt-1">
             <label class="label text-grey-darken-2" for="email">{{ $t('login.email') }}</label>
             <VTextField
@@ -51,22 +51,42 @@
 </template>
 
 <script setup lang="ts">
+import { doc, getDoc } from "firebase/firestore";
+
 definePageMeta({ layout: "default" });
+
+const { $auth, $db } = useNuxtApp();
+const { user, userRole, login } = useAuth();
+const { ruleRequired, ruleEmail } = useFormRules();
 
 const email = ref("");
 const password = ref("");
 const loading = ref(false);
 const error = ref(false);
+const formRef = ref();
 
-const { ruleRequired, ruleEmail } = useFormRules();
-const { login } = useAuth();
+// Already logged in — redirect immediately
+onMounted(() => {
+  if (user.value && userRole.value) {
+    navigateTo(userRole.value === "guest" ? "/account" : "/admin");
+  }
+});
 
 const submit = async () => {
+  const { valid } = await formRef.value.validate();
+  if (!valid) return;
   loading.value = true;
   error.value = false;
   try {
     await login(email.value, password.value);
-    await navigateTo("/admin");
+    const uid = $auth.currentUser?.uid;
+    if (uid) {
+      const snap = await getDoc(doc($db, "users", uid));
+      const role = snap.data()?.role;
+      await navigateTo(role === "guest" ? "/account" : "/admin");
+    } else {
+      await navigateTo("/admin");
+    }
   } catch {
     error.value = true;
   } finally {

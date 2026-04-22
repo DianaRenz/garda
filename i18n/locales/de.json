@@ -26,6 +26,7 @@
     "title": "Termin anfragen",
     "subtitle": "Füllen Sie das Formular aus und wir melden uns zur Bestätigung.",
     "back": "← Zurück zum Kalender",
+    "backToAccount": "← Zurück zum Konto",
     "name": "Ihr Name",
     "contact": "Kontakt (Telefon oder E-Mail)",
     "startDate": "Anreisedatum",
@@ -35,12 +36,21 @@
     "success": "Anfrage gesendet! Wir melden uns zur Bestätigung."
   },
   "login": {
-    "subtitle": "Anmeldung für Eigentümer",
+    "subtitle": "Bei Ihrem Konto anmelden",
     "email": "E-Mail",
     "password": "Passwort",
     "submit": "Anmelden",
     "forgotPassword": "Passwort vergessen?",
     "error": "Falsche E-Mail oder falsches Passwort"
+  },
+  "resetPassword": {
+    "title": "Passwort zurücksetzen",
+    "subtitle": "E-Mail eingeben — wir senden einen Reset-Link",
+    "email": "E-Mail",
+    "submit": "Anweisungen senden",
+    "success": "E-Mail gesendet! Prüfen Sie Ihr Postfach.",
+    "error": "Etwas ist schiefgelaufen. Überprüfen Sie die E-Mail und versuchen Sie es erneut.",
+    "backToLogin": "← Zurück zur Anmeldung"
   },
   "dashboard": {
     "title": "Dashboard",

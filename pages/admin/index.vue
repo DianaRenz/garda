@@ -22,16 +22,28 @@
       <template v-if="upcomingBookings.length">
         <div v-for="(b, i) in upcomingBookings" :key="b.id">
           <VDivider v-if="i > 0" />
-          <div class="d-flex align-center justify-space-between px-4 py-3">
-            <div>
+          <div class="d-flex align-center justify-space-between px-4 py-3 ga-3">
+            <div class="flex-grow-1 min-width-0">
               <div class="text-body-2 font-weight-medium">{{ b.guestName }}</div>
               <div class="text-caption text-medium-emphasis mt-1">
                 {{ formatDate(b.startDate) }} — {{ formatDate(b.endDate) }}
               </div>
             </div>
-            <VChip :color="statusColor[b.status]" size="small" variant="tonal">
-              {{ $t(`bookings.statuses.${b.status}`) }}
-            </VChip>
+            <div class="d-flex align-center ga-2 flex-shrink-0">
+              <VBtn
+                v-if="b.status === 'pending'"
+                size="x-small"
+                variant="tonal"
+                color="primary"
+                :loading="confirming === b.id"
+                @click="confirm(b.id)"
+              >
+                {{ $t('bookings.actions.confirm') }}
+              </VBtn>
+              <VChip :color="statusColor[b.status]" size="small" variant="tonal">
+                {{ $t(`bookings.statuses.${b.status}`) }}
+              </VChip>
+            </div>
           </div>
         </div>
       </template>
@@ -46,8 +58,19 @@
 <script setup lang="ts">
 definePageMeta({ layout: "admin", middleware: "auth" });
 
-const { bookings, subscribe, formatDate, statusColor } = useBookings();
+const { bookings, subscribe, updateBooking, formatDate, statusColor } = useBookings();
 const { guests, subscribe: subscribeGuests } = useGuests();
+
+const confirming = ref<string | null>(null);
+
+const confirm = async (id: string) => {
+  confirming.value = id;
+  try {
+    await updateBooking(id, { status: "confirmed" });
+  } finally {
+    confirming.value = null;
+  }
+};
 const { t } = useI18n();
 
 const now = new Date();

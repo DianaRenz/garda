@@ -53,9 +53,11 @@ This is a Nuxt 4 + Vuetify 4 starter template. Vuetify is loaded via `vite-plugi
 
 **PWA:** Configured via `@kevinmarrec/nuxt-pwa` in `nuxt.config.ts`. Replace `public/favicon.ico` and `public/icon.png` for a new app.
 
-**Firebase:** `plugins/firebase.ts` initializes Firebase and provides `$auth`, `$db`, `$storage` via `useNuxtApp()`. Auth composable is `composables/useAuth.ts`. Admin routes protected by `middleware/auth.ts` (checks `role === 'admin'` in `users/{uid}`).
+**Firebase:** `plugins/firebase.ts` initializes Firebase and provides `$auth`, `$db`, `$storage` via `useNuxtApp()`. (`$storage` is initialized but unused — no photo feature planned.) Auth composable is `composables/useAuth.ts`. Admin routes protected by `middleware/auth.ts` (checks `role === 'admin'` in `users/{uid}`).
 
 **Roles:** Two roles stored in Firestore `users/{uid}` — `admin` (full `/admin` access) and `guest` (only `/account`, `/request`, public pages). User doc fields: `role`, `email`, `name` (guest only), `phone` (guest only), `createdAt`.
+
+**Auth state:** `useAuth()` exposes `user` (Firebase User), `userRole` (`'admin' | 'guest' | null`), `isLoggedIn`, `init`, `login`, `logout`. `init()` is called in `app.vue` on mount — sets up `onAuthStateChanged` listener which also fetches `userRole` from Firestore. After login, always fetch role from Firestore directly (don't wait for reactive state) to avoid timing issues. `pages/setup.vue` is dev-only (`import.meta.dev` guard).
 
 **Invite system:** Registration is closed — only via one-time invite links (`/register/[token]`). Tokens are generated in `/admin/settings` using `composables/useInvite.ts` (`generateInvite(type)`, `validateToken`, `markTokenUsed`). `type: 'admin' | 'guest'` is stored in Firestore `invites` collection and returned by `validateToken`. Tokens expire in 7 days, marked `used: true` after registration. Admin invite → redirect `/admin`, guest invite → redirect `/account`.
 

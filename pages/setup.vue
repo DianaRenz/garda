@@ -55,6 +55,10 @@ const loading = ref(false);
 const error = ref(false);
 
 onMounted(() => {
+  if (!import.meta.dev) {
+    navigateTo("/");
+    return;
+  }
   onAuthStateChanged($auth, (u) => {
     user.value = u;
   });

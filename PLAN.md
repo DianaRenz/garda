@@ -218,15 +218,22 @@
 - [x] Полный календарь `/admin/calendar` — с именами гостей, клик → диалог с confirm/delete
 
 ### Фаза 4 — Полировка
+- [x] UX-аудит и исправления:
+  - `useAuth.ts` — добавлен `userRole` (реактивный, загружается из `users/{uid}` при init)
+  - `pages/login/index.vue` — redirect по роли (guest→/account, admin→/admin); редирект если уже залогинен
+  - `pages/reset-password/index.vue` — реализован через `sendPasswordResetEmail`, i18n, success-state
+  - `layouts/default.vue` — иконка аккаунта в appbar: ведёт на /account, /admin или /login по роли
+  - `pages/request/index.vue` — умная кнопка назад (к кабинету если залогинен, к календарю если нет); post-success с кнопкой
+  - `pages/admin/index.vue` — quick confirm pending прямо с дашборда
+  - `pages/setup.vue` — закрыт в продакшене (`import.meta.dev`)
 - [x] Мобильная версия:
   - `layouts/admin.vue` — временный drawer + VAppBar с гамбургером на мобильном (`useDisplay()`)
   - `pages/admin/bookings/index.vue` — VTable на десктопе, VCard-список на мобильном
   - `pages/admin/guests/index.vue` — VTable на десктопе, VCard-список на мобильном
   - `components/AppCalendar.vue` — уменьшенные ячейки на экранах < 600px
-- [ ] Фото квартиры (Firebase Storage)
-- [ ] История посещений / статистика
-- [ ] PWA (уже настроен в стартере)
 - [ ] Firestore Security Rules (production-ready)
+- [ ] PWA (уже настроен в стартере)
+- [ ] История посещений / статистика (nice-to-have)
 
 ---
 
@@ -246,3 +253,4 @@
 - Email-подтверждение гостю когда запрос одобрен
 - iCal экспорт календаря
 - История посещений / статистика (кто чаще всего, любимые месяцы)
+- ~~Фото квартиры~~ — не нужно, приложение для своих

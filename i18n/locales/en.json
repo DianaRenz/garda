@@ -26,6 +26,7 @@
     "title": "Request dates",
     "subtitle": "Fill in the form and we will get back to you to confirm.",
     "back": "← Back to calendar",
+    "backToAccount": "← Back to account",
     "name": "Your name",
     "contact": "Contact (phone or email)",
     "startDate": "Check-in date",
@@ -35,12 +36,21 @@
     "success": "Request sent! We will contact you to confirm."
   },
   "login": {
-    "subtitle": "Owner login",
+    "subtitle": "Sign in to your account",
     "email": "Email",
     "password": "Password",
     "submit": "Sign in",
     "forgotPassword": "Forgot password?",
     "error": "Invalid email or password"
+  },
+  "resetPassword": {
+    "title": "Reset password",
+    "subtitle": "Enter your email and we'll send a reset link",
+    "email": "Email",
+    "submit": "Send instructions",
+    "success": "Email sent! Check your inbox.",
+    "error": "Something went wrong. Check the email and try again.",
+    "backToLogin": "← Back to login"
   },
   "dashboard": {
     "title": "Dashboard",
