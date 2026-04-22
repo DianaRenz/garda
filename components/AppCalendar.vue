@@ -173,4 +173,21 @@ const cellStyle = (cell: typeof cells.value[0]) => ({
   white-space: nowrap;
   opacity: 0.75;
 }
+
+@media (max-width: 599px) {
+  .cal-cell {
+    min-height: 42px;
+    padding: 4px 3px;
+    border-radius: 5px;
+    gap: 2px;
+  }
+  .cal-header {
+    font-size: 10px;
+    padding: 2px 0 4px;
+    letter-spacing: 0;
+  }
+  .cal-name {
+    font-size: 9px;
+  }
+}
 </style>

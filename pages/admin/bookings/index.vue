@@ -21,8 +21,8 @@
       </VChip>
     </div>
 
-    <!-- Table -->
-    <VCard variant="outlined">
+    <!-- Desktop table -->
+    <VCard v-if="!mobile" variant="outlined">
       <VTable v-if="filtered.length">
         <thead>
           <tr>
@@ -85,6 +85,52 @@
       </div>
     </VCard>
 
+    <!-- Mobile cards -->
+    <template v-else>
+      <div v-if="!filtered.length" class="pa-8 text-center text-medium-emphasis">
+        {{ $t('bookings.empty') }}
+      </div>
+      <div class="d-flex flex-column ga-3">
+        <VCard v-for="b in filtered" :key="b.id" variant="outlined" rounded="lg">
+          <VCardText class="pa-4">
+            <div class="d-flex align-start justify-space-between mb-1">
+              <div>
+                <div class="font-weight-medium">{{ b.guestName }}</div>
+                <div class="text-body-2 text-medium-emphasis">{{ b.guestContact }}</div>
+              </div>
+              <VChip :color="statusColor[b.status]" size="small" variant="tonal">
+                {{ $t(`bookings.statuses.${b.status}`) }}
+              </VChip>
+            </div>
+            <div class="text-body-2 mt-2">
+              {{ formatDate(b.startDate) }} — {{ formatDate(b.endDate) }}
+            </div>
+            <div v-if="b.notes" class="text-body-2 text-medium-emphasis mt-1">{{ b.notes }}</div>
+          </VCardText>
+          <VCardActions class="px-4 pb-3 pt-0">
+            <VBtn
+              v-if="b.status === 'pending'"
+              size="small"
+              variant="tonal"
+              color="primary"
+              :loading="confirming === b.id"
+              @click="confirm(b.id)"
+            >
+              {{ $t('bookings.actions.confirm') }}
+            </VBtn>
+            <VSpacer />
+            <VBtn
+              size="small"
+              variant="text"
+              color="error"
+              icon="fluent:delete-24-regular"
+              @click="askDelete(b.id)"
+            />
+          </VCardActions>
+        </VCard>
+      </div>
+    </template>
+
     <!-- Create dialog -->
     <VDialog v-model="dialog" max-width="500">
       <VCard>
@@ -141,8 +187,11 @@
 </template>
 
 <script setup lang="ts">
+import { useDisplay } from 'vuetify'
+
 definePageMeta({ layout: "admin", middleware: "auth" });
 
+const { mobile } = useDisplay()
 const { t } = useI18n();
 const { ruleRequired } = useFormRules();
 const { bookings, subscribe, createBooking, updateBooking, deleteBooking, formatDate, statusColor } = useBookings();

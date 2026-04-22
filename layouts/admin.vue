@@ -1,9 +1,24 @@
 <template>
   <VApp>
-    <VNavigationDrawer v-model="drawer" :rail="rail" permanent>
+    <!-- Mobile top bar -->
+    <VAppBar v-if="mobile" flat border="b">
+      <template #prepend>
+        <VBtn icon variant="text" @click="drawer = !drawer">
+          <VIcon icon="fluent:navigation-24-regular" />
+        </VBtn>
+      </template>
+      <VAppBarTitle class="font-weight-bold">Garda</VAppBarTitle>
+    </VAppBar>
+
+    <VNavigationDrawer
+      v-model="drawer"
+      :rail="!mobile && rail"
+      :temporary="mobile"
+    >
       <VListItem title="Garda" nav class="py-4">
         <template #append>
           <VBtn
+            v-if="!mobile"
             :icon="rail ? 'fluent:panel-right-expand-24-regular' : 'fluent:panel-right-contract-24-regular'"
             variant="text"
             @click="rail = !rail"
@@ -21,12 +36,13 @@
           :prepend-icon="item.icon"
           :title="$t(item.titleKey)"
           rounded="lg"
+          @click="mobile && (drawer = false)"
         />
       </VList>
 
       <template #append>
         <VDivider />
-        <div v-if="!rail" class="d-flex justify-center ga-1 py-2">
+        <div v-if="!rail || mobile" class="d-flex justify-center ga-1 py-2">
           <VBtn
             v-for="loc in locales"
             :key="loc.code"
@@ -51,7 +67,7 @@
     </VNavigationDrawer>
 
     <VMain>
-      <VContainer class="py-8">
+      <VContainer class="py-6 py-md-8">
         <slot />
       </VContainer>
     </VMain>
@@ -59,17 +75,25 @@
 </template>
 
 <script setup lang="ts">
-const drawer = ref(true);
-const rail = ref(false);
+import { useDisplay } from 'vuetify'
 
-const { logout } = useAuth();
-const { locale, locales, setLocale } = useI18n();
+const { mobile } = useDisplay()
+const drawer = ref(true)
+const rail = ref(false)
+
+watch(mobile, (isMobile) => {
+  drawer.value = !isMobile
+  if (!isMobile) rail.value = false
+}, { immediate: false })
+
+const { logout } = useAuth()
+const { locale, locales, setLocale } = useI18n()
 
 const navItems = [
-  { to: "/admin",           icon: "fluent:home-24-regular",              titleKey: "nav.dashboard" },
-  { to: "/admin/calendar",  icon: "fluent:calendar-24-regular",          titleKey: "nav.calendar" },
+  { to: "/admin",           icon: "fluent:home-24-regular",               titleKey: "nav.dashboard" },
+  { to: "/admin/calendar",  icon: "fluent:calendar-24-regular",           titleKey: "nav.calendar" },
   { to: "/admin/bookings",  icon: "fluent:calendar-checkmark-24-regular", titleKey: "nav.bookings" },
-  { to: "/admin/guests",    icon: "fluent:people-24-regular",            titleKey: "nav.guests" },
-  { to: "/admin/settings",  icon: "fluent:settings-24-regular",          titleKey: "nav.settings" },
-];
+  { to: "/admin/guests",    icon: "fluent:people-24-regular",             titleKey: "nav.guests" },
+  { to: "/admin/settings",  icon: "fluent:settings-24-regular",           titleKey: "nav.settings" },
+]
 </script>

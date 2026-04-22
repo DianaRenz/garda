@@ -63,6 +63,8 @@ This is a Nuxt 4 + Vuetify 4 starter template. Vuetify is loaded via `vite-plugi
 
 **Guest cabinet:** `pages/account/index.vue` — protected (redirects to `/login` if not authenticated), shows user profile from `users/{uid}`, lists own bookings via `subscribeByUser`, logout button. `/request` form pre-fills `name`/`phone` from `users/{uid}` for logged-in guests.
 
+**Mobile:** Admin layout uses `useDisplay()` from `'vuetify'` (import explicitly — not auto-imported). `layouts/admin.vue` uses `temporary` drawer + `VAppBar` with hamburger on mobile, permanent drawer with rail toggle on desktop. Pages with `VTable` (`/admin/bookings`, `/admin/guests`) render card lists on mobile using `v-if="!mobile"` / `v-else`. `AppCalendar.vue` has responsive CSS for cells < 600px.
+
 **Calendar:** `components/AppCalendar.vue` — shared month-grid component. Props: `bookings: Booking[]`, `showNames: boolean`. Emits `select(booking)` when `showNames=true` and user clicks a booked cell. Handles month navigation, Mon-Sun headers via Intl, day coloring by status (pending=amber, confirmed=blue, blocked=red). Used in `/calendar` (public, no names) and `/admin/calendar` (with names + click → VDialog for confirm/delete).
 
 **i18n:** Locale files at `i18n/locales/{ru,en,de}.json`. Always add keys to all three files. Use `$t('key')` in templates, `useI18n().t('key')` in `<script setup>`. Import types from Vuetify with `import type` to avoid runtime errors.

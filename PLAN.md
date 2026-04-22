@@ -218,7 +218,11 @@
 - [x] Полный календарь `/admin/calendar` — с именами гостей, клик → диалог с confirm/delete
 
 ### Фаза 4 — Полировка
-- [ ] Мобильная версия
+- [x] Мобильная версия:
+  - `layouts/admin.vue` — временный drawer + VAppBar с гамбургером на мобильном (`useDisplay()`)
+  - `pages/admin/bookings/index.vue` — VTable на десктопе, VCard-список на мобильном
+  - `pages/admin/guests/index.vue` — VTable на десктопе, VCard-список на мобильном
+  - `components/AppCalendar.vue` — уменьшенные ячейки на экранах < 600px
 - [ ] Фото квартиры (Firebase Storage)
 - [ ] История посещений / статистика
 - [ ] PWA (уже настроен в стартере)
