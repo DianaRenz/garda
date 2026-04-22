@@ -8,12 +8,13 @@
 
 ## Концепция
 
-Два режима работы приложения:
+Три режима работы приложения:
 
 | Режим | Доступ | Что видит |
 |---|---|---|
 | **Публичный** | Все (по ссылке) | Описание квартиры + анонимный календарь |
-| **Админский** | Только владельцы (логин) | Всё: имена, контакты, история, управление |
+| **Гостевой** | Друзья по инвайту (`role: guest`) | Свои бронирования, форма запроса дат |
+| **Админский** | Владельцы по инвайту (`role: admin`) | Всё: имена, контакты, история, управление |
 
 ---
 
@@ -89,13 +90,22 @@
 ```
 /invites/{token}        // UUID как ID документа
   token: string          // дублируется для удобства
+  type: 'admin' | 'guest'  // тип инвайта
   createdAt: Timestamp
   expiresAt: Timestamp   // +7 дней от createdAt
   used: boolean
   usedAt: Timestamp | null
 
+/users/{uid}            // Firebase Auth UID
+  role: 'admin' | 'guest'
+  email: string
+  name: string | null    // только для гостей
+  phone: string | null   // только для гостей
+  createdAt: Timestamp
+
 /bookings/{bookingId}
-  guestId: string | null   // null если запрос пришёл через форму (гость ещё не в гостевой книге)
+  guestId: string | null   // ссылка на /guests (гостевая книга)
+  userId: string | null    // UID зарегистрированного гостя (если запрос от авторизованного)
   guestName: string        // денормализовано для скорости
   guestContact: string     // телефон или email (из формы или из гостевой книги)
   startDate: Timestamp
@@ -124,9 +134,10 @@
 ```
 
 ### Firebase Auth
-- Только для владельцев (Email + Password)
+- Для владельцев (role: admin) и приглашённых гостей (role: guest)
 - Публичная часть — без авторизации
 - Firestore Rules: чтение `/bookings` публично (только status + даты), запись — только auth
+- Гости видят только свои бронирования в `/account` (фильтр по `userId == uid`)
 
 ### Firestore Security Rules (концепция)
 ```
@@ -142,15 +153,17 @@
 ```
 /                        → публичная главная
 /calendar                → публичный календарь
-/request                 → форма запроса дат (публичная)
-/login                   → логин для владельцев
-/register/[token]        → регистрация по инвайт-ссылке (одноразовый UUID-токен, 7 дней)
+/request                 → форма запроса дат (публичная, пре-заполнение для залогиненных гостей)
+/login                   → логин для владельцев и гостей
+/register/[token]        → регистрация по инвайт-ссылке (тип admin/guest из токена)
 
-/admin                   → дашборд (protected)
+/account                 → личный кабинет гостя (role: guest, protected)
+
+/admin                   → дашборд (role: admin, protected)
 /admin/calendar          → полный календарь (protected)
 /admin/bookings          → список бронирований (protected)
 /admin/guests            → гостевая книга (protected)
-/admin/settings          → настройки (protected)
+/admin/settings          → настройки + генерация admin/guest инвайтов (protected)
 ```
 
 Защита роутов — Nuxt middleware, проверяет Firebase Auth.
@@ -174,32 +187,42 @@
 ## Фазы разработки
 
 ### Фаза 0 — Инфраструктура (завершено)
-- [x] Инвайт-система: `composables/useInvite.ts` + `pages/register/[token].vue` + секция генерации ссылки в `/admin/settings`
-
 - [x] Настроен Nuxt 4 + Vuetify 4 + i18n (ru/en/de)
-- [x] Исправлена смена языков: добавлен `langDir: 'i18n/locales'` в конфиг `@nuxtjs/i18n` v10 (без него модуль не находил файлы переводов); убрана устаревшая опция `lazy` (в v10 lazy loading автоматический)
+- [x] Исправлена смена языков: `langDir: 'i18n/locales'` в `@nuxtjs/i18n` v10
 - [x] Skeleton-страницы для всех роутов
 - [x] Auth middleware для `/admin`
 - [x] Firebase конфиг через runtimeConfig
 
-### Фаза 1 — Ядро (MVP)
-- [ ] Firebase подключение (auth + firestore)
-- [ ] Auth middleware для `/admin`
-- [ ] Страница `/admin/bookings` — CRUD бронирований
-- [ ] Страница `/admin/guests` — CRUD гостей
-- [ ] Публичный календарь `/calendar` с цветами по статусу
+### Фаза 1 — Ядро (MVP) (завершено)
+- [x] Firebase подключение (auth + firestore) — `plugins/firebase.ts`
+- [x] Auth middleware для `/admin` — `middleware/auth.ts` (проверяет role === 'admin')
+- [x] Страница `/admin/bookings` — CRUD бронирований (`composables/useBookings.ts`)
+- [x] Страница `/admin/guests` — CRUD гостей
+- [x] Публичный календарь `/calendar` с цветами по статусу
+- [x] Инвайт-система: `composables/useInvite.ts` + `pages/register/[token].vue`
+- [x] Форма запроса дат `/request` → создаёт `pending` бронирование
 
-### Фаза 2 — Контент
-- [ ] Главная страница `/` с описанием квартиры
-- [ ] Админский дашборд `/admin`
-- [ ] Полный календарь в админке `/admin/calendar`
-- [ ] Настройки `/admin/settings` (редактирование описания)
+### Фаза 2 — Гостевой доступ (завершено)
+- [x] Разделение инвайтов: `generateInvite('admin' | 'guest')`, поле `type` в Firestore
+- [x] Регистрация гостя: форма с name + phone, `role: 'guest'` в `users/{uid}`
+- [x] Личный кабинет гостя: `pages/account/index.vue` — список своих бронирований
+- [x] `subscribeByUser(uid)` в `useBookings.ts` — фильтр по `userId`
+- [x] Пре-заполнение формы `/request` из данных пользователя (name/phone)
+- [x] Хранение `userId` в бронированиях для фильтрации гостем
+- [x] Два отдельных инвайт-блока в `/admin/settings`
 
-### Фаза 3 — Полировка
+### Фаза 3 — Контент (завершено)
+- [x] Главная страница `/` с описанием квартиры (данные из Firestore `/apartment/info`)
+- [x] Админский дашборд `/admin` — счётчики и ближайшие бронирования
+- [x] Публичный календарь `/calendar` — цветовой грид через `AppCalendar.vue`
+- [x] Полный календарь `/admin/calendar` — с именами гостей, клик → диалог с confirm/delete
+
+### Фаза 4 — Полировка
 - [ ] Мобильная версия
 - [ ] Фото квартиры (Firebase Storage)
 - [ ] История посещений / статистика
 - [ ] PWA (уже настроен в стартере)
+- [ ] Firestore Security Rules (production-ready)
 
 ---
 
@@ -208,7 +231,8 @@
 - **Запрос дат:** два способа — друзья могут сами отправить запрос через форму на сайте (статус `pending`), либо владелец добавляет бронирование вручную из админки
 - **Уведомления:** nice-to-have, в MVP не входит
 - **Доступ:** один общий аккаунт (муж + жена), несколько владельцев не нужно
-- **Регистрация:** закрытая, только по одноразовой инвайт-ссылке (`/register/[token]`). Токен генерируется из `/admin/settings`, хранится в Firestore коллекции `invites`, действует 7 дней, помечается как `used: true` после регистрации. Реализовано в `composables/useInvite.ts`
+- **Регистрация:** закрытая, только по одноразовой инвайт-ссылке (`/register/[token]`). Токен генерируется из `/admin/settings`, хранится в Firestore коллекции `invites` с полем `type: 'admin' | 'guest'`, действует 7 дней, помечается как `used: true` после регистрации. Реализовано в `composables/useInvite.ts`
+- **Роли:** `admin` — полный доступ к `/admin`; `guest` — только личный кабинет `/account`, форма запроса `/request`, публичный календарь
 
 ---
 

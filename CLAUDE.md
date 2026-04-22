@@ -53,10 +53,20 @@ This is a Nuxt 4 + Vuetify 4 starter template. Vuetify is loaded via `vite-plugi
 
 **PWA:** Configured via `@kevinmarrec/nuxt-pwa` in `nuxt.config.ts`. Replace `public/favicon.ico` and `public/icon.png` for a new app.
 
-**Firebase:** `plugins/firebase.ts` initializes Firebase and provides `$auth`, `$db`, `$storage` via `useNuxtApp()`. Auth composable is `composables/useAuth.ts`. Admin routes protected by `middleware/auth.ts`.
+**Firebase:** `plugins/firebase.ts` initializes Firebase and provides `$auth`, `$db`, `$storage` via `useNuxtApp()`. Auth composable is `composables/useAuth.ts`. Admin routes protected by `middleware/auth.ts` (checks `role === 'admin'` in `users/{uid}`).
 
-**Invite system:** Registration is closed — only via one-time invite links (`/register/[token]`). Tokens are generated in `/admin/settings` using `composables/useInvite.ts` (`generateInvite`, `validateToken`, `markTokenUsed`). Stored in Firestore `invites` collection, expire in 7 days, marked `used: true` after registration.
+**Roles:** Two roles stored in Firestore `users/{uid}` — `admin` (full `/admin` access) and `guest` (only `/account`, `/request`, public pages). User doc fields: `role`, `email`, `name` (guest only), `phone` (guest only), `createdAt`.
+
+**Invite system:** Registration is closed — only via one-time invite links (`/register/[token]`). Tokens are generated in `/admin/settings` using `composables/useInvite.ts` (`generateInvite(type)`, `validateToken`, `markTokenUsed`). `type: 'admin' | 'guest'` is stored in Firestore `invites` collection and returned by `validateToken`. Tokens expire in 7 days, marked `used: true` after registration. Admin invite → redirect `/admin`, guest invite → redirect `/account`.
+
+**Bookings:** `composables/useBookings.ts` — `Booking` has `userId: string | null` (Firebase UID of registered guest who submitted the request). `subscribeByUser(uid)` queries bookings where `userId == uid` for the guest cabinet. `createBooking` stores `userId` when a logged-in user submits via `/request`.
+
+**Guest cabinet:** `pages/account/index.vue` — protected (redirects to `/login` if not authenticated), shows user profile from `users/{uid}`, lists own bookings via `subscribeByUser`, logout button. `/request` form pre-fills `name`/`phone` from `users/{uid}` for logged-in guests.
+
+**Calendar:** `components/AppCalendar.vue` — shared month-grid component. Props: `bookings: Booking[]`, `showNames: boolean`. Emits `select(booking)` when `showNames=true` and user clicks a booked cell. Handles month navigation, Mon-Sun headers via Intl, day coloring by status (pending=amber, confirmed=blue, blocked=red). Used in `/calendar` (public, no names) and `/admin/calendar` (with names + click → VDialog for confirm/delete).
 
 **i18n:** Locale files at `i18n/locales/{ru,en,de}.json`. Always add keys to all three files. Use `$t('key')` in templates, `useI18n().t('key')` in `<script setup>`. Import types from Vuetify with `import type` to avoid runtime errors.
 
 **Always update PLAN.md and CLAUDE.md** after implementing significant features.
+
+## Codex will review your output once you are done.

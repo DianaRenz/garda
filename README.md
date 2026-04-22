@@ -1,7 +1,7 @@
 # Garda — Apartment Manager
 
 Приложение для управления доступом к квартире на озере Гарда.
-Друзья могут смотреть календарь и запрашивать даты, владельцы подтверждают через админку.
+Друзья регистрируются по инвайту, запрашивают даты и видят свои бронирования в личном кабинете. Владельцы подтверждают через админку.
 
 Подробный план проекта: [PLAN.md](./PLAN.md)
 
@@ -50,43 +50,48 @@ NUXT_PUBLIC_FIREBASE_APP_ID=
 |---|---|---|
 | `/` | Публичный | Описание квартиры |
 | `/calendar` | Публичный | Анонимный календарь (цвета по статусу) |
-| `/request` | Публичный | Форма запроса дат |
-| `/login` | Публичный | Вход для владельцев |
-| `/register/[token]` | По инвайту | Регистрация по одноразовой ссылке |
-| `/admin` | Владельцы | Дашборд |
+| `/request` | Публичный | Форма запроса дат (пре-заполнение для гостей) |
+| `/login` | Публичный | Вход для владельцев и гостей |
+| `/register/[token]` | По инвайту | Регистрация (тип `admin`/`guest` из токена) |
+| `/account` | Гости (`role: guest`) | Личный кабинет: профиль + свои бронирования |
+| `/admin` | Владельцы (`role: admin`) | Дашборд |
 | `/admin/calendar` | Владельцы | Полный календарь с именами |
 | `/admin/bookings` | Владельцы | Список всех бронирований |
 | `/admin/guests` | Владельцы | Гостевая книга |
-| `/admin/settings` | Владельцы | Настройки квартиры |
+| `/admin/settings` | Владельцы | Настройки + генерация admin/guest инвайтов |
 
 ## Структура проекта
 
 ```
 assets/
   main.scss            # Глобальные стили
+components/
+  AppCalendar.vue      # Общий календарный грид (публичный + admin, prop showNames)
 composables/
   rules.ts             # useFormRules() — валидация форм
   useAuth.ts           # login, logout, user state
-  useInvite.ts         # generateInvite, validateToken, markTokenUsed
+  useInvite.ts         # generateInvite(type), validateToken (возвращает type), markTokenUsed
+  useBookings.ts       # CRUD + subscribe + subscribeByUser(uid) + userId в модели
 layouts/
   default.vue          # Базовый layout: VApp > VMain > slot
 pages/
   index.vue            # Главная (описание квартиры)
   calendar/            # Публичный календарь
-  request/             # Форма запроса дат
-  login/               # Вход для владельцев
-  register/[token].vue # Регистрация по инвайт-ссылке
-  admin/               # Защищённая админка
+  request/             # Форма запроса дат (пре-заполнение из users/{uid})
+  login/               # Вход для владельцев и гостей
+  register/[token].vue # Регистрация: admin (email+pass) или guest (name+phone+email+pass)
+  account/             # Личный кабинет гостя (role: guest)
+  admin/               # Защищённая админка (role: admin)
 plugins/
   vuetify.ts           # Vuetify
-  firebase.ts          # Firebase init
+  firebase.ts          # Firebase init ($auth, $db, $storage)
 utils/
   themes.ts            # Светлая и тёмная темы
   defaults.ts          # Глобальные дефолты Vuetify
   customIcons.ts       # Кастомный icon set (Fluent)
   tw-colors.ts         # Палитра цветов Tailwind
 middleware/
-  auth.ts              # Защита /admin роутов
+  auth.ts              # Защита /admin роутов (проверяет role === 'admin')
 ```
 
 ## Статусы бронирований
