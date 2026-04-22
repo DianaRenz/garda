@@ -3,6 +3,8 @@ import {
   query, orderBy, where, onSnapshot, serverTimestamp, Timestamp,
 } from "firebase/firestore";
 
+export type BookingStatus = "pending" | "confirmed" | "blocked" | "rejected";
+
 export interface Booking {
   id: string;
   guestId: string | null;
@@ -11,9 +13,10 @@ export interface Booking {
   guestContact: string;
   startDate: Timestamp;
   endDate: Timestamp;
-  status: "pending" | "confirmed" | "blocked";
+  status: BookingStatus;
   source: "admin" | "request";
   notes: string;
+  rejectionNote: string | null;
   createdAt: Timestamp;
   updatedAt: Timestamp;
 }
@@ -25,10 +28,16 @@ export interface BookingForm {
   guestContact: string;
   startDate: string; // YYYY-MM-DD
   endDate: string;
-  status: "pending" | "confirmed" | "blocked";
+  status: BookingStatus;
   source: "admin" | "request";
   notes: string;
+  rejectionNote?: string | null;
 }
+
+const tsToStr = (ts: Timestamp): string => {
+  const d = ts.toDate();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+};
 
 export const useBookings = () => {
   const { $db } = useNuxtApp();
@@ -52,6 +61,18 @@ export const useBookings = () => {
     });
   };
 
+  const getConflicts = (booking: Booking): Booking[] => {
+    if (!booking.startDate || !booking.endDate) return [];
+    const aStart = tsToStr(booking.startDate);
+    const aEnd = tsToStr(booking.endDate);
+    return bookings.value.filter((b) => {
+      if (b.id === booking.id) return false;
+      if (b.status === "rejected" || b.status === "blocked") return false;
+      if (!b.startDate || !b.endDate) return false;
+      return aStart <= tsToStr(b.endDate) && aEnd >= tsToStr(b.startDate);
+    });
+  };
+
   const createBooking = async (form: BookingForm) => {
     await addDoc(collection($db, "bookings"), {
       guestId: form.guestId ?? null,
@@ -63,6 +84,7 @@ export const useBookings = () => {
       status: form.status,
       source: form.source,
       notes: form.notes,
+      rejectionNote: null,
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
     });
@@ -89,10 +111,15 @@ export const useBookings = () => {
   };
 
   const statusColor: Record<string, string> = {
-    pending: "warning",
+    pending:   "warning",
     confirmed: "primary",
-    blocked: "error",
+    blocked:   "error",
+    rejected:  "secondary",
   };
 
-  return { bookings, subscribe, subscribeByUser, createBooking, updateBooking, deleteBooking, formatDate, statusColor };
+  return {
+    bookings, subscribe, subscribeByUser, getConflicts,
+    createBooking, updateBooking, deleteBooking,
+    formatDate, statusColor,
+  };
 };

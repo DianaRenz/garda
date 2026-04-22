@@ -110,9 +110,10 @@
   guestContact: string     // телефон или email (из формы или из гостевой книги)
   startDate: Timestamp
   endDate: Timestamp
-  status: 'pending' | 'confirmed' | 'blocked'
+  status: 'pending' | 'confirmed' | 'blocked' | 'rejected'
   source: 'admin' | 'request'  // добавлено вручную или через форму
   notes: string
+  rejectionNote: string | null  // причина отклонения (заполняется при reject)
   createdAt: Timestamp
   updatedAt: Timestamp
 
@@ -231,6 +232,13 @@
   - `pages/admin/bookings/index.vue` — VTable на десктопе, VCard-список на мобильном
   - `pages/admin/guests/index.vue` — VTable на десктопе, VCard-список на мобильном
   - `components/AppCalendar.vue` — уменьшенные ячейки на экранах < 600px
+- [x] UX: отклонение заявок и workflow гостя:
+  - `useBookings.ts` — добавлен статус `rejected`, поле `rejectionNote`, функция `getConflicts()`
+  - `pages/account/index.vue` — разделение upcoming/past, читаемые статусы, отмена pending, показ причины отклонения
+  - `pages/admin/bookings/index.vue` — кнопка Reject для pending, диалог с textarea + конфликт-предупреждение, фильтр по rejected
+  - `pages/admin/calendar/index.vue` — Reject в диалоге детали, sub-dialog с причиной + конфликтами
+  - `components/AppCalendar.vue` — prop `highlightIds` подсвечивает собственные брони гостя (primary border)
+  - i18n — ключи `bookings.rejectDialog.*`, `account.upcoming/past/cancelRequest/...`, `calendar.legend.mine`
 - [ ] Firestore Security Rules (production-ready)
 - [ ] PWA (уже настроен в стартере)
 - [ ] История посещений / статистика (nice-to-have)

@@ -5,7 +5,7 @@
     <AppCalendar :bookings="bookings" :show-names="true" @select="selected = $event" />
 
     <!-- Booking detail dialog -->
-    <VDialog v-model="dialog" max-width="400">
+    <VDialog v-model="dialog" max-width="420">
       <VCard v-if="selected" rounded="lg">
         <VCardText class="pa-5">
           <div class="d-flex align-center justify-space-between mb-3">
@@ -28,9 +28,13 @@
           <div v-if="selected.notes" class="text-body-2 text-medium-emphasis mt-3 pa-3 rounded-lg" style="background: rgba(0,0,0,0.04)">
             {{ selected.notes }}
           </div>
+
+          <div v-if="selected.rejectionNote" class="text-body-2 text-medium-emphasis mt-3 pa-3 rounded-lg" style="background: rgba(0,0,0,0.04)">
+            <span class="font-weight-medium">{{ $t('account.rejectedNote') }}</span> {{ selected.rejectionNote }}
+          </div>
         </VCardText>
 
-        <VCardActions class="px-5 pb-5 pt-0">
+        <VCardActions class="px-5 pb-5 pt-0 flex-wrap ga-2">
           <VBtn
             v-if="selected.status === 'pending'"
             variant="tonal"
@@ -40,9 +44,47 @@
           >
             {{ $t('bookings.actions.confirm') }}
           </VBtn>
+          <VBtn
+            v-if="selected.status === 'pending'"
+            variant="tonal"
+            color="error"
+            @click="openReject"
+          >
+            {{ $t('bookings.actions.reject') }}
+          </VBtn>
           <VSpacer />
           <VBtn variant="text" color="error" @click="deleteDialog = true">
             {{ $t('bookings.actions.delete') }}
+          </VBtn>
+        </VCardActions>
+      </VCard>
+    </VDialog>
+
+    <!-- Reject dialog -->
+    <VDialog v-model="rejectDialog" max-width="480">
+      <VCard rounded="lg">
+        <VCardTitle class="pa-6 pb-2">{{ $t('bookings.rejectDialog.title') }}</VCardTitle>
+        <VCardText>
+          <VAlert v-if="rejectConflicts.length" type="info" variant="tonal" class="mb-4" density="compact">
+            <div class="font-weight-medium mb-1">{{ $t('bookings.rejectDialog.conflict') }}</div>
+            <div v-for="c in rejectConflicts" :key="c.id" class="text-body-2">
+              {{ c.guestName }}: {{ formatDate(c.startDate) }} — {{ formatDate(c.endDate) }}
+            </div>
+          </VAlert>
+          <div>
+            <label class="label text-grey-darken-2">{{ $t('bookings.rejectDialog.note') }}</label>
+            <VTextarea
+              v-model="rejectNote"
+              :placeholder="$t('bookings.rejectDialog.notePlaceholder')"
+              rows="3"
+            />
+          </div>
+        </VCardText>
+        <VCardActions class="pa-6 pt-0 ga-2">
+          <VSpacer />
+          <VBtn variant="text" @click="rejectDialog = false">{{ $t('common.cancel') }}</VBtn>
+          <VBtn color="error" variant="tonal" :loading="rejecting" @click="doReject">
+            {{ $t('bookings.rejectDialog.confirm') }}
           </VBtn>
         </VCardActions>
       </VCard>
@@ -72,7 +114,7 @@ import type { Booking } from '~/composables/useBookings'
 
 definePageMeta({ layout: "admin", middleware: "auth" });
 
-const { bookings, subscribe, updateBooking, deleteBooking, formatDate, statusColor } = useBookings();
+const { bookings, subscribe, updateBooking, deleteBooking, getConflicts, formatDate, statusColor } = useBookings();
 
 onMounted(() => {
   const unsub = subscribe();
@@ -86,8 +128,15 @@ const dialog = computed({
 });
 
 const deleteDialog = ref(false);
+const rejectDialog = ref(false);
 const confirming = ref(false);
 const deleting = ref(false);
+const rejecting = ref(false);
+const rejectNote = ref('');
+
+const rejectConflicts = computed(() =>
+  selected.value ? getConflicts(selected.value) : []
+);
 
 const confirm = async () => {
   if (!selected.value) return;
@@ -97,6 +146,26 @@ const confirm = async () => {
     selected.value = null;
   } finally {
     confirming.value = false;
+  }
+};
+
+const openReject = () => {
+  rejectNote.value = '';
+  rejectDialog.value = true;
+};
+
+const doReject = async () => {
+  if (!selected.value) return;
+  rejecting.value = true;
+  try {
+    await updateBooking(selected.value.id, {
+      status: 'rejected',
+      rejectionNote: rejectNote.value || null,
+    });
+    rejectDialog.value = false;
+    selected.value = null;
+  } finally {
+    rejecting.value = false;
   }
 };
 

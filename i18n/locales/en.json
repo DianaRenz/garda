@@ -18,7 +18,8 @@
       "available": "Available",
       "pending": "Requested",
       "confirmed": "Occupied",
-      "blocked": "Unavailable"
+      "blocked": "Unavailable",
+      "mine": "Your booking"
     },
     "requestBtn": "Request dates"
   },
@@ -69,7 +70,8 @@
       "all": "All",
       "pending": "Pending",
       "confirmed": "Confirmed",
-      "blocked": "Blocked"
+      "blocked": "Blocked",
+      "rejected": "Rejected"
     },
     "sources": {
       "admin": "Manual",
@@ -77,7 +79,15 @@
     },
     "actions": {
       "confirm": "Confirm",
+      "reject": "Reject",
       "delete": "Delete"
+    },
+    "rejectDialog": {
+      "title": "Reject request",
+      "note": "Reason (optional)",
+      "notePlaceholder": "E.g. these dates are taken, try different ones",
+      "conflict": "Conflict with another request:",
+      "confirm": "Reject"
     },
     "table": {
       "guest": "Guest",
@@ -152,9 +162,16 @@
   },
   "account": {
     "title": "My account",
-    "myBookings": "My bookings",
-    "noBookings": "You have no bookings yet",
-    "requestDates": "Request dates"
+    "upcoming": "Upcoming trips",
+    "past": "Past trips",
+    "noUpcoming": "No upcoming trips",
+    "noPast": "No past trips",
+    "requestDates": "Request dates",
+    "cancelRequest": "Cancel request",
+    "cancelConfirm": "Cancel this request?",
+    "rejectedNote": "Reason:",
+    "pendingStatus": "Awaiting confirmation",
+    "confirmedStatus": "Confirmed"
   },
   "common": {
     "cancel": "Cancel",

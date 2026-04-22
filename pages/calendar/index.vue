@@ -5,12 +5,21 @@
 
     <div class="d-flex ga-4 flex-wrap mb-6">
       <div v-for="item in legend" :key="item.key" class="d-flex align-center ga-2">
-        <div class="rounded" :style="{ background: item.color, width: '14px', height: '14px', border: '1px solid rgba(0,0,0,0.08)' }" />
+        <div
+          class="rounded"
+          :style="{
+            background: item.color,
+            width: '14px',
+            height: '14px',
+            border: item.border ?? '1px solid rgba(0,0,0,0.08)',
+            boxSizing: 'border-box',
+          }"
+        />
         <span class="text-body-2">{{ $t(`calendar.legend.${item.key}`) }}</span>
       </div>
     </div>
 
-    <AppCalendar :bookings="bookings" />
+    <AppCalendar :bookings="bookings" :highlight-ids="ownBookingIds" />
 
     <div class="mt-8 text-center">
       <VBtn class="gradient primary" to="/request">{{ $t('calendar.requestBtn') }}</VBtn>
@@ -21,6 +30,7 @@
 <script setup lang="ts">
 definePageMeta({ layout: "default" });
 
+const { user } = useAuth();
 const { bookings, subscribe } = useBookings();
 
 onMounted(() => {
@@ -28,10 +38,22 @@ onMounted(() => {
   onUnmounted(unsub);
 });
 
-const legend = [
-  { key: "available",  color: "rgba(0,0,0,0.04)" },
-  { key: "pending",    color: "rgba(255,193,7,0.45)" },
-  { key: "confirmed",  color: "rgba(33,150,243,0.35)" },
-  { key: "blocked",    color: "rgba(244,67,54,0.35)" },
-];
+const ownBookingIds = computed(() =>
+  user.value
+    ? bookings.value.filter(b => b.userId === user.value!.uid).map(b => b.id)
+    : []
+);
+
+const legend = computed(() => {
+  const base = [
+    { key: "available", color: "rgba(0,0,0,0.04)" },
+    { key: "pending",   color: "rgba(255,193,7,0.45)" },
+    { key: "confirmed", color: "rgba(33,150,243,0.35)" },
+    { key: "blocked",   color: "rgba(244,67,54,0.35)" },
+  ];
+  if (user.value) {
+    base.push({ key: "mine", color: "rgba(33,150,243,0.2)", border: "2px solid rgb(99,102,241)" } as any);
+  }
+  return base;
+});
 </script>

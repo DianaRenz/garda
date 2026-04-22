@@ -69,6 +69,15 @@
                   {{ $t('bookings.actions.confirm') }}
                 </VBtn>
                 <VBtn
+                  v-if="b.status === 'pending'"
+                  size="small"
+                  variant="tonal"
+                  color="error"
+                  @click="askReject(b)"
+                >
+                  {{ $t('bookings.actions.reject') }}
+                </VBtn>
+                <VBtn
                   size="small"
                   variant="text"
                   color="error"
@@ -117,6 +126,15 @@
               @click="confirm(b.id)"
             >
               {{ $t('bookings.actions.confirm') }}
+            </VBtn>
+            <VBtn
+              v-if="b.status === 'pending'"
+              size="small"
+              variant="tonal"
+              color="error"
+              @click="askReject(b)"
+            >
+              {{ $t('bookings.actions.reject') }}
             </VBtn>
             <VSpacer />
             <VBtn
@@ -171,6 +189,36 @@
       </VCard>
     </VDialog>
 
+    <!-- Reject dialog -->
+    <VDialog v-model="rejectDialog" max-width="480">
+      <VCard rounded="lg">
+        <VCardTitle class="pa-6 pb-2">{{ $t('bookings.rejectDialog.title') }}</VCardTitle>
+        <VCardText>
+          <VAlert v-if="rejectConflicts.length" type="info" variant="tonal" class="mb-4" density="compact">
+            <div class="font-weight-medium mb-1">{{ $t('bookings.rejectDialog.conflict') }}</div>
+            <div v-for="c in rejectConflicts" :key="c.id" class="text-body-2">
+              {{ c.guestName }}: {{ formatDate(c.startDate) }} — {{ formatDate(c.endDate) }}
+            </div>
+          </VAlert>
+          <div>
+            <label class="label text-grey-darken-2">{{ $t('bookings.rejectDialog.note') }}</label>
+            <VTextarea
+              v-model="rejectNote"
+              :placeholder="$t('bookings.rejectDialog.notePlaceholder')"
+              rows="3"
+            />
+          </div>
+        </VCardText>
+        <VCardActions class="pa-6 pt-0 ga-2">
+          <VSpacer />
+          <VBtn variant="text" @click="rejectDialog = false">{{ $t('common.cancel') }}</VBtn>
+          <VBtn color="error" variant="tonal" :loading="rejecting" @click="doReject">
+            {{ $t('bookings.rejectDialog.confirm') }}
+          </VBtn>
+        </VCardActions>
+      </VCard>
+    </VDialog>
+
     <!-- Delete confirm dialog -->
     <VDialog v-model="deleteDialog" max-width="400">
       <VCard>
@@ -188,24 +236,29 @@
 
 <script setup lang="ts">
 import { useDisplay } from 'vuetify'
+import type { Booking } from '~/composables/useBookings'
 
 definePageMeta({ layout: "admin", middleware: "auth" });
 
 const { mobile } = useDisplay()
 const { t } = useI18n();
 const { ruleRequired } = useFormRules();
-const { bookings, subscribe, createBooking, updateBooking, deleteBooking, formatDate, statusColor } = useBookings();
+const { bookings, subscribe, createBooking, updateBooking, deleteBooking, getConflicts, formatDate, statusColor } = useBookings();
 
 const dialog = ref(false);
 const deleteDialog = ref(false);
+const rejectDialog = ref(false);
 const saving = ref(false);
 const deleting = ref(false);
+const rejecting = ref(false);
 const confirming = ref<string | null>(null);
 const deleteId = ref<string | null>(null);
+const rejectTarget = ref<Booking | null>(null);
+const rejectNote = ref('');
 const filterStatus = ref("all");
 const formRef = ref();
 
-const statuses = ["all", "pending", "confirmed", "blocked"].map((v) => ({ value: v }));
+const statuses = ["all", "pending", "confirmed", "blocked", "rejected"].map((v) => ({ value: v }));
 
 const statusOptions = computed(() =>
   ["pending", "confirmed", "blocked"].map((v) => ({
@@ -218,6 +271,10 @@ const filtered = computed(() =>
   filterStatus.value === "all"
     ? bookings.value
     : bookings.value.filter((b) => b.status === filterStatus.value)
+);
+
+const rejectConflicts = computed(() =>
+  rejectTarget.value ? getConflicts(rejectTarget.value) : []
 );
 
 const form = reactive({
@@ -252,6 +309,26 @@ const confirm = async (id: string) => {
     await updateBooking(id, { status: "confirmed" });
   } finally {
     confirming.value = null;
+  }
+};
+
+const askReject = (b: Booking) => {
+  rejectTarget.value = b;
+  rejectNote.value = '';
+  rejectDialog.value = true;
+};
+
+const doReject = async () => {
+  if (!rejectTarget.value) return;
+  rejecting.value = true;
+  try {
+    await updateBooking(rejectTarget.value.id, {
+      status: 'rejected',
+      rejectionNote: rejectNote.value || null,
+    });
+    rejectDialog.value = false;
+  } finally {
+    rejecting.value = false;
   }
 };
 

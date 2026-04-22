@@ -109,3 +109,45 @@ middleware/
 | `pending` | Жёлтый | Запрошено (без имени) |
 | `confirmed` | Синий | Занято |
 | `blocked` | Красный | Недоступно |
+| `rejected` | Серый | Не отображается |
+
+## Git-конвенции
+
+### Формат коммита
+
+```
+<type>(<scope>): <описание>
+```
+
+### Типы коммитов
+
+| Тип | Когда использовать |
+|---|---|
+| `feat` | Новая функциональность |
+| `fix` | Исправление бага |
+| `chore` | Настройка инфраструктуры, зависимости, конфиги |
+| `refactor` | Рефакторинг без изменения поведения |
+| `style` | Визуальные правки (CSS, layout) без логики |
+| `docs` | Изменения в документации (README, PLAN, CLAUDE) |
+| `i18n` | Добавление/правка переводов |
+
+### Примеры
+
+```
+feat(account): add upcoming/past booking split with cancel option
+feat(admin): add reject flow with conflict detection
+fix(calendar): correct highlighted cell border for own bookings
+chore(deps): update firebase to v11
+docs(readme): add git commit conventions
+i18n: add rejected status and rejectDialog keys to all locales
+refactor(bookings): extract getConflicts helper
+```
+
+### Ветки
+
+| Префикс | Назначение |
+|---|---|
+| `feat/` | Новые фичи |
+| `fix/` | Исправления |
+| `chore/` | Инфраструктура, конфиги |
+| `refactor/` | Рефакторинг |

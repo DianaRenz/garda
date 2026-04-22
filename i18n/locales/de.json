@@ -18,7 +18,8 @@
       "available": "Frei",
       "pending": "Angefragt",
       "confirmed": "Belegt",
-      "blocked": "Nicht verfügbar"
+      "blocked": "Nicht verfügbar",
+      "mine": "Ihre Buchung"
     },
     "requestBtn": "Termin anfragen"
   },
@@ -69,7 +70,8 @@
       "all": "Alle",
       "pending": "Ausstehend",
       "confirmed": "Bestätigt",
-      "blocked": "Gesperrt"
+      "blocked": "Gesperrt",
+      "rejected": "Abgelehnt"
     },
     "sources": {
       "admin": "Manuell",
@@ -77,7 +79,15 @@
     },
     "actions": {
       "confirm": "Bestätigen",
+      "reject": "Ablehnen",
       "delete": "Löschen"
+    },
+    "rejectDialog": {
+      "title": "Anfrage ablehnen",
+      "note": "Grund (optional)",
+      "notePlaceholder": "Z.B. diese Termine sind vergeben, versuche andere",
+      "conflict": "Konflikt mit einer anderen Anfrage:",
+      "confirm": "Ablehnen"
     },
     "table": {
       "guest": "Gast",
@@ -152,9 +162,16 @@
   },
   "account": {
     "title": "Mein Konto",
-    "myBookings": "Meine Buchungen",
-    "noBookings": "Sie haben noch keine Buchungen",
-    "requestDates": "Termin anfragen"
+    "upcoming": "Bevorstehende Reisen",
+    "past": "Vergangene Reisen",
+    "noUpcoming": "Keine bevorstehenden Reisen",
+    "noPast": "Keine vergangenen Reisen",
+    "requestDates": "Termin anfragen",
+    "cancelRequest": "Anfrage stornieren",
+    "cancelConfirm": "Diese Anfrage stornieren?",
+    "rejectedNote": "Grund:",
+    "pendingStatus": "Wartet auf Bestätigung",
+    "confirmedStatus": "Bestätigt"
   },
   "common": {
     "cancel": "Abbrechen",

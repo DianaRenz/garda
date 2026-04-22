@@ -44,7 +44,8 @@ import type { Booking } from '~/composables/useBookings'
 const props = withDefaults(defineProps<{
   bookings: Booking[]
   showNames?: boolean
-}>(), { showNames: false })
+  highlightIds?: string[]
+}>(), { showNames: false, highlightIds: () => [] })
 
 defineEmits<{ select: [booking: Booking] }>()
 
@@ -128,10 +129,19 @@ const cells = computed(() => {
   return result
 })
 
-const cellStyle = (cell: typeof cells.value[0]) => ({
-  opacity: cell.isCurrentMonth ? 1 : 0.3,
-  background: (cell.booking && cell.isCurrentMonth) ? BG[cell.booking.status] : undefined,
-})
+const highlightSet = computed(() => new Set(props.highlightIds))
+
+const cellStyle = (cell: typeof cells.value[0]) => {
+  const isOwn = cell.booking && cell.isCurrentMonth && highlightSet.value.has(cell.booking.id)
+  return {
+    opacity: cell.isCurrentMonth ? 1 : 0.3,
+    background: (cell.booking && cell.isCurrentMonth) ? BG[cell.booking.status] : undefined,
+    border: isOwn
+      ? '2px solid rgb(var(--v-theme-primary))'
+      : '1px solid rgba(0,0,0,0.06)',
+    boxShadow: isOwn ? '0 0 0 1px rgb(var(--v-theme-primary))' : undefined,
+  }
+}
 </script>
 
 <style scoped>
