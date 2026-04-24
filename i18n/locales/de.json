@@ -12,13 +12,13 @@
       "title": "Ihre Basis für Prada, Monte Baldo & Gardasee",
       "subtitle": "Ein persönlicher Reiseführer für die Region — plus eine private Wohnung für Menschen, denen wir vertrauen.",
       "body": "Wir kommen seit Jahren hierher. Diese Website sammelt, was wir gelernt haben: wo man ohne Massen wandert, wo man wie ein Einheimischer isst, was man besser meidet. Die Wohnung ist für Familie und enge Freunde — keine Vermietung.",
-      "ctaGuide": "Reiseführer erkunden",
+      "ctaGuide": "Verfügbarkeit prüfen",
       "ctaDates": "Termine anfragen"
     },
     "about": {
       "title": "Warum wir das gebaut haben",
       "p1": "Wir sind keine Reiseveranstalter und keine Reiseblogger. Das ist ein persönliches Projekt — ein Ort, um zu teilen, was wir über eine Ecke Italiens gelernt haben, die jene belohnt, die über das Offensichtliche hinausschauen.",
-      "p2": "Die Wohnung in Prada liegt auf 750 m über dem See. Sie bietet komfortabel Platz für vier Personen, hat eine Terrasse mit Blick auf Monte Baldo und liegt fünf Minuten von der Seilbahn entfernt. Wir teilen sie mit Menschen, die wir kennen und denen wir vertrauen."
+      "p2": "Wir sind keine Travel-Influencer mit Affiliate-Links. Alles hier basiert auf persönlicher Erfahrung — Wanderungen, Restaurants, ruhige Orte. Wir aktualisieren es, wenn wir etwas Neues entdecken."
     },
     "features": {
       "title": "Was Sie hier finden",
@@ -50,7 +50,7 @@
     "honest": {
       "title": "Ehrliche Hinweise zur Region",
       "items": [
-        "Juli und August sind die belebtesten Monate am See. Mai, Juni und September bieten ein deutlich besseres Erlebnis mit weniger Besuchern.",
+        "Juli und August sind die besten Monate zum Schwimmen — aber auch die belebtesten. Mai, Juni und September eignen sich besser für alle, die Ruhe dem Badespaß vorziehen.",
         "Parken in Malcesine, Limone und den größeren Seeorten ist im Sommer sehr schwierig. Früh ankommen oder Park-and-Ride-Möglichkeiten nutzen.",
         "Die Monte-Baldo-Seilbahn hat an Sommerwochenenden lange Warteschlangen. Online im Voraus buchen oder vor 9 Uhr ankommen.",
         "Der nördliche Teil des Sees ist windiger — ideal zum Segeln und Windsurfen, weniger geeignet zum ruhigen Schwimmen.",
@@ -60,7 +60,7 @@
     },
     "private": {
       "title": "Ihr persönlicher Bereich",
-      "desc": "Wohnungsdetails ansehen, bevorstehende Aufenthalte prüfen und neue Termine anfragen.",
+      "desc": "Prüfen Sie bevorstehende Aufenthalte, fordern Sie neue Termine an und rufen Sie alle Details ab.",
       "cta": "Zur Wohnung"
     }
   },

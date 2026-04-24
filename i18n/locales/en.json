@@ -12,13 +12,13 @@
       "title": "Your base for Prada, Monte Baldo & Lake Garda",
       "subtitle": "A curated guide to the region — plus a private apartment for those we trust.",
       "body": "We've been coming here for years. This site collects what we know: where to hike without the crowds, where to eat like a local, what to skip. The apartment is for family and close friends — not a rental.",
-      "ctaGuide": "Explore the guide",
+      "ctaGuide": "Check availability",
       "ctaDates": "Request dates"
     },
     "about": {
       "title": "Why we built this",
       "p1": "We're not tour operators or travel bloggers. This is a personal project — a place to share what we've learned about a corner of Italy that rewards those who look beyond the obvious.",
-      "p2": "The apartment in Prada sits above the lake at 750 m. It sleeps four comfortably, has a terrace with a Monte Baldo view, and is five minutes from the cable car. We share it with people we know and trust."
+      "p2": "We're not travel influencers with affiliate links. Everything here comes from personal experience — the walks, the meals, the quiet spots. We update it when we find something worth sharing."
     },
     "features": {
       "title": "What you'll find here",
@@ -50,7 +50,7 @@
     "honest": {
       "title": "Honest notes about the region",
       "items": [
-        "July and August are the busiest months on the lake. May, June, and September offer a much better experience with fewer visitors.",
+        "July and August are the best months for swimming — but also the busiest. May, June, and September suit those who prefer fewer crowds over beach season.",
         "Parking in Malcesine, Limone, and the larger lakeside towns is very difficult in summer. Arrive early or use park-and-ride options where available.",
         "The Monte Baldo cable car has long queues on summer weekends. Book online in advance or arrive before 9 am.",
         "The northern end of the lake is windier — perfect for sailing and windsurfing, less ideal for quiet swimming.",
@@ -60,7 +60,7 @@
     },
     "private": {
       "title": "Your private access",
-      "desc": "View apartment details, check your upcoming stays, and request new dates.",
+      "desc": "Check your upcoming stays, request new dates, and access all the details.",
       "cta": "Go to the apartment"
     }
   },

@@ -125,7 +125,7 @@ const { user, userRole } = useAuth();
 const features = [
   { key: 'hiking',      icon: 'fluent:map-24-regular' },
   { key: 'food',        icon: 'fluent:food-24-regular' },
-  { key: 'experiences', icon: 'fluent:binoculars-24-regular' },
+  { key: 'experiences', icon: 'fluent:ticket-24-regular' },
   { key: 'wellness',    icon: 'fluent:heart-24-regular' },
   { key: 'practical',   icon: 'fluent:vehicle-car-24-regular' },
   { key: 'family',      icon: 'fluent:people-24-regular' },

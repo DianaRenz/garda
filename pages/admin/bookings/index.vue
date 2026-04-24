@@ -117,6 +117,22 @@
         </VCardTitle>
         <VCardText>
           <VForm ref="formRef" @submit.prevent="save">
+            <!-- Registered user selector -->
+            <div class="mb-4">
+              <label class="label text-grey-darken-2 mb-1 d-block">Аккаунт гостя <span class="text-medium-emphasis font-weight-regular">(необязательно)</span></label>
+              <VSelect
+                v-model="form.userId"
+                :items="registeredUserOptions"
+                item-title="label"
+                item-value="uid"
+                clearable
+                placeholder="Не привязан"
+                density="compact"
+                @update:model-value="onUserSelect"
+              />
+              <p class="text-caption text-medium-emphasis mt-1">Если выбран — гость увидит эту поездку в своём кабинете</p>
+            </div>
+
             <!-- Guest selector -->
             <div class="mb-4 pa-4 rounded-lg" style="background: rgba(0,0,0,0.04);">
               <label class="label text-grey-darken-2 mb-3 d-block">Гость</label>
@@ -226,16 +242,27 @@
 </template>
 
 <script setup lang="ts">
+import { collection, query, where, getDocs } from 'firebase/firestore'
 import { useDisplay } from 'vuetify'
 import type { Booking } from '~/composables/useBookings'
 
 definePageMeta({ layout: "admin", middleware: "auth" });
 
+const { $db } = useNuxtApp();
 const { mobile } = useDisplay()
 const { t } = useI18n();
 const { ruleRequired } = useFormRules();
 const { bookings, subscribe, createBooking, updateBooking, deleteBooking } = useBookings();
 const { guests, subscribe: subscribeGuests, createGuest } = useGuests();
+
+const registeredUsers = ref<Array<{ uid: string; name: string; email: string; phone?: string }>>([]);
+
+const registeredUserOptions = computed(() =>
+  registeredUsers.value.map(u => ({
+    uid: u.uid,
+    label: [u.name || u.email, u.phone].filter(Boolean).join(' · '),
+  }))
+);
 
 const { bookings: allBookings, formatDate, statusColor } = useBookings();
 
@@ -275,6 +302,7 @@ const filtered = computed(() =>
 
 const form = reactive({
   guestId: null as string | null,
+  userId: null as string | null,
   guestName: "",
   guestContact: "",
   startDate: "",
@@ -282,6 +310,15 @@ const form = reactive({
   status: "confirmed" as "pending" | "confirmed" | "blocked" | "rejected",
   notes: "",
 });
+
+const onUserSelect = (uid: string | null) => {
+  if (!uid) { form.userId = null; return; }
+  const u = registeredUsers.value.find(x => x.uid === uid);
+  if (!u) return;
+  form.userId = uid;
+  if (!form.guestName) form.guestName = u.name || '';
+  if (!form.guestContact) form.guestContact = u.phone || u.email || '';
+};
 
 const newGuestForm = reactive({
   name: "",
@@ -292,6 +329,7 @@ const newGuestForm = reactive({
 const createNew = () => {
   Object.assign(form, {
     guestId: null,
+    userId: null,
     guestName: "",
     guestContact: "",
     startDate: "",
@@ -308,6 +346,7 @@ const editBooking = (booking: Booking) => {
   editingId.value = booking.id;
   Object.assign(form, {
     guestId: booking.guestId,
+    userId: booking.userId,
     guestName: booking.guestName,
     guestContact: booking.guestContact,
     startDate: booking.startDate.toDate().toISOString().split('T')[0],
@@ -342,6 +381,7 @@ const save = async () => {
       const { Timestamp } = await import("firebase/firestore");
       await updateBooking(editingId.value, {
         guestId: form.guestId,
+        userId: form.userId,
         guestName: form.guestName,
         guestContact: form.guestContact,
         startDate: Timestamp.fromDate(new Date(form.startDate)),
@@ -352,6 +392,7 @@ const save = async () => {
     } else {
       await createBooking({
         guestId: form.guestId,
+        userId: form.userId,
         guestName: form.guestName,
         guestContact: form.guestContact,
         startDate: form.startDate,
@@ -383,9 +424,12 @@ const doDelete = async () => {
   }
 };
 
-onMounted(() => {
+onMounted(async () => {
   const u1 = subscribe();
   const u2 = subscribeGuests();
   onUnmounted(() => { u1(); u2(); });
+
+  const snap = await getDocs(query(collection($db, 'users'), where('role', '==', 'guest')));
+  registeredUsers.value = snap.docs.map(d => ({ uid: d.id, ...d.data() as any }));
 });
 </script>
