@@ -37,12 +37,13 @@
         <tbody>
           <tr v-for="b in filtered" :key="b.id" class="cursor-pointer hover:bg-gray-50" @click="editBooking(b)">
             <td>
-              <div class="font-weight-medium">{{ b.guestName || '(не назначен)' }}</div>
+              <div class="font-weight-medium">{{ bookingGuestLabel(b) }}</div>
               <div class="text-body-2 text-medium-emphasis">{{ b.guestPhone || b.guestContact || '—' }}</div>
               <div v-if="b.guestEmail" class="text-body-2 text-medium-emphasis">{{ b.guestEmail }}</div>
             </td>
             <td class="text-no-wrap">
               {{ formatDate(b.startDate) }} — {{ formatDate(b.endDate) }}
+              <div class="text-caption text-medium-emphasis">{{ bookingDuration(b) }}</div>
             </td>
             <td>
               <VChip :color="statusColor[b.status]" size="small" variant="tonal">
@@ -84,7 +85,7 @@
           <VCardText class="pa-4">
             <div class="d-flex align-start justify-space-between mb-1">
               <div class="flex-grow-1">
-                <div class="font-weight-medium">{{ b.guestName || '(не назначен)' }}</div>
+                <div class="font-weight-medium">{{ bookingGuestLabel(b) }}</div>
                 <div class="text-body-2 text-medium-emphasis">{{ b.guestPhone || b.guestContact || '—' }}</div>
                 <div v-if="b.guestEmail" class="text-body-2 text-medium-emphasis">{{ b.guestEmail }}</div>
               </div>
@@ -95,6 +96,7 @@
             <div class="text-body-2 mt-2">
               {{ formatDate(b.startDate) }} — {{ formatDate(b.endDate) }}
             </div>
+            <div class="text-caption text-medium-emphasis">{{ bookingDuration(b) }}</div>
             <div v-if="b.notes" class="text-body-2 text-medium-emphasis mt-1">{{ b.notes }}</div>
           </VCardText>
           <VCardActions class="px-4 pb-3 pt-0" @click.stop>
@@ -115,53 +117,61 @@
     <VDialog v-model="editDialog" max-width="540">
       <VCard>
         <VCardTitle class="pa-6 pb-2">
-          {{ editingId ? 'Редактировать бронирование' : $t('bookings.form.title') }}
+          {{ editingId ? $t('bookings.form.editTitle') : $t('bookings.form.title') }}
         </VCardTitle>
         <VCardText>
           <VForm ref="formRef" @submit.prevent="save">
+            <div class="mt-1">
+              <label class="label text-grey-darken-2">{{ $t('bookings.form.status') }}</label>
+              <VSelect v-model="form.status" :items="statusOptions" item-title="label" item-value="value" />
+            </div>
+
             <!-- Registered user selector -->
-            <div class="mb-4">
-              <label class="label text-grey-darken-2 mb-1 d-block">Аккаунт гостя <span class="text-medium-emphasis font-weight-regular">(необязательно)</span></label>
+            <div v-if="form.status !== 'blocked'" class="mb-4">
+              <label class="label text-grey-darken-2 mb-1 d-block">
+                {{ $t('bookings.form.accountGuest') }}
+                <span class="text-medium-emphasis font-weight-regular">{{ $t('bookings.form.optional') }}</span>
+              </label>
               <VSelect
                 v-model="form.userId"
                 :items="registeredUserOptions"
                 item-title="label"
                 item-value="uid"
                 clearable
-                placeholder="Не привязан"
+                :placeholder="$t('bookings.form.unlinked')"
                 density="compact"
                 @update:model-value="onUserSelect"
               />
-              <p class="text-caption text-medium-emphasis mt-1">Если выбран — гость увидит эту поездку в своём кабинете</p>
+              <p class="text-caption text-medium-emphasis mt-1">{{ $t('bookings.form.accountHint') }}</p>
             </div>
 
             <!-- Guest selector -->
-            <div class="mb-4 pa-4 rounded-lg" style="background: rgba(0,0,0,0.04);">
-              <label class="label text-grey-darken-2 mb-3 d-block">Гость</label>
+            <div v-if="form.status !== 'blocked'" class="mb-4 pa-4 rounded-lg" style="background: rgba(0,0,0,0.04);">
+              <label class="label text-grey-darken-2 mb-3 d-block">{{ $t('bookings.form.guest') }}</label>
               <VSelect
                 v-model="form.guestId"
                 :items="guestOptions"
                 item-title="name"
                 item-value="id"
-                label="Выберите или создайте гостя"
+                :label="$t('bookings.form.guestPlaceholder')"
                 clearable
               />
               <VBtn
-                v-if="form.guestId && !editingId"
+                v-if="!form.guestId && !editingId"
                 size="small"
                 variant="text"
                 class="mt-2"
                 prepend-icon="fluent:add-circle-20-regular"
                 @click="createNewGuestInline = true"
               >
-                Или создать нового
+                {{ $t('bookings.form.createNewGuest') }}
               </VBtn>
             </div>
 
             <!-- Inline guest creation -->
-            <VCard v-if="createNewGuestInline" variant="outlined" class="mb-4 pa-4">
+            <VCard v-if="createNewGuestInline && form.status !== 'blocked'" variant="outlined" class="mb-4 pa-4">
               <div class="d-flex align-center justify-space-between mb-3">
-                <span class="text-body-2 font-weight-medium">Новый гость</span>
+                <span class="text-body-2 font-weight-medium">{{ $t('bookings.form.newGuest') }}</span>
                 <VBtn
                   icon="fluent:dismiss-24-regular"
                   variant="text"
@@ -170,15 +180,15 @@
                 />
               </div>
               <div class="mt-1">
-                <label class="label text-grey-darken-2 text-body-2">Имя</label>
+                <label class="label text-grey-darken-2 text-body-2">{{ $t('guests.form.name') }}</label>
                 <VTextField v-model="newGuestForm.name" density="compact" />
               </div>
               <div class="mt-1">
-                <label class="label text-grey-darken-2 text-body-2">Телефон</label>
+                <label class="label text-grey-darken-2 text-body-2">{{ $t('guests.form.phone') }}</label>
                 <VTextField v-model="newGuestForm.phone" density="compact" />
               </div>
               <div class="mt-1">
-                <label class="label text-grey-darken-2 text-body-2">Email</label>
+                <label class="label text-grey-darken-2 text-body-2">{{ $t('guests.form.email') }}</label>
                 <VTextField v-model="newGuestForm.email" density="compact" />
               </div>
               <VBtn
@@ -186,18 +196,22 @@
                 class="gradient primary mt-3"
                 @click="addGuestAndAssign"
               >
-                Создать и назначить
+                {{ $t('bookings.form.createAndAssign') }}
               </VBtn>
             </VCard>
 
             <!-- Other fields -->
-            <div class="mt-4">
+            <div v-if="form.status !== 'blocked'" class="mt-4">
+              <label class="label text-grey-darken-2">{{ $t('bookings.form.guestName') }}</label>
+              <VTextField v-model="form.guestName" :rules="[ruleRequired]" prepend-inner-icon="fluent:person-24-regular" />
+            </div>
+            <div v-if="form.status !== 'blocked'" class="mt-1">
               <label class="label text-grey-darken-2">{{ $t('bookings.form.phone') }}</label>
               <VTextField v-model="form.guestPhone" type="tel" prepend-inner-icon="fluent:call-24-regular" />
             </div>
-            <div class="mt-1">
+            <div v-if="form.status !== 'blocked'" class="mt-1">
               <label class="label text-grey-darken-2">{{ $t('bookings.form.email') }}</label>
-              <VTextField v-model="form.guestEmail" type="email" prepend-inner-icon="fluent:mail-24-regular" :rules="[ruleEmail]" />
+              <VTextField v-model="form.guestEmail" type="email" prepend-inner-icon="fluent:mail-24-regular" :rules="[ruleOptionalEmail]" />
             </div>
             <div class="mt-1">
               <label class="label text-grey-darken-2">{{ $t('bookings.form.startDate') }}</label>
@@ -208,13 +222,15 @@
               <VTextField v-model="form.endDate" type="date" :rules="endDateRules" />
             </div>
             <div class="mt-1">
-              <label class="label text-grey-darken-2">{{ $t('bookings.form.status') }}</label>
-              <VSelect v-model="form.status" :items="statusOptions" item-title="label" item-value="value" />
-            </div>
-            <div class="mt-1">
               <label class="label text-grey-darken-2">{{ $t('bookings.form.notes') }}</label>
               <VTextarea v-model="form.notes" rows="2" />
             </div>
+            <VAlert v-if="dialogConflicts.length" type="warning" variant="tonal" density="comfortable" class="mt-4">
+              {{ $t('bookings.form.conflicts') }}
+              <div v-for="b in dialogConflicts" :key="b.id" class="text-body-2 mt-1">
+                {{ bookingGuestLabel(b) }} · {{ formatDate(b.startDate) }} — {{ formatDate(b.endDate) }}
+              </div>
+            </VAlert>
           </VForm>
         </VCardText>
         <VCardActions class="pa-6 pt-0 ga-2">
@@ -223,10 +239,10 @@
           <VBtn
             class="gradient primary"
             :loading="saving"
-            :disabled="!form.guestId"
+            :disabled="!canSave"
             @click="save"
           >
-            {{ editingId ? 'Обновить' : $t('bookings.form.save') }}
+            {{ editingId ? $t('bookings.form.update') : $t('bookings.form.save') }}
           </VBtn>
         </VCardActions>
       </VCard>
@@ -270,7 +286,7 @@ const registeredUserOptions = computed(() =>
   }))
 );
 
-const { bookings: allBookings, formatDate, statusColor } = useBookings();
+const { formatDate, statusColor } = useBookings();
 
 const editDialog = ref(false);
 const deleteDialog = ref(false);
@@ -285,7 +301,7 @@ const createNewGuestInline = ref(false);
 const statuses = ["all", "pending", "confirmed", "blocked", "rejected"].map((v) => ({ value: v }));
 
 const statusOptions = computed(() =>
-  ["pending", "confirmed", "blocked"].map((v) => ({
+  ["pending", "confirmed", "blocked", "rejected"].map((v) => ({
     value: v,
     label: t(`bookings.statuses.${v}`),
   }))
@@ -299,6 +315,13 @@ const endDateRules = computed(() => [
   ruleRequired,
   (v: string) => !form.startDate || !v || v > form.startDate || t('bookings.form.endDateError'),
 ]);
+
+const canSave = computed(() =>
+  !!form.startDate
+  && !!form.endDate
+  && form.endDate > form.startDate
+  && (form.status === "blocked" || !!form.guestName.trim())
+);
 
 const filtered = computed(() =>
   filterStatus.value === "all"
@@ -328,6 +351,17 @@ const onUserSelect = (uid: string | null) => {
   form.guestEmail = u.email || form.guestEmail;
 };
 
+watch(() => form.status, (status) => {
+  if (status === "blocked") {
+    form.guestId = null;
+    form.userId = null;
+    form.guestName = "";
+    form.guestPhone = "";
+    form.guestEmail = "";
+    createNewGuestInline.value = false;
+  }
+});
+
 watch(() => form.guestId, (id) => {
   if (!id) return;
   const g = guests.value.find(x => x.id === id);
@@ -342,6 +376,8 @@ const newGuestForm = reactive({
   phone: "",
   email: "",
 });
+
+const ruleOptionalEmail = (value: string) => !value || ruleEmail(value);
 
 const createNew = () => {
   Object.assign(form, {
@@ -377,6 +413,33 @@ const editBooking = (booking: Booking) => {
   editDialog.value = true;
 };
 
+const toIso = (date: Date) =>
+  `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+
+const overlapsFormRange = (booking: Booking) => {
+  if (!form.startDate || !form.endDate || form.endDate <= form.startDate) return false;
+  if (booking.id === editingId.value || booking.status === "rejected") return false;
+  const start = toIso(booking.startDate.toDate());
+  const end = toIso(booking.endDate.toDate());
+  return form.startDate < end && form.endDate > start;
+};
+
+const dialogConflicts = computed(() => bookings.value.filter(overlapsFormRange));
+
+const bookingGuestLabel = (booking: Booking) => {
+  if (booking.status === "blocked") return t('bookings.blockedGuest');
+  return booking.guestName || t('bookings.unassigned');
+};
+
+const bookingDuration = (booking: Booking) => {
+  if (!booking.startDate || !booking.endDate) return "";
+  const nights = Math.max(
+    1,
+    Math.round((booking.endDate.toDate().getTime() - booking.startDate.toDate().getTime()) / 86400000)
+  );
+  return t('bookings.nights', { count: nights });
+};
+
 const addGuestAndAssign = async () => {
   if (!newGuestForm.name) return;
   await createGuest({ name: newGuestForm.name, phone: newGuestForm.phone, email: newGuestForm.email, notes: "" });
@@ -394,17 +457,16 @@ const addGuestAndAssign = async () => {
 const save = async () => {
   const { valid } = await formRef.value.validate();
   if (!valid) return;
-  saving.value = true;
+    saving.value = true;
   try {
     if (editingId.value) {
-      // При редактировании конвертируем даты обратно в Timestamps
       const { Timestamp } = await import("firebase/firestore");
       await updateBooking(editingId.value, {
-        guestId: form.guestId,
-        userId: form.userId,
-        guestName: form.guestName,
-        guestPhone: form.guestPhone,
-        guestEmail: form.guestEmail,
+        guestId: form.status === "blocked" ? null : form.guestId,
+        userId: form.status === "blocked" ? null : form.userId,
+        guestName: form.status === "blocked" ? "" : form.guestName,
+        guestPhone: form.status === "blocked" ? "" : form.guestPhone,
+        guestEmail: form.status === "blocked" ? "" : form.guestEmail,
         startDate: Timestamp.fromDate(new Date(form.startDate)),
         endDate: Timestamp.fromDate(new Date(form.endDate)),
         status: form.status,
@@ -412,11 +474,11 @@ const save = async () => {
       });
     } else {
       await createBooking({
-        guestId: form.guestId,
-        userId: form.userId,
-        guestName: form.guestName,
-        guestPhone: form.guestPhone,
-        guestEmail: form.guestEmail,
+        guestId: form.status === "blocked" ? null : form.guestId,
+        userId: form.status === "blocked" ? null : form.userId,
+        guestName: form.status === "blocked" ? "" : form.guestName,
+        guestPhone: form.status === "blocked" ? "" : form.guestPhone,
+        guestEmail: form.status === "blocked" ? "" : form.guestEmail,
         startDate: form.startDate,
         endDate: form.endDate,
         status: form.status,

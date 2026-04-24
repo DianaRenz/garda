@@ -83,13 +83,28 @@
     "backToAccount": "← Zurück zum Konto",
     "name": "Ihr Name",
     "phone": "Telefonnummer",
+    "phoneHint": "Optional, aber hilfreich für dringende Fragen",
     "email": "E-Mail-Adresse",
     "startDate": "Anreisedatum",
+    "startDateError": "Anreise darf nicht in der Vergangenheit liegen",
     "endDate": "Abreisedatum",
     "endDateError": "Abreise muss nach Anreise liegen",
+    "sections": {
+      "guest": "Gastdaten",
+      "dates": "Reisedaten",
+      "details": "Details"
+    },
+    "availabilityUnknown": "Der Kalender konnte nicht geprüft werden. Sie können die Anfrage trotzdem senden, wir prüfen die Daten manuell.",
+    "datesAvailable": "Für diese Daten gibt es keine bestätigten Buchungen.",
+    "conflictBlocked": "Diese Daten überschneiden sich mit belegten oder gesperrten Tagen:",
+    "conflictPending": "Für diese Daten gibt es bereits eine Anfrage. Sie können trotzdem anfragen, die Bestätigung hängt von den Eigentümern ab:",
+    "conflictSubmitError": "Bitte wählen Sie andere Daten: dieser Zeitraum überschneidet sich mit belegten Tagen.",
+    "submitError": "Die Anfrage konnte nicht gesendet werden. Prüfen Sie die Angaben und versuchen Sie es erneut.",
     "notes": "Anmerkung (optional)",
     "submit": "Anfrage senden",
-    "success": "Anfrage gesendet! Wir melden uns zur Bestätigung."
+    "success": "Anfrage gesendet! Wir melden uns zur Bestätigung.",
+    "viewCalendar": "Kalender öffnen",
+    "viewAccount": "Zum Konto"
   },
   "login": {
     "subtitle": "Bei Ihrem Konto anmelden",
@@ -121,6 +136,9 @@
     "title": "Buchungen",
     "add": "Hinzufügen",
     "empty": "Keine Buchungen",
+    "unassigned": "Nicht zugewiesen",
+    "blockedGuest": "Gesperrte Daten",
+    "nights": "{count} Nächte",
     "statuses": {
       "all": "Alle",
       "pending": "Ausstehend",
@@ -153,7 +171,17 @@
     },
     "form": {
       "title": "Neue Buchung",
+      "editTitle": "Buchung bearbeiten",
       "guest": "Gast",
+      "guestName": "Name des Gasts",
+      "accountGuest": "Gastkonto",
+      "optional": "(optional)",
+      "unlinked": "Nicht verknüpft",
+      "accountHint": "Wenn ausgewählt, sieht der Gast diese Reise in seinem Konto.",
+      "guestPlaceholder": "Aus dem Gästebuch wählen",
+      "createNewGuest": "Neuen Gast erstellen",
+      "newGuest": "Neuer Gast",
+      "createAndAssign": "Erstellen und zuweisen",
       "phone": "Telefon",
       "email": "E-Mail",
       "startDate": "Anreisedatum",
@@ -161,8 +189,10 @@
       "endDateError": "Abreise muss nach Anreise liegen",
       "status": "Status",
       "notes": "Anmerkungen",
+      "conflicts": "Dieser Zeitraum überschneidet sich mit anderen Buchungen:",
       "cancel": "Abbrechen",
-      "save": "Speichern"
+      "save": "Speichern",
+      "update": "Aktualisieren"
     }
   },
   "guests": {
