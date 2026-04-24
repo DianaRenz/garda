@@ -2,7 +2,7 @@ import { h } from "vue";
 import type { IconSet, IconAliases, IconProps } from "vuetify";
 import { Icon } from "@iconify/vue";
 
-const aliases: IconAliases = {
+const aliases = {
   collapse: "fluent:chevron-up-24-regular",
   complete: "fluent:checkmark-24-regular",
   cancel: "fluent:dismiss-circle-24-regular",
@@ -39,7 +39,7 @@ const aliases: IconAliases = {
   minus: "fluent:subtract-24-regular",
   sortAsc: "fluent:arrow-sort-up-24-regular",
   sortDesc: "fluent:arrow-sort-down-24-regular",
-};
+} satisfies Partial<IconAliases>;
 
 const custom: IconSet = {
   component: (props: IconProps) => h(Icon, { icon: props.icon as string }),

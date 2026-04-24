@@ -274,10 +274,17 @@ const { $db } = useNuxtApp();
 const { mobile } = useDisplay()
 const { t } = useI18n();
 const { ruleRequired, ruleEmail } = useFormRules();
-const { bookings, subscribe, createBooking, updateBooking, deleteBooking } = useBookings();
+const { bookings, subscribe, createBooking, updateBooking, deleteBooking, syncPublicBookings } = useBookings();
 const { guests, subscribe: subscribeGuests, createGuest } = useGuests();
 
-const registeredUsers = ref<Array<{ uid: string; name: string; email: string; phone?: string }>>([]);
+interface RegisteredUser {
+  uid: string;
+  name?: string;
+  email: string;
+  phone?: string;
+}
+
+const registeredUsers = ref<RegisteredUser[]>([]);
 
 const registeredUserOptions = computed(() =>
   registeredUsers.value.map(u => ({
@@ -297,6 +304,7 @@ const filterStatus = ref("all");
 const formRef = ref();
 const editingId = ref<string | null>(null);
 const createNewGuestInline = ref(false);
+const publicSyncDone = ref(false);
 
 const statuses = ["all", "pending", "confirmed", "blocked", "rejected"].map((v) => ({ value: v }));
 
@@ -514,6 +522,15 @@ onMounted(async () => {
   onUnmounted(() => { u1(); u2(); });
 
   const snap = await getDocs(query(collection($db, 'users'), where('role', '==', 'guest')));
-  registeredUsers.value = snap.docs.map(d => ({ uid: d.id, ...d.data() as any }));
+  registeredUsers.value = snap.docs.map((d) => {
+    const data = d.data() as Omit<RegisteredUser, "uid">;
+    return { uid: d.id, ...data };
+  });
+});
+
+watch(bookings, async (items) => {
+  if (publicSyncDone.value || !items.length) return;
+  publicSyncDone.value = true;
+  await syncPublicBookings(items);
 });
 </script>

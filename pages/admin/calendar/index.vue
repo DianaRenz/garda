@@ -136,7 +136,9 @@ definePageMeta({ layout: "admin", middleware: "auth" });
 
 const { bookings, subscribe, updateBooking, deleteBooking, getConflicts, formatDate, statusColor } = useBookings();
 
-const legend = [
+type LegendItem = { key: string; color: string; border?: string };
+
+const legend: LegendItem[] = [
   { key: "available", color: "rgba(0,0,0,0.04)" },
   { key: "pending",   color: "rgba(255,193,7,0.45)" },
   { key: "confirmed", color: "rgba(33,150,243,0.35)" },

@@ -24,13 +24,13 @@
         class="cal-cell"
         :class="{ 'cal-cell--clickable': showNames && !!cell.booking }"
         :style="cellStyle(cell)"
-        @click="cell.booking && showNames && $emit('select', cell.booking)"
+        @click="cell.booking && showNames && $emit('select', cell.booking as Booking)"
       >
         <span
           class="text-caption"
           :class="cell.isToday ? 'font-weight-bold text-primary' : ''"
         >{{ cell.day }}</span>
-        <span v-if="showNames && cell.booking && cell.isCurrentMonth" class="cal-name">
+        <span v-if="showNames && cell.booking && cell.isCurrentMonth && 'guestName' in cell.booking" class="cal-name">
           {{ cell.booking.guestName }}
         </span>
       </div>
@@ -39,10 +39,12 @@
 </template>
 
 <script setup lang="ts">
-import type { Booking } from '~/composables/useBookings'
+import type { Booking, PublicBooking } from '~/composables/useBookings'
+
+type CalendarBooking = Booking | PublicBooking
 
 const props = withDefaults(defineProps<{
-  bookings: Booking[]
+  bookings: CalendarBooking[]
   showNames?: boolean
   highlightIds?: string[]
 }>(), { showNames: false, highlightIds: () => [] })
@@ -93,7 +95,7 @@ const BG: Record<string, string> = {
   blocked:   'rgba(244,  67,  54, 0.14)',
 }
 
-const getBooking = (dateStr: string): Booking | null => {
+const getBooking = (dateStr: string): CalendarBooking | null => {
   const matches = props.bookings.filter(b => {
     if (!b.startDate || !b.endDate) return false
     return dateStr >= toStr(b.startDate.toDate()) && dateStr <= toStr(b.endDate.toDate())

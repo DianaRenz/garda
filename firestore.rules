@@ -95,6 +95,16 @@ service cloud.firestore {
         && request.resource.data.updatedAt == request.time;
     }
 
+    function validPublicBookingProjection(bookingId) {
+      return existsAfter(/databases/$(database)/documents/bookings/$(bookingId))
+        && hasOnly(request.resource.data, ['startDate', 'endDate', 'status', 'updatedAt'])
+        && getAfter(/databases/$(database)/documents/bookings/$(bookingId)).data.status in ['pending', 'confirmed', 'blocked']
+        && request.resource.data.startDate == getAfter(/databases/$(database)/documents/bookings/$(bookingId)).data.startDate
+        && request.resource.data.endDate == getAfter(/databases/$(database)/documents/bookings/$(bookingId)).data.endDate
+        && request.resource.data.status == getAfter(/databases/$(database)/documents/bookings/$(bookingId)).data.status
+        && request.resource.data.updatedAt == request.time;
+    }
+
     match /users/{uid} {
       allow get: if isSelf(uid) || isAdmin();
       allow list: if isAdmin();
@@ -127,10 +137,10 @@ service cloud.firestore {
     }
 
     match /bookings/{bookingId} {
-      // Public reads power the anonymous calendar. Because Firestore cannot
-      // mask fields in a document, move public calendar reads to a projected
-      // collection or server endpoint before storing sensitive guest details.
-      allow read: if true;
+      allow get, list: if isAdmin() || (
+        signedIn()
+        && resource.data.userId == request.auth.uid
+      );
       allow create: if validRequestBookingCreate() || (
         isAdmin()
         && validAdminBookingWrite()
@@ -141,6 +151,17 @@ service cloud.firestore {
         signedIn()
         && resource.data.userId == request.auth.uid
         && resource.data.status == 'pending'
+      );
+    }
+
+    match /publicBookings/{bookingId} {
+      allow read: if true;
+      allow create, update: if isAdmin() || validPublicBookingProjection(bookingId);
+      allow delete: if isAdmin() || (
+        signedIn()
+        && exists(/databases/$(database)/documents/bookings/$(bookingId))
+        && get(/databases/$(database)/documents/bookings/$(bookingId)).data.userId == request.auth.uid
+        && get(/databases/$(database)/documents/bookings/$(bookingId)).data.status == 'pending'
       );
     }
 

@@ -43,7 +43,7 @@
 </template>
 
 <script setup lang="ts">
-import { doc, setDoc, Timestamp } from "firebase/firestore";
+import { doc, setDoc, serverTimestamp } from "firebase/firestore";
 import { onAuthStateChanged, type User } from "firebase/auth";
 
 definePageMeta({ layout: "default" });
@@ -72,7 +72,7 @@ const grantAdmin = async () => {
     await setDoc(doc($db, "users", user.value.uid), {
       role: "admin",
       email: user.value.email,
-      createdAt: Timestamp.now(),
+      createdAt: serverTimestamp(),
     });
     await navigateTo("/admin");
   } catch {

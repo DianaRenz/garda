@@ -109,14 +109,14 @@
 
 <script setup lang="ts">
 import { doc, getDoc } from "firebase/firestore";
-import type { Booking } from '~/composables/useBookings';
+import type { PublicBooking } from '~/composables/useBookings';
 
 definePageMeta({ layout: "default" });
 
 const { $db } = useNuxtApp();
 const { user } = useAuth();
 const { ruleRequired, ruleEmail } = useFormRules();
-const { bookings, subscribe, createBooking, formatDate } = useBookings();
+const { publicBookings, subscribePublic, createBooking, formatDate } = useBookings();
 const { t } = useI18n();
 
 const loading = ref(false);
@@ -163,7 +163,7 @@ const endDateRules = computed(() => [
   (v: string) => !form.startDate || !v || v > form.startDate || t('request.endDateError'),
 ]);
 
-const overlapsSelectedRange = (booking: Booking) => {
+const overlapsSelectedRange = (booking: PublicBooking) => {
   if (!dateRangeReady.value || !booking.startDate || !booking.endDate) return false;
   const start = toIso(booking.startDate.toDate());
   const end = toIso(booking.endDate.toDate());
@@ -171,9 +171,7 @@ const overlapsSelectedRange = (booking: Booking) => {
 };
 
 const rangeConflicts = computed(() =>
-  bookings.value.filter((booking) =>
-    booking.status !== "rejected" && overlapsSelectedRange(booking)
-  )
+  publicBookings.value.filter((booking) => overlapsSelectedRange(booking))
 );
 
 const blockingConflicts = computed(() =>
@@ -184,12 +182,12 @@ const pendingConflicts = computed(() =>
   rangeConflicts.value.filter((booking) => booking.status === "pending")
 );
 
-const bookingDateText = (booking: Booking) =>
+const bookingDateText = (booking: PublicBooking) =>
   `${formatDate(booking.startDate)} - ${formatDate(booking.endDate)}`;
 
 onMounted(() => {
   try {
-    unsubscribeBookings = subscribe();
+    unsubscribeBookings = subscribePublic();
   } catch {
     bookingLoadError.value = true;
   }
