@@ -107,7 +107,9 @@
   guestId: string | null   // ссылка на /guests (гостевая книга)
   userId: string | null    // UID зарегистрированного гостя (если запрос от авторизованного)
   guestName: string        // денормализовано для скорости
-  guestContact: string     // телефон или email (из формы или из гостевой книги)
+  guestPhone: string       // телефон (раньше был guestContact)
+  guestEmail: string       // email
+  guestContact: string     // legacy — старые документы, оставлен для совместимости
   startDate: Timestamp
   endDate: Timestamp
   status: 'pending' | 'confirmed' | 'blocked' | 'rejected'
@@ -244,6 +246,14 @@
 - [ ] PWA (уже настроен в стартере)
 - [ ] История посещений / статистика (nice-to-have)
 
+### Фаза 6 — UX-улучшения и уведомления (завершено)
+- [x] `composables/useBookings.ts` — рефакторинг: `guestContact` → отдельные `guestPhone` + `guestEmail`; добавлена коллекция `publicBookings` (полная атомарность через `writeBatch`), `subscribePublic()`, `syncPublicBookings()`
+- [x] `pages/request/index.vue` — для залогиненных гостей: компактная read-only карточка профиля вместо редактируемых полей; только Dates + Details секции интерактивны. Для анонимных — полная форма. Реальная проверка конфликтов через `publicBookings`
+- [x] `composables/useNotifications.ts` — EmailJS уведомления (`@emailjs/browser`, lazy-load). `notifyAdminNewRequest` при новой заявке, `notifyGuestStatusUpdate` при confirm/reject. Best-effort, не блокируют UI
+- [x] `/admin/bookings/index.vue` — выбор зарегистрированного пользователя (users с role:'guest'); `canSave` computed; `bookingDuration()` счётчик ночей; диалог конфликтов в форме; `syncPublicBookings` при первой загрузке
+- [x] `/admin/calendar/index.vue` — легенда цветов; reject-диалог с заметкой + конфликтами; уведомления при confirm/reject
+- [x] `env.example` — документация переменных окружения (Firebase + EmailJS)
+
 ### Фаза 5 — Редизайн лендинга и выделение страницы квартиры (завершено)
 - [x] `pages/index.vue` — полный перезапуск: редакционный гид по региону (не про квартиру)
   - Hero: overline с топонимами, h1 `clamp()`, два CTA
@@ -270,10 +280,36 @@
 
 ---
 
+## Email-уведомления (TODO — GitHub Issue #1)
+
+Инфраструктура готова (`composables/useNotifications.ts`, `@emailjs/browser`), вызовы закомментированы.
+Чтобы активировать:
+
+1. Зарегистрироваться на [emailjs.com](https://www.emailjs.com/) (free tier: 200 писем/мес)
+2. Подключить email-сервис (Gmail / Outlook / SMTP)
+3. Создать два шаблона:
+   - **Admin template** (уведомление владельцу при новой заявке)
+     - Переменные: `{{guest_name}}`, `{{guest_email}}`, `{{guest_phone}}`, `{{start_date}}`, `{{end_date}}`, `{{notes}}`
+     - TO: ваш email (статичный в настройках шаблона)
+   - **Guest template** (уведомление гостю при confirm/reject)
+     - Переменные: `{{to_email}}`, `{{guest_name}}`, `{{status}}`, `{{start_date}}`, `{{end_date}}`, `{{rejection_note}}`
+     - TO: `{{to_email}}` (динамический — из кода)
+4. Добавить в `.env`:
+   ```
+   NUXT_PUBLIC_EMAILJS_PUBLIC_KEY=...
+   NUXT_PUBLIC_EMAILJS_SERVICE_ID=...
+   NUXT_PUBLIC_EMAILJS_ADMIN_TEMPLATE_ID=...
+   NUXT_PUBLIC_EMAILJS_GUEST_TEMPLATE_ID=...
+   ```
+5. Раскомментировать вызовы (`TODO: email notifications`) в:
+   - `pages/request/index.vue` — `notifyAdminNewRequest` после успешного submit
+   - `pages/admin/bookings/index.vue` — `notifyGuestStatusUpdate` при смене статуса на confirmed/rejected
+   - `pages/admin/calendar/index.vue` — `notifyGuestStatusUpdate` в `confirm()` и `doReject()`
+
+---
+
 ## Nice-to-Have (не в MVP)
 
-- Email-уведомление владельцам когда гость отправил запрос
-- Email-подтверждение гостю когда запрос одобрен
 - iCal экспорт календаря
 - История посещений / статистика (кто чаще всего, любимые месяцы)
 - ~~Фото квартиры~~ — не нужно, приложение для своих

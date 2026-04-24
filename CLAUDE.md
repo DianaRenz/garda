@@ -61,7 +61,7 @@ This is a Nuxt 4 + Vuetify 4 starter template. Vuetify is loaded via `vite-plugi
 
 **Invite system:** Registration is closed — only via one-time invite links (`/register/[token]`). Tokens are generated in `/admin/settings` using `composables/useInvite.ts` (`generateInvite(type)`, `validateToken`, `markTokenUsed`). `type: 'admin' | 'guest'` is stored in Firestore `invites` collection and returned by `validateToken`. Tokens expire in 7 days, marked `used: true` after registration. Admin invite → redirect `/admin`, guest invite → redirect `/apartment`.
 
-**Bookings:** `composables/useBookings.ts` — `Booking` has `userId: string | null` (Firebase UID of registered guest who submitted the request). `subscribeByUser(uid)` queries bookings where `userId == uid` for the guest cabinet. `createBooking` stores `userId` when a logged-in user submits via `/request`. `formatDate(ts)` uses Russian locale. `statusColor` maps status to Vuetify color names.
+**Bookings:** `composables/useBookings.ts` — `Booking` fields include `userId: string | null` (Firebase UID), `guestPhone: string`, `guestEmail: string`, `guestContact?: string` (legacy). Two Firestore collections: `bookings` (full data, admin-only) and `publicBookings` (stripped: `id, startDate, endDate, status` — no guest info). All writes use `writeBatch` to keep both collections in sync. `createBooking` / `updateBooking` / `deleteBooking` all update `publicBookings` atomically. `subscribePublic()` subscribes to `publicBookings` for the public `/request` conflict check. `syncPublicBookings()` rebuilds `publicBookings` from `bookings` (called once on first admin load). `formatDate(ts)` uses `ru-RU` locale. `statusColor` maps status to Vuetify color names.
 
 **Landing page concept (`/`):** Public editorial page about the Prada / Monte Baldo / Lake Garda region — NOT apartment info. Five sections: Hero (region CTA), About (personal statement), Feature cards (6 topics: hiking, food, experiences, wellness, practical, family), Honest notes (region-focused: season, parking, cable car, wind, restaurants), Private CTA (`v-if="user"` only). Uses `$tm()` + `$rt()` for i18n arrays in Honest notes. No `useApartment()` here.
 
@@ -78,13 +78,21 @@ Always show a loading spinner (`ref(true)` → `false` after data loads). Use lo
 
 **Navigation:** `layouts/default.vue` `accountLink` computed: guest → `/apartment`, admin → `/admin`, unauthenticated → `/login`. Landing page private CTA also routes guests → `/apartment`, admins → `/admin`.
 
-**Guest cabinet:** `pages/account/index.vue` — shows user profile from `users/{uid}`, own bookings (upcoming/past split), cancel pending, rejection note. Logout → navigates to `/`. Uses local `ref<Booking[]>` not shared state. `/request` pre-fills `name`/`phone` from `users/{uid}` for logged-in guests.
+**Guest cabinet:** `pages/account/index.vue` — shows user profile from `users/{uid}`, own bookings (upcoming/past split), cancel pending, rejection note. Logout → navigates to `/`. Uses local `ref<Booking[]>` not shared state.
+
+**Request form (`/request`):** For **anonymous users** — shows full 3-section form: Guest (name, email, phone), Dates, Details. For **logged-in users** — shows a compact read-only VCard with profile info (name, email, phone) instead of the Guest section, then only Dates + Details. In both cases form fields are pre-filled from `users/{uid}`. Real-time conflict check against `publicBookings`: blocking conflicts (confirmed/blocked) disable submit; pending conflicts show a warning but allow submit. Start date must not be in the past.
+
+**Email notifications:** `composables/useNotifications.ts` — uses `@emailjs/browser` (lazy-loaded). `notifyAdminNewRequest(params)` → admin template when guest submits /request. `notifyGuestStatusUpdate(params)` → guest template when admin confirms/rejects. Both are best-effort (errors caught and logged, never block UI). Configure via env vars: `NUXT_PUBLIC_EMAILJS_PUBLIC_KEY`, `NUXT_PUBLIC_EMAILJS_SERVICE_ID`, `NUXT_PUBLIC_EMAILJS_ADMIN_TEMPLATE_ID`, `NUXT_PUBLIC_EMAILJS_GUEST_TEMPLATE_ID`. See `env.example` for template variable docs. If vars are not set, notifications are silently skipped.
 
 **Mobile:** Admin layout uses `useDisplay()` from `'vuetify'` (import explicitly — not auto-imported). `layouts/admin.vue` uses `temporary` drawer + `VAppBar` with hamburger on mobile, permanent drawer with rail toggle on desktop. Pages with `VTable` (`/admin/bookings`, `/admin/guests`) render card lists on mobile using `v-if="!mobile"` / `v-else`. `AppCalendar.vue` has responsive CSS for cells < 600px.
 
 **Calendar:** `components/AppCalendar.vue` — shared month-grid component. Props: `bookings: Booking[]`, `showNames: boolean`, `highlightIds?: string[]` (own bookings get primary border). Emits `select(booking)` when `showNames=true` and user clicks a booked cell. Handles month navigation, Mon-Sun headers via Intl, day coloring by status (pending=amber, confirmed=blue, blocked=red). Used in `/calendar` (public, no names) and `/admin/calendar` (with names + click → VDialog for confirm/delete).
 
+**Admin bookings form:** `/admin/bookings/index.vue` — has a registered user selector (`getDocs` from `users` collection with `role='guest'`). When a registered user is selected, auto-fills `guestName/Phone/Email` from their profile and sets `userId` so the booking appears in their account. Also has a guest book selector (`guestId` from `/guests`). `canSave` computed guards the save button. `syncPublicBookings` is called once on first bookings load. `dialogConflicts` shows overlapping bookings in the form.
+
 **i18n:** Locale files at `i18n/locales/{ru,en,de}.json`. Always add keys to all three files. Use `$t('key')` in templates, `useI18n().t('key')` in `<script setup>`. Use `$tm('key')` for arrays + `$rt(item)` per item. Import types from Vuetify with `import type` to avoid runtime errors.
+
+**Environment variables:** See `env.example` at project root for all required variables. Firebase vars map via Nuxt's convention: `NUXT_PUBLIC_FIREBASE_API_KEY` → `runtimeConfig.public.firebaseApiKey`. EmailJS vars follow the same pattern.
 
 **Always update PLAN.md and CLAUDE.md** after implementing significant features.
 

@@ -12,7 +12,18 @@
         </div>
 
         <VForm v-if="!success" ref="formRef" @submit.prevent="submit">
-          <section class="request-section">
+          <!-- Logged-in: compact read-only profile card -->
+          <VCard v-if="user" variant="tonal" rounded="lg" class="mb-6 pa-4 d-flex align-center ga-3">
+            <VIcon icon="fluent:person-circle-24-regular" color="primary" size="36" />
+            <div>
+              <div class="font-weight-medium">{{ form.name }}</div>
+              <div class="text-body-2 text-medium-emphasis">{{ form.email }}</div>
+              <div v-if="form.phone" class="text-body-2 text-medium-emphasis">{{ form.phone }}</div>
+            </div>
+          </VCard>
+
+          <!-- Not logged in: editable guest section -->
+          <section v-else class="request-section">
             <div class="section-heading">
               <VIcon icon="fluent:person-24-regular" color="primary" />
               <h2>{{ $t('request.sections.guest') }}</h2>
@@ -117,6 +128,8 @@ const { $db } = useNuxtApp();
 const { user } = useAuth();
 const { ruleRequired, ruleEmail } = useFormRules();
 const { publicBookings, subscribePublic, createBooking, formatDate } = useBookings();
+// TODO: email notifications — see GitHub issue #1
+// const { notifyAdminNewRequest } = useNotifications();
 const { t } = useI18n();
 
 const loading = ref(false);
@@ -238,6 +251,15 @@ const submit = async () => {
       guestId: null,
       userId: currentUserId.value,
     });
+    // TODO: notify admin — see GitHub issue #1
+    // notifyAdminNewRequest({
+    //   guestName: form.name,
+    //   guestEmail: form.email,
+    //   guestPhone: form.phone,
+    //   startDate: form.startDate,
+    //   endDate: form.endDate,
+    //   notes: form.notes,
+    // }).catch(() => {});
     success.value = true;
   } catch {
     submitError.value = t('request.submitError');

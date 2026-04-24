@@ -23,6 +23,10 @@ export default defineNuxtConfig({
       firebaseStorageBucket: "",
       firebaseMessagingSenderId: "",
       firebaseAppId: "",
+      emailjsPublicKey: "",
+      emailjsServiceId: "",
+      emailjsAdminTemplateId: "",
+      emailjsGuestTemplateId: "",
     },
   },
 

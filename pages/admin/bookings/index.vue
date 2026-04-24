@@ -274,8 +274,10 @@ const { $db } = useNuxtApp();
 const { mobile } = useDisplay()
 const { t } = useI18n();
 const { ruleRequired, ruleEmail } = useFormRules();
-const { bookings, subscribe, createBooking, updateBooking, deleteBooking, syncPublicBookings } = useBookings();
+const { bookings, subscribe, createBooking, updateBooking, deleteBooking, syncPublicBookings, formatDate, statusColor } = useBookings();
 const { guests, subscribe: subscribeGuests, createGuest } = useGuests();
+// TODO: email notifications — see GitHub issue #1
+// const { notifyGuestStatusUpdate } = useNotifications();
 
 interface RegisteredUser {
   uid: string;
@@ -292,8 +294,6 @@ const registeredUserOptions = computed(() =>
     label: [u.name || u.email, u.phone].filter(Boolean).join(' · '),
   }))
 );
-
-const { formatDate, statusColor } = useBookings();
 
 const editDialog = ref(false);
 const deleteDialog = ref(false);
@@ -465,9 +465,10 @@ const addGuestAndAssign = async () => {
 const save = async () => {
   const { valid } = await formRef.value.validate();
   if (!valid) return;
-    saving.value = true;
+  saving.value = true;
   try {
     if (editingId.value) {
+      const prevStatus = bookings.value.find(b => b.id === editingId.value)?.status;
       const { Timestamp } = await import("firebase/firestore");
       await updateBooking(editingId.value, {
         guestId: form.status === "blocked" ? null : form.guestId,
@@ -480,6 +481,12 @@ const save = async () => {
         status: form.status,
         notes: form.notes,
       });
+      // TODO: notify guest on status change — see GitHub issue #1
+      // if (form.guestEmail && prevStatus !== form.status &&
+      //     (form.status === "confirmed" || form.status === "rejected")) {
+      //   notifyGuestStatusUpdate({ guestName: form.guestName, guestEmail: form.guestEmail,
+      //     status: form.status, startDate: form.startDate, endDate: form.endDate }).catch(() => {});
+      // }
     } else {
       await createBooking({
         guestId: form.status === "blocked" ? null : form.guestId,

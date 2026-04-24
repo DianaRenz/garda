@@ -135,6 +135,8 @@ import type { Booking } from '~/composables/useBookings'
 definePageMeta({ layout: "admin", middleware: "auth" });
 
 const { bookings, subscribe, updateBooking, deleteBooking, getConflicts, formatDate, statusColor } = useBookings();
+// TODO: email notifications — see GitHub issue #1
+// const { notifyGuestStatusUpdate } = useNotifications();
 
 type LegendItem = { key: string; color: string; border?: string };
 
@@ -170,8 +172,14 @@ const rejectConflicts = computed(() =>
 const confirm = async () => {
   if (!selected.value) return;
   confirming.value = true;
+  const booking = selected.value;
   try {
-    await updateBooking(selected.value.id, { status: 'confirmed' });
+    await updateBooking(booking.id, { status: 'confirmed' });
+    // TODO: notify guest on confirm — see GitHub issue #1
+    // if (booking.guestEmail) {
+    //   notifyGuestStatusUpdate({ guestName: booking.guestName, guestEmail: booking.guestEmail,
+    //     status: 'confirmed', startDate: formatDate(booking.startDate), endDate: formatDate(booking.endDate) }).catch(() => {});
+    // }
     selected.value = null;
   } finally {
     confirming.value = false;
@@ -186,11 +194,19 @@ const openReject = () => {
 const doReject = async () => {
   if (!selected.value) return;
   rejecting.value = true;
+  const booking = selected.value;
+  const note = rejectNote.value || null;
   try {
-    await updateBooking(selected.value.id, {
+    await updateBooking(booking.id, {
       status: 'rejected',
-      rejectionNote: rejectNote.value || null,
+      rejectionNote: note,
     });
+    // TODO: notify guest on reject — see GitHub issue #1
+    // if (booking.guestEmail) {
+    //   notifyGuestStatusUpdate({ guestName: booking.guestName, guestEmail: booking.guestEmail,
+    //     status: 'rejected', startDate: formatDate(booking.startDate), endDate: formatDate(booking.endDate),
+    //     rejectionNote: note }).catch(() => {});
+    // }
     rejectDialog.value = false;
     selected.value = null;
   } finally {
