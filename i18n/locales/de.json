@@ -8,8 +8,61 @@
     "logout": "Abmelden"
   },
   "home": {
-    "subtitle": "Unsere Wohnung am Gardasee — in den Bergen, mit Blick auf den See.",
-    "cta": "Kalender ansehen"
+    "hero": {
+      "title": "Ihre Basis für Prada, Monte Baldo & Gardasee",
+      "subtitle": "Ein persönlicher Reiseführer für die Region — plus eine private Wohnung für Menschen, denen wir vertrauen.",
+      "body": "Wir kommen seit Jahren hierher. Diese Website sammelt, was wir gelernt haben: wo man ohne Massen wandert, wo man wie ein Einheimischer isst, was man besser meidet. Die Wohnung ist für Familie und enge Freunde — keine Vermietung.",
+      "ctaGuide": "Reiseführer erkunden",
+      "ctaDates": "Termine anfragen"
+    },
+    "about": {
+      "title": "Warum wir das gebaut haben",
+      "p1": "Wir sind keine Reiseveranstalter und keine Reiseblogger. Das ist ein persönliches Projekt — ein Ort, um zu teilen, was wir über eine Ecke Italiens gelernt haben, die jene belohnt, die über das Offensichtliche hinausschauen.",
+      "p2": "Die Wohnung in Prada liegt auf 750 m über dem See. Sie bietet komfortabel Platz für vier Personen, hat eine Terrasse mit Blick auf Monte Baldo und liegt fünf Minuten von der Seilbahn entfernt. Wir teilen sie mit Menschen, die wir kennen und denen wir vertrauen."
+    },
+    "features": {
+      "title": "Was Sie hier finden",
+      "hiking": {
+        "title": "Wandern",
+        "desc": "Routen von einfachen Seespaziergängen bis zum Monte-Baldo-Kamm, mit ehrlichen Hinweisen zu Schwierigkeit und Besucherzahlen."
+      },
+      "food": {
+        "title": "Essen & Wein",
+        "desc": "Unsere Lieblingsrestaurants, Agriturismi und Produzenten — ausgewählt nach Qualität, nicht für Touristen."
+      },
+      "experiences": {
+        "title": "Erlebnisse",
+        "desc": "Paragliding, Segeln, Olivenölverkostungen, lokale Märkte. Was sich lohnt und was man besser lässt."
+      },
+      "wellness": {
+        "title": "Wellness",
+        "desc": "Thermalbäder, ruhige Orte, langsame Morgen. Der See hat in den frühen Stunden ein besonderes Licht."
+      },
+      "practical": {
+        "title": "Mobilität",
+        "desc": "Fähren, Busse, Parkplätze, die Seilbahn. Wie man ohne Auto zurechtkommt — und wann man wirklich eines braucht."
+      },
+      "family": {
+        "title": "Mit Kindern",
+        "desc": "Was für Familien funktioniert — Strände mit flachem Wasser, Spielplätze, Restaurants die Kinder wirklich willkommen heißen."
+      }
+    },
+    "honest": {
+      "title": "Ehrliche Hinweise zur Region",
+      "items": [
+        "Juli und August sind die belebtesten Monate am See. Mai, Juni und September bieten ein deutlich besseres Erlebnis mit weniger Besuchern.",
+        "Parken in Malcesine, Limone und den größeren Seeorten ist im Sommer sehr schwierig. Früh ankommen oder Park-and-Ride-Möglichkeiten nutzen.",
+        "Die Monte-Baldo-Seilbahn hat an Sommerwochenenden lange Warteschlangen. Online im Voraus buchen oder vor 9 Uhr ankommen.",
+        "Der nördliche Teil des Sees ist windiger — ideal zum Segeln und Windsurfen, weniger geeignet zum ruhigen Schwimmen.",
+        "Viele Restaurants sind montags geschlossen. Öffnungszeiten immer vor dem Besuch prüfen.",
+        "Die bekannten Touristenstädte am See sind wunderschön, aber sehr kommerziell. Der echte Charakter der Region zeigt sich im Hinterland und in der Höhe."
+      ]
+    },
+    "private": {
+      "title": "Ihr persönlicher Bereich",
+      "desc": "Wohnungsdetails ansehen, bevorstehende Aufenthalte prüfen und neue Termine anfragen.",
+      "cta": "Zur Wohnung"
+    }
   },
   "calendar": {
     "title": "Kalender",
@@ -172,6 +225,11 @@
     "rejectedNote": "Grund:",
     "pendingStatus": "Wartet auf Bestätigung",
     "confirmedStatus": "Bestätigt"
+  },
+  "apartment": {
+    "title": "Die Wohnung",
+    "requestBtn": "Termin anfragen",
+    "bookingsBtn": "Meine Buchungen"
   },
   "common": {
     "cancel": "Abbrechen",

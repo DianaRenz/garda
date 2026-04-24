@@ -2,7 +2,7 @@
   <div>
     <div class="d-flex align-center justify-space-between mb-6">
       <h1 class="text-h5 font-weight-bold">{{ $t('bookings.title') }}</h1>
-      <VBtn class="gradient primary" prepend-icon="fluent:add-24-regular" @click="openCreate">
+      <VBtn class="gradient primary" prepend-icon="fluent:add-24-regular" @click="createNew">
         {{ $t('bookings.add') }}
       </VBtn>
     </div>
@@ -35,10 +35,10 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="b in filtered" :key="b.id">
+          <tr v-for="b in filtered" :key="b.id" class="cursor-pointer hover:bg-gray-50" @click="editBooking(b)">
             <td>
-              <div class="font-weight-medium">{{ b.guestName }}</div>
-              <div class="text-body-2 text-medium-emphasis">{{ b.guestContact }}</div>
+              <div class="font-weight-medium">{{ b.guestName || '(не назначен)' }}</div>
+              <div class="text-body-2 text-medium-emphasis">{{ b.guestContact || '—' }}</div>
             </td>
             <td class="text-no-wrap">
               {{ formatDate(b.startDate) }} — {{ formatDate(b.endDate) }}
@@ -56,35 +56,14 @@
             <td class="text-medium-emphasis text-body-2" style="max-width:200px;">
               {{ b.notes || '—' }}
             </td>
-            <td>
-              <div class="d-flex ga-1 justify-end">
-                <VBtn
-                  v-if="b.status === 'pending'"
-                  size="small"
-                  variant="tonal"
-                  color="primary"
-                  :loading="confirming === b.id"
-                  @click="confirm(b.id)"
-                >
-                  {{ $t('bookings.actions.confirm') }}
-                </VBtn>
-                <VBtn
-                  v-if="b.status === 'pending'"
-                  size="small"
-                  variant="tonal"
-                  color="error"
-                  @click="askReject(b)"
-                >
-                  {{ $t('bookings.actions.reject') }}
-                </VBtn>
-                <VBtn
-                  size="small"
-                  variant="text"
-                  color="error"
-                  icon="fluent:delete-24-regular"
-                  @click="askDelete(b.id)"
-                />
-              </div>
+            <td @click.stop>
+              <VBtn
+                size="small"
+                variant="text"
+                color="error"
+                icon="fluent:delete-24-regular"
+                @click="askDelete(b.id)"
+              />
             </td>
           </tr>
         </tbody>
@@ -100,12 +79,12 @@
         {{ $t('bookings.empty') }}
       </div>
       <div class="d-flex flex-column ga-3">
-        <VCard v-for="b in filtered" :key="b.id" variant="outlined" rounded="lg">
+        <VCard v-for="b in filtered" :key="b.id" variant="outlined" rounded="lg" class="cursor-pointer" @click="editBooking(b)">
           <VCardText class="pa-4">
             <div class="d-flex align-start justify-space-between mb-1">
-              <div>
-                <div class="font-weight-medium">{{ b.guestName }}</div>
-                <div class="text-body-2 text-medium-emphasis">{{ b.guestContact }}</div>
+              <div class="flex-grow-1">
+                <div class="font-weight-medium">{{ b.guestName || '(не назначен)' }}</div>
+                <div class="text-body-2 text-medium-emphasis">{{ b.guestContact || '—' }}</div>
               </div>
               <VChip :color="statusColor[b.status]" size="small" variant="tonal">
                 {{ $t(`bookings.statuses.${b.status}`) }}
@@ -116,26 +95,7 @@
             </div>
             <div v-if="b.notes" class="text-body-2 text-medium-emphasis mt-1">{{ b.notes }}</div>
           </VCardText>
-          <VCardActions class="px-4 pb-3 pt-0">
-            <VBtn
-              v-if="b.status === 'pending'"
-              size="small"
-              variant="tonal"
-              color="primary"
-              :loading="confirming === b.id"
-              @click="confirm(b.id)"
-            >
-              {{ $t('bookings.actions.confirm') }}
-            </VBtn>
-            <VBtn
-              v-if="b.status === 'pending'"
-              size="small"
-              variant="tonal"
-              color="error"
-              @click="askReject(b)"
-            >
-              {{ $t('bookings.actions.reject') }}
-            </VBtn>
+          <VCardActions class="px-4 pb-3 pt-0" @click.stop>
             <VSpacer />
             <VBtn
               size="small"
@@ -149,17 +109,71 @@
       </div>
     </template>
 
-    <!-- Create dialog -->
-    <VDialog v-model="dialog" max-width="500">
+    <!-- Edit/Create booking dialog -->
+    <VDialog v-model="editDialog" max-width="540">
       <VCard>
-        <VCardTitle class="pa-6 pb-2">{{ $t('bookings.form.title') }}</VCardTitle>
+        <VCardTitle class="pa-6 pb-2">
+          {{ editingId ? 'Редактировать бронирование' : $t('bookings.form.title') }}
+        </VCardTitle>
         <VCardText>
           <VForm ref="formRef" @submit.prevent="save">
-            <div class="mt-1">
-              <label class="label text-grey-darken-2">{{ $t('bookings.form.guest') }}</label>
-              <VTextField v-model="form.guestName" :rules="[ruleRequired]" />
+            <!-- Guest selector -->
+            <div class="mb-4 pa-4 rounded-lg" style="background: rgba(0,0,0,0.04);">
+              <label class="label text-grey-darken-2 mb-3 d-block">Гость</label>
+              <VSelect
+                v-model="form.guestId"
+                :items="guestOptions"
+                item-title="name"
+                item-value="id"
+                label="Выберите или создайте гостя"
+                clearable
+              />
+              <VBtn
+                v-if="form.guestId && !editingId"
+                size="small"
+                variant="text"
+                class="mt-2"
+                prepend-icon="fluent:add-circle-20-regular"
+                @click="createNewGuestInline = true"
+              >
+                Или создать нового
+              </VBtn>
             </div>
-            <div class="mt-1">
+
+            <!-- Inline guest creation -->
+            <VCard v-if="createNewGuestInline" variant="outlined" class="mb-4 pa-4">
+              <div class="d-flex align-center justify-space-between mb-3">
+                <span class="text-body-2 font-weight-medium">Новый гость</span>
+                <VBtn
+                  icon="fluent:dismiss-24-regular"
+                  variant="text"
+                  size="small"
+                  @click="createNewGuestInline = false"
+                />
+              </div>
+              <div class="mt-1">
+                <label class="label text-grey-darken-2 text-body-2">Имя</label>
+                <VTextField v-model="newGuestForm.name" density="compact" />
+              </div>
+              <div class="mt-1">
+                <label class="label text-grey-darken-2 text-body-2">Телефон</label>
+                <VTextField v-model="newGuestForm.phone" density="compact" />
+              </div>
+              <div class="mt-1">
+                <label class="label text-grey-darken-2 text-body-2">Email</label>
+                <VTextField v-model="newGuestForm.email" density="compact" />
+              </div>
+              <VBtn
+                size="small"
+                class="gradient primary mt-3"
+                @click="addGuestAndAssign"
+              >
+                Создать и назначить
+              </VBtn>
+            </VCard>
+
+            <!-- Other fields -->
+            <div class="mt-4">
               <label class="label text-grey-darken-2">{{ $t('bookings.form.contact') }}</label>
               <VTextField v-model="form.guestContact" />
             </div>
@@ -169,7 +183,7 @@
             </div>
             <div class="mt-1">
               <label class="label text-grey-darken-2">{{ $t('bookings.form.endDate') }}</label>
-              <VTextField v-model="form.endDate" type="date" :rules="[ruleRequired]" />
+              <VTextField v-model="form.endDate" type="date" :rules="endDateRules" />
             </div>
             <div class="mt-1">
               <label class="label text-grey-darken-2">{{ $t('bookings.form.status') }}</label>
@@ -183,43 +197,20 @@
         </VCardText>
         <VCardActions class="pa-6 pt-0 ga-2">
           <VSpacer />
-          <VBtn variant="text" @click="dialog = false">{{ $t('bookings.form.cancel') }}</VBtn>
-          <VBtn class="gradient primary" :loading="saving" @click="save">{{ $t('bookings.form.save') }}</VBtn>
-        </VCardActions>
-      </VCard>
-    </VDialog>
-
-    <!-- Reject dialog -->
-    <VDialog v-model="rejectDialog" max-width="480">
-      <VCard rounded="lg">
-        <VCardTitle class="pa-6 pb-2">{{ $t('bookings.rejectDialog.title') }}</VCardTitle>
-        <VCardText>
-          <VAlert v-if="rejectConflicts.length" type="info" variant="tonal" class="mb-4" density="compact">
-            <div class="font-weight-medium mb-1">{{ $t('bookings.rejectDialog.conflict') }}</div>
-            <div v-for="c in rejectConflicts" :key="c.id" class="text-body-2">
-              {{ c.guestName }}: {{ formatDate(c.startDate) }} — {{ formatDate(c.endDate) }}
-            </div>
-          </VAlert>
-          <div>
-            <label class="label text-grey-darken-2">{{ $t('bookings.rejectDialog.note') }}</label>
-            <VTextarea
-              v-model="rejectNote"
-              :placeholder="$t('bookings.rejectDialog.notePlaceholder')"
-              rows="3"
-            />
-          </div>
-        </VCardText>
-        <VCardActions class="pa-6 pt-0 ga-2">
-          <VSpacer />
-          <VBtn variant="text" @click="rejectDialog = false">{{ $t('common.cancel') }}</VBtn>
-          <VBtn color="error" variant="tonal" :loading="rejecting" @click="doReject">
-            {{ $t('bookings.rejectDialog.confirm') }}
+          <VBtn variant="text" @click="editDialog = false">{{ $t('bookings.form.cancel') }}</VBtn>
+          <VBtn
+            class="gradient primary"
+            :loading="saving"
+            :disabled="!form.guestId"
+            @click="save"
+          >
+            {{ editingId ? 'Обновить' : $t('bookings.form.save') }}
           </VBtn>
         </VCardActions>
       </VCard>
     </VDialog>
 
-    <!-- Delete confirm dialog -->
+    <!-- Delete confirm -->
     <VDialog v-model="deleteDialog" max-width="400">
       <VCard>
         <VCardTitle class="pa-6 pb-2">{{ $t('common.deleteConfirmTitle') }}</VCardTitle>
@@ -243,20 +234,20 @@ definePageMeta({ layout: "admin", middleware: "auth" });
 const { mobile } = useDisplay()
 const { t } = useI18n();
 const { ruleRequired } = useFormRules();
-const { bookings, subscribe, createBooking, updateBooking, deleteBooking, getConflicts, formatDate, statusColor } = useBookings();
+const { bookings, subscribe, createBooking, updateBooking, deleteBooking } = useBookings();
+const { guests, subscribe: subscribeGuests, createGuest } = useGuests();
 
-const dialog = ref(false);
+const { bookings: allBookings, formatDate, statusColor } = useBookings();
+
+const editDialog = ref(false);
 const deleteDialog = ref(false);
-const rejectDialog = ref(false);
 const saving = ref(false);
 const deleting = ref(false);
-const rejecting = ref(false);
-const confirming = ref<string | null>(null);
 const deleteId = ref<string | null>(null);
-const rejectTarget = ref<Booking | null>(null);
-const rejectNote = ref('');
 const filterStatus = ref("all");
 const formRef = ref();
+const editingId = ref<string | null>(null);
+const createNewGuestInline = ref(false);
 
 const statuses = ["all", "pending", "confirmed", "blocked", "rejected"].map((v) => ({ value: v }));
 
@@ -267,28 +258,78 @@ const statusOptions = computed(() =>
   }))
 );
 
+const guestOptions = computed(() => [
+  ...guests.value.map(g => ({ id: g.id, name: g.name })),
+]);
+
+const endDateRules = computed(() => [
+  ruleRequired,
+  (v: string) => !form.startDate || !v || v >= form.startDate || t('bookings.form.endDateError'),
+]);
+
 const filtered = computed(() =>
   filterStatus.value === "all"
     ? bookings.value
     : bookings.value.filter((b) => b.status === filterStatus.value)
 );
 
-const rejectConflicts = computed(() =>
-  rejectTarget.value ? getConflicts(rejectTarget.value) : []
-);
-
 const form = reactive({
+  guestId: null as string | null,
   guestName: "",
   guestContact: "",
   startDate: "",
   endDate: "",
-  status: "confirmed" as "pending" | "confirmed" | "blocked",
+  status: "confirmed" as "pending" | "confirmed" | "blocked" | "rejected",
   notes: "",
 });
 
-const openCreate = () => {
-  Object.assign(form, { guestName: "", guestContact: "", startDate: "", endDate: "", status: "confirmed", notes: "" });
-  dialog.value = true;
+const newGuestForm = reactive({
+  name: "",
+  phone: "",
+  email: "",
+});
+
+const createNew = () => {
+  Object.assign(form, {
+    guestId: null,
+    guestName: "",
+    guestContact: "",
+    startDate: "",
+    endDate: "",
+    status: "confirmed",
+    notes: "",
+  });
+  editingId.value = null;
+  createNewGuestInline.value = false;
+  editDialog.value = true;
+};
+
+const editBooking = (booking: Booking) => {
+  editingId.value = booking.id;
+  Object.assign(form, {
+    guestId: booking.guestId,
+    guestName: booking.guestName,
+    guestContact: booking.guestContact,
+    startDate: booking.startDate.toDate().toISOString().split('T')[0],
+    endDate: booking.endDate.toDate().toISOString().split('T')[0],
+    status: booking.status,
+    notes: booking.notes,
+  });
+  createNewGuestInline.value = false;
+  editDialog.value = true;
+};
+
+const addGuestAndAssign = async () => {
+  if (!newGuestForm.name) return;
+  await createGuest({ name: newGuestForm.name, phone: newGuestForm.phone, email: newGuestForm.email, notes: "" });
+  const newGuest = guests.value.find(g => g.name === newGuestForm.name);
+  if (newGuest) {
+    form.guestId = newGuest.id;
+    form.guestName = newGuest.name;
+    form.guestContact = newGuestForm.phone || newGuestForm.email;
+  }
+  Object.assign(newGuestForm, { name: "", phone: "", email: "" });
+  createNewGuestInline.value = false;
 };
 
 const save = async () => {
@@ -296,39 +337,33 @@ const save = async () => {
   if (!valid) return;
   saving.value = true;
   try {
-    await createBooking({ ...form, source: "admin", guestId: null });
-    dialog.value = false;
+    if (editingId.value) {
+      // При редактировании конвертируем даты обратно в Timestamps
+      const { Timestamp } = await import("firebase/firestore");
+      await updateBooking(editingId.value, {
+        guestId: form.guestId,
+        guestName: form.guestName,
+        guestContact: form.guestContact,
+        startDate: Timestamp.fromDate(new Date(form.startDate)),
+        endDate: Timestamp.fromDate(new Date(form.endDate)),
+        status: form.status,
+        notes: form.notes,
+      });
+    } else {
+      await createBooking({
+        guestId: form.guestId,
+        guestName: form.guestName,
+        guestContact: form.guestContact,
+        startDate: form.startDate,
+        endDate: form.endDate,
+        status: form.status,
+        source: "admin",
+        notes: form.notes,
+      });
+    }
+    editDialog.value = false;
   } finally {
     saving.value = false;
-  }
-};
-
-const confirm = async (id: string) => {
-  confirming.value = id;
-  try {
-    await updateBooking(id, { status: "confirmed" });
-  } finally {
-    confirming.value = null;
-  }
-};
-
-const askReject = (b: Booking) => {
-  rejectTarget.value = b;
-  rejectNote.value = '';
-  rejectDialog.value = true;
-};
-
-const doReject = async () => {
-  if (!rejectTarget.value) return;
-  rejecting.value = true;
-  try {
-    await updateBooking(rejectTarget.value.id, {
-      status: 'rejected',
-      rejectionNote: rejectNote.value || null,
-    });
-    rejectDialog.value = false;
-  } finally {
-    rejecting.value = false;
   }
 };
 
@@ -349,7 +384,8 @@ const doDelete = async () => {
 };
 
 onMounted(() => {
-  const unsub = subscribe();
-  onUnmounted(unsub);
+  const u1 = subscribe();
+  const u2 = subscribeGuests();
+  onUnmounted(() => { u1(); u2(); });
 });
 </script>

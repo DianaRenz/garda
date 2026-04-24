@@ -49,6 +49,6 @@ const { user, userRole } = useAuth();
 
 const accountLink = computed(() => {
   if (!user.value) return "/login";
-  return userRole.value === "guest" ? "/account" : "/admin";
+  return userRole.value === "guest" ? "/apartment" : "/admin";
 });
 </script>

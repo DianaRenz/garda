@@ -59,17 +59,32 @@ This is a Nuxt 4 + Vuetify 4 starter template. Vuetify is loaded via `vite-plugi
 
 **Auth state:** `useAuth()` exposes `user` (Firebase User), `userRole` (`'admin' | 'guest' | null`), `isLoggedIn`, `init`, `login`, `logout`. `init()` is called in `app.vue` on mount — sets up `onAuthStateChanged` listener which also fetches `userRole` from Firestore. After login, always fetch role from Firestore directly (don't wait for reactive state) to avoid timing issues. `pages/setup.vue` is dev-only (`import.meta.dev` guard).
 
-**Invite system:** Registration is closed — only via one-time invite links (`/register/[token]`). Tokens are generated in `/admin/settings` using `composables/useInvite.ts` (`generateInvite(type)`, `validateToken`, `markTokenUsed`). `type: 'admin' | 'guest'` is stored in Firestore `invites` collection and returned by `validateToken`. Tokens expire in 7 days, marked `used: true` after registration. Admin invite → redirect `/admin`, guest invite → redirect `/account`.
+**Invite system:** Registration is closed — only via one-time invite links (`/register/[token]`). Tokens are generated in `/admin/settings` using `composables/useInvite.ts` (`generateInvite(type)`, `validateToken`, `markTokenUsed`). `type: 'admin' | 'guest'` is stored in Firestore `invites` collection and returned by `validateToken`. Tokens expire in 7 days, marked `used: true` after registration. Admin invite → redirect `/admin`, guest invite → redirect `/apartment`.
 
-**Bookings:** `composables/useBookings.ts` — `Booking` has `userId: string | null` (Firebase UID of registered guest who submitted the request). `subscribeByUser(uid)` queries bookings where `userId == uid` for the guest cabinet. `createBooking` stores `userId` when a logged-in user submits via `/request`.
+**Bookings:** `composables/useBookings.ts` — `Booking` has `userId: string | null` (Firebase UID of registered guest who submitted the request). `subscribeByUser(uid)` queries bookings where `userId == uid` for the guest cabinet. `createBooking` stores `userId` when a logged-in user submits via `/request`. `formatDate(ts)` uses Russian locale. `statusColor` maps status to Vuetify color names.
 
-**Guest cabinet:** `pages/account/index.vue` — protected (redirects to `/login` if not authenticated), shows user profile from `users/{uid}`, lists own bookings via `subscribeByUser`, logout button. `/request` form pre-fills `name`/`phone` from `users/{uid}` for logged-in guests.
+**Landing page concept (`/`):** Public editorial page about the Prada / Monte Baldo / Lake Garda region — NOT apartment info. Five sections: Hero (region CTA), About (personal statement), Feature cards (6 topics: hiking, food, experiences, wellness, practical, family), Honest notes (region-focused: season, parking, cable car, wind, restaurants), Private CTA (`v-if="user"` only). Uses `$tm()` + `$rt()` for i18n arrays in Honest notes. No `useApartment()` here.
+
+**Apartment page (`/apartment`):** Protected page for registered users (guests and admins). Shows apartment info from Firestore via `useApartment()`: title, description, address, directions, rules. Buttons: "Request dates" → `/request`, "My bookings" → `/account`. Auth guard uses `onAuthStateChanged` promise (same pattern as `/account`) — do NOT use `isLoggedIn.value` directly as it may be `false` before Firebase resolves.
+
+**Guest route protection pattern:** Guest-facing protected pages (`/apartment`, `/account`, `/request`) use a client-side `onAuthStateChanged` promise in `onMounted` — NOT middleware. Pattern:
+```ts
+const user = await new Promise<any>((resolve) => {
+  const unsub = onAuthStateChanged($auth, (u) => { unsub(); resolve(u); });
+});
+if (!user) { await navigateTo('/login'); return; }
+```
+Always show a loading spinner (`ref(true)` → `false` after data loads). Use local `ref<Booking[]>` (not shared `useState`) for guest bookings to avoid conflict with admin's global subscriber.
+
+**Navigation:** `layouts/default.vue` `accountLink` computed: guest → `/apartment`, admin → `/admin`, unauthenticated → `/login`. Landing page private CTA also routes guests → `/apartment`, admins → `/admin`.
+
+**Guest cabinet:** `pages/account/index.vue` — shows user profile from `users/{uid}`, own bookings (upcoming/past split), cancel pending, rejection note. Logout → navigates to `/`. Uses local `ref<Booking[]>` not shared state. `/request` pre-fills `name`/`phone` from `users/{uid}` for logged-in guests.
 
 **Mobile:** Admin layout uses `useDisplay()` from `'vuetify'` (import explicitly — not auto-imported). `layouts/admin.vue` uses `temporary` drawer + `VAppBar` with hamburger on mobile, permanent drawer with rail toggle on desktop. Pages with `VTable` (`/admin/bookings`, `/admin/guests`) render card lists on mobile using `v-if="!mobile"` / `v-else`. `AppCalendar.vue` has responsive CSS for cells < 600px.
 
-**Calendar:** `components/AppCalendar.vue` — shared month-grid component. Props: `bookings: Booking[]`, `showNames: boolean`. Emits `select(booking)` when `showNames=true` and user clicks a booked cell. Handles month navigation, Mon-Sun headers via Intl, day coloring by status (pending=amber, confirmed=blue, blocked=red). Used in `/calendar` (public, no names) and `/admin/calendar` (with names + click → VDialog for confirm/delete).
+**Calendar:** `components/AppCalendar.vue` — shared month-grid component. Props: `bookings: Booking[]`, `showNames: boolean`, `highlightIds?: string[]` (own bookings get primary border). Emits `select(booking)` when `showNames=true` and user clicks a booked cell. Handles month navigation, Mon-Sun headers via Intl, day coloring by status (pending=amber, confirmed=blue, blocked=red). Used in `/calendar` (public, no names) and `/admin/calendar` (with names + click → VDialog for confirm/delete).
 
-**i18n:** Locale files at `i18n/locales/{ru,en,de}.json`. Always add keys to all three files. Use `$t('key')` in templates, `useI18n().t('key')` in `<script setup>`. Import types from Vuetify with `import type` to avoid runtime errors.
+**i18n:** Locale files at `i18n/locales/{ru,en,de}.json`. Always add keys to all three files. Use `$t('key')` in templates, `useI18n().t('key')` in `<script setup>`. Use `$tm('key')` for arrays + `$rt(item)` per item. Import types from Vuetify with `import type` to avoid runtime errors.
 
 **Always update PLAN.md and CLAUDE.md** after implementing significant features.
 

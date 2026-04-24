@@ -22,14 +22,14 @@
       <template v-if="upcomingBookings.length">
         <div v-for="(b, i) in upcomingBookings" :key="b.id">
           <VDivider v-if="i > 0" />
-          <div class="d-flex align-center justify-space-between px-4 py-3 ga-3">
+          <div class="d-flex align-center justify-space-between px-4 py-3 ga-3 cursor-pointer hover:bg-gray-50" @click="goToBookings(b.id)">
             <div class="flex-grow-1 min-width-0">
-              <div class="text-body-2 font-weight-medium">{{ b.guestName }}</div>
+              <div class="text-body-2 font-weight-medium">{{ b.guestName || '(не назначен)' }}</div>
               <div class="text-caption text-medium-emphasis mt-1">
                 {{ formatDate(b.startDate) }} — {{ formatDate(b.endDate) }}
               </div>
             </div>
-            <div class="d-flex align-center ga-2 flex-shrink-0">
+            <div class="d-flex align-center ga-2 flex-shrink-0" @click.stop>
               <VBtn
                 v-if="b.status === 'pending'"
                 size="x-small"
@@ -70,6 +70,13 @@ const confirm = async (id: string) => {
   } finally {
     confirming.value = null;
   }
+};
+
+const goToBookings = (bookingId?: string) => {
+  navigateTo({
+    path: '/admin/bookings',
+    query: bookingId ? { booking: bookingId } : undefined,
+  });
 };
 const { t } = useI18n();
 
