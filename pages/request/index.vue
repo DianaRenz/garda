@@ -15,8 +15,12 @@
             <VTextField v-model="form.name" :rules="[ruleRequired]" prepend-inner-icon="fluent:person-24-regular" />
           </div>
           <div class="mt-1">
-            <label class="label text-grey-darken-2">{{ $t('request.contact') }}</label>
-            <VTextField v-model="form.contact" :rules="[ruleRequired]" prepend-inner-icon="fluent:mail-24-regular" />
+            <label class="label text-grey-darken-2">{{ $t('request.phone') }}</label>
+            <VTextField v-model="form.phone" :rules="[ruleRequired]" prepend-inner-icon="fluent:call-24-regular" type="tel" />
+          </div>
+          <div class="mt-1">
+            <label class="label text-grey-darken-2">{{ $t('request.email') }}</label>
+            <VTextField v-model="form.email" :rules="[ruleRequired, ruleEmail]" prepend-inner-icon="fluent:mail-24-regular" type="email" />
           </div>
           <div class="mt-1">
             <label class="label text-grey-darken-2">{{ $t('request.startDate') }}</label>
@@ -24,7 +28,7 @@
           </div>
           <div class="mt-1">
             <label class="label text-grey-darken-2">{{ $t('request.endDate') }}</label>
-            <VTextField v-model="form.endDate" :rules="[ruleRequired]" type="date" />
+            <VTextField v-model="form.endDate" :rules="endDateRules" type="date" />
           </div>
           <div class="mt-1">
             <label class="label text-grey-darken-2">{{ $t('request.notes') }}</label>
@@ -62,8 +66,9 @@ definePageMeta({ layout: "default" });
 
 const { $db } = useNuxtApp();
 const { user } = useAuth();
-const { ruleRequired } = useFormRules();
+const { ruleRequired, ruleEmail } = useFormRules();
 const { createBooking } = useBookings();
+const { t } = useI18n();
 
 const loading = ref(false);
 const success = ref(false);
@@ -76,11 +81,17 @@ const backLabel = computed(() => user.value ? "request.backToAccount" : "request
 
 const form = reactive({
   name: "",
-  contact: "",
+  phone: "",
+  email: "",
   startDate: "",
   endDate: "",
   notes: "",
 });
+
+const endDateRules = computed(() => [
+  ruleRequired,
+  (v: string) => !form.startDate || !v || v > form.startDate || t('request.endDateError'),
+]);
 
 // Pre-fill from user profile when available
 watch(user, async (u) => {
@@ -91,9 +102,11 @@ watch(user, async (u) => {
     if (snap.exists()) {
       const data = snap.data();
       if (data.name) form.name = data.name;
-      if (data.phone) form.contact = data.phone;
-      else if (data.email) form.contact = data.email;
+      if (data.phone) form.phone = data.phone;
+      if (data.email) form.email = data.email;
     }
+    // fallback: use auth email if not in profile
+    if (!form.email && u.email) form.email = u.email;
   } catch {
     // pre-fill is best-effort
   }
@@ -107,7 +120,8 @@ const submit = async () => {
   try {
     await createBooking({
       guestName: form.name,
-      guestContact: form.contact,
+      guestPhone: form.phone,
+      guestEmail: form.email,
       startDate: form.startDate,
       endDate: form.endDate,
       notes: form.notes,

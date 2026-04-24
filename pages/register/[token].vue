@@ -88,7 +88,7 @@
 
 <script setup lang="ts">
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { doc, setDoc, Timestamp } from "firebase/firestore";
+import { doc, runTransaction, serverTimestamp } from "firebase/firestore";
 
 definePageMeta({ layout: "default" });
 
@@ -96,7 +96,7 @@ const { $auth, $db } = useNuxtApp();
 const route = useRoute();
 const token = route.params.token as string;
 
-const { validateToken, markTokenUsed } = useInvite();
+const { validateToken } = useInvite();
 const { ruleRequired, ruleEmail, rulePassLen } = useFormRules();
 
 const validating = ref(true);
@@ -135,14 +135,26 @@ const submit = async () => {
   submitError.value = false;
   try {
     const credential = await createUserWithEmailAndPassword($auth, email.value, password.value);
-    await setDoc(doc($db, "users", credential.user.uid), {
-      role: inviteType.value,
-      email: email.value,
-      name: inviteType.value === "guest" ? name.value : null,
-      phone: inviteType.value === "guest" ? phone.value : null,
-      createdAt: Timestamp.now(),
+    await runTransaction($db, async (transaction) => {
+      const inviteRef = doc($db, "invites", token);
+      const inviteSnap = await transaction.get(inviteRef);
+
+      if (!inviteSnap.exists()) throw new Error("invalid_invite");
+      const invite = inviteSnap.data();
+      if (invite.used) throw new Error("used_invite");
+      if (invite.expiresAt.toDate() < new Date()) throw new Error("expired_invite");
+      if (invite.type !== inviteType.value) throw new Error("invalid_invite_type");
+
+      transaction.set(doc($db, "users", credential.user.uid), {
+        role: inviteType.value,
+        email: email.value,
+        name: inviteType.value === "guest" ? name.value : null,
+        phone: inviteType.value === "guest" ? phone.value : null,
+        inviteToken: token,
+        createdAt: serverTimestamp(),
+      });
+      transaction.update(inviteRef, { used: true, usedAt: serverTimestamp() });
     });
-    await markTokenUsed(token);
     await navigateTo(inviteType.value === "guest" ? "/account" : "/admin");
   } catch {
     submitError.value = true;

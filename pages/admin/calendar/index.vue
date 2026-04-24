@@ -1,6 +1,22 @@
 <template>
   <div>
-    <h1 class="text-h5 font-weight-bold mb-6">{{ $t('calendar.title') }}</h1>
+    <h1 class="text-h5 font-weight-bold mb-4">{{ $t('calendar.title') }}</h1>
+
+    <div class="d-flex ga-4 flex-wrap mb-6">
+      <div v-for="item in legend" :key="item.key" class="d-flex align-center ga-2">
+        <div
+          class="rounded"
+          :style="{
+            background: item.color,
+            width: '14px',
+            height: '14px',
+            border: item.border ?? '1px solid rgba(0,0,0,0.08)',
+            boxSizing: 'border-box',
+          }"
+        />
+        <span class="text-body-2">{{ $t(`calendar.legend.${item.key}`) }}</span>
+      </div>
+    </div>
 
     <AppCalendar :bookings="bookings" :show-names="true" @select="selected = $event" />
 
@@ -20,9 +36,13 @@
             {{ formatDate(selected.startDate) }} — {{ formatDate(selected.endDate) }}
           </div>
 
-          <div v-if="selected.guestContact" class="d-flex align-center ga-2 text-body-2 mb-2">
+          <div v-if="selected.guestPhone || selected.guestContact" class="d-flex align-center ga-2 text-body-2 mb-2">
+            <VIcon icon="fluent:call-24-regular" size="16" />
+            {{ selected.guestPhone || selected.guestContact }}
+          </div>
+          <div v-if="selected.guestEmail" class="d-flex align-center ga-2 text-body-2 mb-2">
             <VIcon icon="fluent:mail-24-regular" size="16" />
-            {{ selected.guestContact }}
+            {{ selected.guestEmail }}
           </div>
 
           <div v-if="selected.notes" class="text-body-2 text-medium-emphasis mt-3 pa-3 rounded-lg" style="background: rgba(0,0,0,0.04)">
@@ -115,6 +135,13 @@ import type { Booking } from '~/composables/useBookings'
 definePageMeta({ layout: "admin", middleware: "auth" });
 
 const { bookings, subscribe, updateBooking, deleteBooking, getConflicts, formatDate, statusColor } = useBookings();
+
+const legend = [
+  { key: "available", color: "rgba(0,0,0,0.04)" },
+  { key: "pending",   color: "rgba(255,193,7,0.45)" },
+  { key: "confirmed", color: "rgba(33,150,243,0.35)" },
+  { key: "blocked",   color: "rgba(244,67,54,0.35)" },
+];
 
 onMounted(() => {
   const unsub = subscribe();

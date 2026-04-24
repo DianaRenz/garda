@@ -10,7 +10,9 @@ export interface Booking {
   guestId: string | null;
   userId: string | null;
   guestName: string;
-  guestContact: string;
+  guestPhone: string;
+  guestEmail: string;
+  guestContact?: string; // legacy field — kept for backward compat with old Firestore docs
   startDate: Timestamp;
   endDate: Timestamp;
   status: BookingStatus;
@@ -25,7 +27,8 @@ export interface BookingForm {
   guestId?: string | null;
   userId?: string | null;
   guestName: string;
-  guestContact: string;
+  guestPhone: string;
+  guestEmail: string;
   startDate: string; // YYYY-MM-DD
   endDate: string;
   status: BookingStatus;
@@ -78,7 +81,8 @@ export const useBookings = () => {
       guestId: form.guestId ?? null,
       userId: form.userId ?? null,
       guestName: form.guestName,
-      guestContact: form.guestContact,
+      guestPhone: form.guestPhone,
+      guestEmail: form.guestEmail,
       startDate: Timestamp.fromDate(new Date(form.startDate)),
       endDate: Timestamp.fromDate(new Date(form.endDate)),
       status: form.status,

@@ -38,7 +38,8 @@
           <tr v-for="b in filtered" :key="b.id" class="cursor-pointer hover:bg-gray-50" @click="editBooking(b)">
             <td>
               <div class="font-weight-medium">{{ b.guestName || '(не назначен)' }}</div>
-              <div class="text-body-2 text-medium-emphasis">{{ b.guestContact || '—' }}</div>
+              <div class="text-body-2 text-medium-emphasis">{{ b.guestPhone || b.guestContact || '—' }}</div>
+              <div v-if="b.guestEmail" class="text-body-2 text-medium-emphasis">{{ b.guestEmail }}</div>
             </td>
             <td class="text-no-wrap">
               {{ formatDate(b.startDate) }} — {{ formatDate(b.endDate) }}
@@ -84,7 +85,8 @@
             <div class="d-flex align-start justify-space-between mb-1">
               <div class="flex-grow-1">
                 <div class="font-weight-medium">{{ b.guestName || '(не назначен)' }}</div>
-                <div class="text-body-2 text-medium-emphasis">{{ b.guestContact || '—' }}</div>
+                <div class="text-body-2 text-medium-emphasis">{{ b.guestPhone || b.guestContact || '—' }}</div>
+                <div v-if="b.guestEmail" class="text-body-2 text-medium-emphasis">{{ b.guestEmail }}</div>
               </div>
               <VChip :color="statusColor[b.status]" size="small" variant="tonal">
                 {{ $t(`bookings.statuses.${b.status}`) }}
@@ -190,8 +192,12 @@
 
             <!-- Other fields -->
             <div class="mt-4">
-              <label class="label text-grey-darken-2">{{ $t('bookings.form.contact') }}</label>
-              <VTextField v-model="form.guestContact" />
+              <label class="label text-grey-darken-2">{{ $t('bookings.form.phone') }}</label>
+              <VTextField v-model="form.guestPhone" type="tel" prepend-inner-icon="fluent:call-24-regular" />
+            </div>
+            <div class="mt-1">
+              <label class="label text-grey-darken-2">{{ $t('bookings.form.email') }}</label>
+              <VTextField v-model="form.guestEmail" type="email" prepend-inner-icon="fluent:mail-24-regular" :rules="[ruleEmail]" />
             </div>
             <div class="mt-1">
               <label class="label text-grey-darken-2">{{ $t('bookings.form.startDate') }}</label>
@@ -251,7 +257,7 @@ definePageMeta({ layout: "admin", middleware: "auth" });
 const { $db } = useNuxtApp();
 const { mobile } = useDisplay()
 const { t } = useI18n();
-const { ruleRequired } = useFormRules();
+const { ruleRequired, ruleEmail } = useFormRules();
 const { bookings, subscribe, createBooking, updateBooking, deleteBooking } = useBookings();
 const { guests, subscribe: subscribeGuests, createGuest } = useGuests();
 
@@ -291,7 +297,7 @@ const guestOptions = computed(() => [
 
 const endDateRules = computed(() => [
   ruleRequired,
-  (v: string) => !form.startDate || !v || v >= form.startDate || t('bookings.form.endDateError'),
+  (v: string) => !form.startDate || !v || v > form.startDate || t('bookings.form.endDateError'),
 ]);
 
 const filtered = computed(() =>
@@ -304,7 +310,8 @@ const form = reactive({
   guestId: null as string | null,
   userId: null as string | null,
   guestName: "",
-  guestContact: "",
+  guestPhone: "",
+  guestEmail: "",
   startDate: "",
   endDate: "",
   status: "confirmed" as "pending" | "confirmed" | "blocked" | "rejected",
@@ -316,9 +323,19 @@ const onUserSelect = (uid: string | null) => {
   const u = registeredUsers.value.find(x => x.uid === uid);
   if (!u) return;
   form.userId = uid;
-  if (!form.guestName) form.guestName = u.name || '';
-  if (!form.guestContact) form.guestContact = u.phone || u.email || '';
+  form.guestName = u.name || form.guestName;
+  form.guestPhone = u.phone || form.guestPhone;
+  form.guestEmail = u.email || form.guestEmail;
 };
+
+watch(() => form.guestId, (id) => {
+  if (!id) return;
+  const g = guests.value.find(x => x.id === id);
+  if (!g) return;
+  form.guestName = g.name || form.guestName;
+  form.guestPhone = g.phone || form.guestPhone;
+  form.guestEmail = g.email || form.guestEmail;
+});
 
 const newGuestForm = reactive({
   name: "",
@@ -331,7 +348,8 @@ const createNew = () => {
     guestId: null,
     userId: null,
     guestName: "",
-    guestContact: "",
+    guestPhone: "",
+    guestEmail: "",
     startDate: "",
     endDate: "",
     status: "confirmed",
@@ -348,7 +366,8 @@ const editBooking = (booking: Booking) => {
     guestId: booking.guestId,
     userId: booking.userId,
     guestName: booking.guestName,
-    guestContact: booking.guestContact,
+    guestPhone: booking.guestPhone || booking.guestContact || '',
+    guestEmail: booking.guestEmail || '',
     startDate: booking.startDate.toDate().toISOString().split('T')[0],
     endDate: booking.endDate.toDate().toISOString().split('T')[0],
     status: booking.status,
@@ -365,7 +384,8 @@ const addGuestAndAssign = async () => {
   if (newGuest) {
     form.guestId = newGuest.id;
     form.guestName = newGuest.name;
-    form.guestContact = newGuestForm.phone || newGuestForm.email;
+    form.guestPhone = newGuestForm.phone;
+    form.guestEmail = newGuestForm.email;
   }
   Object.assign(newGuestForm, { name: "", phone: "", email: "" });
   createNewGuestInline.value = false;
@@ -383,7 +403,8 @@ const save = async () => {
         guestId: form.guestId,
         userId: form.userId,
         guestName: form.guestName,
-        guestContact: form.guestContact,
+        guestPhone: form.guestPhone,
+        guestEmail: form.guestEmail,
         startDate: Timestamp.fromDate(new Date(form.startDate)),
         endDate: Timestamp.fromDate(new Date(form.endDate)),
         status: form.status,
@@ -394,7 +415,8 @@ const save = async () => {
         guestId: form.guestId,
         userId: form.userId,
         guestName: form.guestName,
-        guestContact: form.guestContact,
+        guestPhone: form.guestPhone,
+        guestEmail: form.guestEmail,
         startDate: form.startDate,
         endDate: form.endDate,
         status: form.status,

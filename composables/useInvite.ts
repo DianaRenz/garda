@@ -5,6 +5,7 @@ import {
   getDoc,
   updateDoc,
   Timestamp,
+  serverTimestamp,
 } from "firebase/firestore";
 
 export const useInvite = () => {
@@ -16,7 +17,7 @@ export const useInvite = () => {
     await setDoc(ref, {
       token,
       type,
-      createdAt: Timestamp.now(),
+      createdAt: serverTimestamp(),
       expiresAt: Timestamp.fromDate(
         new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
       ),
@@ -41,7 +42,7 @@ export const useInvite = () => {
 
   const markTokenUsed = async (token: string) => {
     const ref = doc($db, "invites", token);
-    await updateDoc(ref, { used: true, usedAt: Timestamp.now() });
+    await updateDoc(ref, { used: true, usedAt: serverTimestamp() });
   };
 
   return { generateInvite, validateToken, markTokenUsed };
