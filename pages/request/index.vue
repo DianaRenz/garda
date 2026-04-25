@@ -1,7 +1,7 @@
 <template>
   <VContainer class="py-8">
     <VRow justify="center">
-      <VCol cols="12" sm="8" md="6">
+      <VCol cols="12" sm="10" md="8">
         <NuxtLink :to="backTo" class="text-body-2 text-medium-emphasis d-flex align-center ga-1 mb-6">
           {{ $t(backLabel) }}
         </NuxtLink>
@@ -9,6 +9,31 @@
         <div class="mb-8">
           <h1 class="text-h4 font-weight-bold mb-2">{{ $t('request.title') }}</h1>
           <p class="text-medium-emphasis">{{ $t('request.subtitle') }}</p>
+        </div>
+
+        <!-- Availability calendar -->
+        <div class="mb-8">
+          <h2 class="text-body-2 font-weight-medium text-medium-emphasis mb-3">
+            {{ $t('calendar.subtitle') }}
+          </h2>
+          <div class="d-flex ga-3 flex-wrap mb-4">
+            <div v-for="item in calendarLegend" :key="item.key" class="d-flex align-center ga-2">
+              <div
+                class="rounded"
+                :style="{
+                  background: item.color,
+                  width: '12px',
+                  height: '12px',
+                  border: '1px solid rgba(0,0,0,0.1)',
+                  boxSizing: 'border-box',
+                }"
+              />
+              <span class="text-caption">{{ $t(`calendar.legend.${item.key}`) }}</span>
+            </div>
+          </div>
+          <VCard variant="outlined" rounded="lg" class="pa-4">
+            <AppCalendar :bookings="publicBookings" />
+          </VCard>
         </div>
 
         <VForm v-if="!success" ref="formRef" @submit.prevent="submit">
@@ -141,8 +166,15 @@ const currentUserId = ref<string | null>(null);
 
 let unsubscribeBookings: (() => void) | null = null;
 
-const backTo = computed(() => user.value ? "/account" : "/calendar");
+const backTo = computed(() => user.value ? "/apartment" : "/calendar");
 const backLabel = computed(() => user.value ? "request.backToAccount" : "request.back");
+
+const calendarLegend = [
+  { key: "available", color: "rgba(0,0,0,0.04)" },
+  { key: "pending",   color: "rgba(255,193,7,0.45)" },
+  { key: "confirmed", color: "rgba(33,150,243,0.35)" },
+  { key: "blocked",   color: "rgba(244,67,54,0.35)" },
+];
 
 const form = reactive({
   name: "",
