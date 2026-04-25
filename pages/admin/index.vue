@@ -40,6 +40,15 @@
               >
                 {{ $t('bookings.actions.confirm') }}
               </VBtn>
+              <VBtn
+                v-if="b.status === 'pending'"
+                size="x-small"
+                variant="tonal"
+                color="error"
+                @click="openReject(b.id)"
+              >
+                {{ $t('bookings.actions.reject') }}
+              </VBtn>
               <VChip :color="statusColor[b.status]" size="small" variant="tonal">
                 {{ $t(`bookings.statuses.${b.status}`) }}
               </VChip>
@@ -52,6 +61,27 @@
         {{ $t('dashboard.noUpcoming') }}
       </div>
     </VCard>
+    <!-- Reject dialog -->
+    <VDialog v-model="rejectDialog" max-width="480">
+      <VCard rounded="lg">
+        <VCardTitle class="pa-6 pb-2">{{ $t('bookings.rejectDialog.title') }}</VCardTitle>
+        <VCardText>
+          <label class="label text-grey-darken-2">{{ $t('bookings.rejectDialog.note') }}</label>
+          <VTextarea
+            v-model="rejectNote"
+            :placeholder="$t('bookings.rejectDialog.notePlaceholder')"
+            rows="3"
+          />
+        </VCardText>
+        <VCardActions class="pa-6 pt-0 ga-2">
+          <VSpacer />
+          <VBtn variant="text" @click="rejectDialog = false">{{ $t('common.cancel') }}</VBtn>
+          <VBtn color="error" variant="tonal" :loading="rejecting" @click="doReject">
+            {{ $t('bookings.rejectDialog.confirm') }}
+          </VBtn>
+        </VCardActions>
+      </VCard>
+    </VDialog>
   </div>
 </template>
 
@@ -62,6 +92,10 @@ const { bookings, subscribe, updateBooking, formatDate, statusColor } = useBooki
 const { guests, subscribe: subscribeGuests } = useGuests();
 
 const confirming = ref<string | null>(null);
+const rejectDialog = ref(false);
+const rejecting = ref(false);
+const rejectNote = ref('');
+const rejectId = ref<string | null>(null);
 
 const confirm = async (id: string) => {
   confirming.value = id;
@@ -69,6 +103,23 @@ const confirm = async (id: string) => {
     await updateBooking(id, { status: "confirmed" });
   } finally {
     confirming.value = null;
+  }
+};
+
+const openReject = (id: string) => {
+  rejectId.value = id;
+  rejectNote.value = '';
+  rejectDialog.value = true;
+};
+
+const doReject = async () => {
+  if (!rejectId.value) return;
+  rejecting.value = true;
+  try {
+    await updateBooking(rejectId.value, { status: 'rejected', rejectionNote: rejectNote.value || null });
+    rejectDialog.value = false;
+  } finally {
+    rejecting.value = false;
   }
 };
 
