@@ -274,7 +274,7 @@ const { $db } = useNuxtApp();
 const { mobile } = useDisplay()
 const { t } = useI18n();
 const { ruleRequired, ruleEmail } = useFormRules();
-const { bookings, subscribe, createBooking, updateBooking, deleteBooking, syncPublicBookings, formatDate, statusColor } = useBookings();
+const { bookings, subscribe, createBooking, updateBooking, deleteBooking, formatDate, statusColor } = useBookings();
 const { guests, subscribe: subscribeGuests, createGuest } = useGuests();
 // TODO: email notifications — see GitHub issue #1
 // const { notifyGuestStatusUpdate } = useNotifications();
@@ -304,7 +304,6 @@ const filterStatus = ref("all");
 const formRef = ref();
 const editingId = ref<string | null>(null);
 const createNewGuestInline = ref(false);
-const publicSyncDone = ref(false);
 
 const statuses = ["all", "pending", "confirmed", "blocked", "rejected"].map((v) => ({ value: v }));
 
@@ -535,9 +534,4 @@ onMounted(async () => {
   });
 });
 
-watch(bookings, async (items) => {
-  if (publicSyncDone.value || !items.length) return;
-  publicSyncDone.value = true;
-  await syncPublicBookings(items);
-});
 </script>

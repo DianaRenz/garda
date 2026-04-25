@@ -60,7 +60,7 @@
           </div>
 
           <VCard variant="outlined" rounded="lg" class="pa-4 mb-6">
-            <AppCalendar :bookings="publicBookings" :highlight-ids="ownBookingIds" />
+            <AppCalendar :bookings="calendarBookings" :highlight-ids="ownBookingIds" />
           </VCard>
 
           <!-- Request CTA -->
@@ -69,7 +69,7 @@
             block
             min-height="44"
             prepend-icon="fluent:calendar-add-24-regular"
-            to="/request"
+            @click="showRequestSheet = true"
           >
             {{ $t('account.requestDates') }}
           </VBtn>
@@ -190,6 +190,13 @@
       </VCol>
     </VRow>
 
+    <!-- Request sheet -->
+    <RequestSheet
+      v-model="showRequestSheet"
+      :calendar-bookings="calendarBookings"
+      :user-data="userData ?? {}"
+    />
+
     <!-- Cancel dialog -->
     <VDialog v-model="cancelDialog" max-width="360">
       <VCard rounded="lg">
@@ -212,18 +219,21 @@
 <script setup lang="ts">
 import { onAuthStateChanged } from "firebase/auth";
 import { doc, getDoc, collection, query, where, orderBy, onSnapshot } from "firebase/firestore";
-import type { Booking } from '~/composables/useBookings';
+import type { Booking, CalendarBooking } from '~/composables/useBookings';
 
 definePageMeta({ layout: "default" });
 
 const { $auth, $db } = useNuxtApp();
 const { apartment, fetchApartment } = useApartment();
-const { publicBookings, subscribePublic, deleteBooking, formatDate, statusColor } = useBookings();
+const { subscribeCalendar, deleteBooking, formatDate, statusColor } = useBookings();
 const { t } = useI18n();
 
 const loading = ref(true);
-const userData = ref<{ name?: string; email?: string } | null>(null);
+const userData = ref<{ name?: string; email?: string; phone?: string } | null>(null);
 const myBookings = ref<Booking[]>([]);
+const calendarBookings = ref<CalendarBooking[]>([]);
+const showRequestSheet = ref(false);
+const currentUserId = ref<string | null>(null);
 const cancelDialog = ref(false);
 const cancelling = ref(false);
 const cancelId = ref<string | null>(null);
@@ -253,7 +263,9 @@ const totalConfirmed = computed(() =>
 );
 
 const ownBookingIds = computed(() =>
-  myBookings.value.filter(b => b.status !== 'rejected').map(b => b.id)
+  calendarBookings.value
+    .filter(b => currentUserId.value && b.userId === currentUserId.value)
+    .map(b => b.id)
 );
 
 const legend = [
@@ -278,7 +290,7 @@ const bookingDuration = (b: Booking): string => {
   return t('bookings.nights', { count: nights });
 };
 
-let unsubPublic: (() => void) | null = null;
+let unsubCalendar: (() => void) | null = null;
 let unsubOwn: (() => void) | null = null;
 
 onMounted(async () => {
@@ -293,14 +305,18 @@ onMounted(async () => {
     return;
   }
 
+  currentUserId.value = user.uid;
+
   await Promise.all([
     getDoc(doc($db, "users", user.uid)).then(snap => {
-      if (snap.exists()) userData.value = snap.data() as { name?: string; email?: string };
+      if (snap.exists()) userData.value = snap.data() as { name?: string; email?: string; phone?: string };
     }).catch(() => {}),
     fetchApartment().catch(() => {}),
   ]);
 
-  unsubPublic = subscribePublic();
+  const calResult = subscribeCalendar();
+  unsubCalendar = calResult.unsub;
+  watch(calResult.calendarBookings, (v) => { calendarBookings.value = v; }, { immediate: true });
 
   const q = query(
     collection($db, "bookings"),
@@ -315,7 +331,7 @@ onMounted(async () => {
 });
 
 onUnmounted(() => {
-  unsubPublic?.();
+  unsubCalendar?.();
   unsubOwn?.();
 });
 

@@ -275,6 +275,7 @@
     "delete": "Löschen",
     "deleteConfirmTitle": "Eintrag löschen?",
     "deleteConfirmText": "Diese Aktion kann nicht rückgängig gemacht werden.",
-    "error": "Etwas ist schiefgelaufen. Bitte versuche es erneut."
+    "error": "Etwas ist schiefgelaufen. Bitte versuche es erneut.",
+    "close": "Schließen"
   }
 }

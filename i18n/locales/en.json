@@ -275,6 +275,7 @@
     "delete": "Delete",
     "deleteConfirmTitle": "Delete entry?",
     "deleteConfirmText": "This action cannot be undone.",
-    "error": "Something went wrong. Please try again."
+    "error": "Something went wrong. Please try again.",
+    "close": "Close"
   }
 }

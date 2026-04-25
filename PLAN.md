@@ -12,8 +12,8 @@
 
 | Режим | Доступ | Что видит |
 |---|---|---|
-| **Публичный** | Все (по ссылке) | Редакционный гид по региону (Прада / Монте Бальдо / Гарда) + анонимный календарь |
-| **Гостевой** | Друзья по инвайту (`role: guest`) | Детали квартиры, свои бронирования, форма запроса дат |
+| **Публичный** | Все (по ссылке) | Редакционный гид по региону (Прада / Монте Бальдо / Гарда) |
+| **Гостевой** | Друзья по инвайту (`role: guest`) | Детали квартиры, свои бронирования, RequestSheet для запроса дат |
 | **Админский** | Владельцы по инвайту (`role: admin`) | Всё: имена, контакты, история, управление |
 
 ---
@@ -40,18 +40,13 @@
 - Честные заметки о регионе (сезон, парковки, канатная дорога, ветер, рестораны)
 - Private CTA (только для залогиненных): кнопка → `/apartment` (гость) или `/admin` (админ)
 
-#### `/calendar` — Публичный календарь
-- Месячный вид (или год целиком)
-- Цветовая индикация по статусам (см. выше)
-- Никаких имён, никаких деталей
-- Легенда цветов внизу
-- Кнопка «Запросить даты» → форма
+#### `/calendar` — Защищённый календарь (только для залогиненных)
+- Месячный вид, цветовая индикация по статусам
+- Собственные брони гостя подсвечены (primary border via `highlightIds`)
+- Кнопка «Запросить даты» → открывает `RequestSheet` (bottom sheet)
+- Auth guard: `onAuthStateChanged` — перенаправляет на `/login` если не залогинен
 
-#### `/request` — Форма запроса дат
-- Имя, контакт (телефон или email)
-- Выбор дат (date range picker, только свободные)
-- Заметка (необязательно)
-- После отправки → статус `pending`, владелец видит в админке
+#### `/request` → редирект на `/apartment`
 
 ---
 
@@ -155,8 +150,8 @@
 
 ```
 /                        → публичная главная (редакционный гид по региону)
-/calendar                → публичный календарь
-/request                 → форма запроса дат (публичная, пре-заполнение для залогиненных гостей)
+/calendar                → защищённый календарь (только залогиненные)
+/request                 → редирект на /apartment
 /login                   → логин для владельцев и гостей
 /register/[token]        → регистрация по инвайт-ссылке (тип admin/guest из токена)
 
@@ -247,12 +242,19 @@
 - [ ] История посещений / статистика (nice-to-have)
 
 ### Фаза 6 — UX-улучшения и уведомления (завершено)
-- [x] `composables/useBookings.ts` — рефакторинг: `guestContact` → отдельные `guestPhone` + `guestEmail`; добавлена коллекция `publicBookings` (полная атомарность через `writeBatch`), `subscribePublic()`, `syncPublicBookings()`
-- [x] `pages/request/index.vue` — для залогиненных гостей: компактная read-only карточка профиля вместо редактируемых полей; только Dates + Details секции интерактивны. Для анонимных — полная форма. Реальная проверка конфликтов через `publicBookings`
+- [x] `composables/useBookings.ts` — рефакторинг: `guestContact` → отдельные `guestPhone` + `guestEmail`
 - [x] `composables/useNotifications.ts` — EmailJS уведомления (`@emailjs/browser`, lazy-load). `notifyAdminNewRequest` при новой заявке, `notifyGuestStatusUpdate` при confirm/reject. Best-effort, не блокируют UI
-- [x] `/admin/bookings/index.vue` — выбор зарегистрированного пользователя (users с role:'guest'); `canSave` computed; `bookingDuration()` счётчик ночей; диалог конфликтов в форме; `syncPublicBookings` при первой загрузке
+- [x] `/admin/bookings/index.vue` — выбор зарегистрированного пользователя (users с role:'guest'); `canSave` computed; `bookingDuration()` счётчик ночей; диалог конфликтов в форме
 - [x] `/admin/calendar/index.vue` — легенда цветов; reject-диалог с заметкой + конфликтами; уведомления при confirm/reject
 - [x] `env.example` — документация переменных окружения (Firebase + EmailJS)
+
+### Фаза 7 — Закрытие публичного доступа к бронированиям (завершено)
+- [x] `composables/useBookings.ts` — удалена коллекция `publicBookings`, `subscribePublic()`, `syncPublicBookings()`. Операции упрощены: `addDoc`/`updateDoc`/`deleteDoc` вместо `writeBatch`. Добавлен `subscribeCalendar()` — возвращает локальный ref с полями `{ id, startDate, endDate, status, userId }`, без `rejected`
+- [x] `components/RequestSheet.vue` (новый) — VBottomSheet с формой: даты + заметка, проверка конфликтов, submit → `createBooking()` + `notifyAdminNewRequest()`, success-state
+- [x] `pages/apartment.vue` — `subscribeCalendar()` вместо `subscribePublic()`; `ownBookingIds` из `calendarBookings` по `userId`; кнопка "Запросить даты" открывает `RequestSheet`
+- [x] `pages/calendar/index.vue` — auth guard (перенаправляет на `/login`); `subscribeCalendar()` вместо `subscribePublic` + `subscribeByUser`; `RequestSheet` вместо кнопки-ссылки
+- [x] `pages/request/index.vue` — редирект на `/apartment`
+- [x] `pages/admin/bookings/index.vue` — удалён `syncPublicBookings`
 
 ### Фаза 5 — Редизайн лендинга и выделение страницы квартиры (завершено)
 - [x] `pages/index.vue` — полный перезапуск: редакционный гид по региону (не про квартиру)
@@ -276,7 +278,7 @@
 - **Уведомления:** nice-to-have, в MVP не входит
 - **Доступ:** один общий аккаунт (муж + жена), несколько владельцев не нужно
 - **Регистрация:** закрытая, только по одноразовой инвайт-ссылке (`/register/[token]`). Токен генерируется из `/admin/settings`, хранится в Firestore коллекции `invites` с полем `type: 'admin' | 'guest'`, действует 7 дней, помечается как `used: true` после регистрации. Реализовано в `composables/useInvite.ts`
-- **Роли:** `admin` — полный доступ к `/admin`; `guest` — только личный кабинет `/account`, форма запроса `/request`, публичный календарь
+- **Роли:** `admin` — полный доступ к `/admin`; `guest` — личный кабинет `/apartment`, защищённый календарь `/calendar`; запрос дат через `RequestSheet` в обоих местах
 
 ---
 
