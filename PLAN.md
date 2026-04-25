@@ -280,10 +280,10 @@
 
 ---
 
-## Email-уведомления (TODO — GitHub Issue #1)
+## Email-уведомления
 
-Инфраструктура готова (`composables/useNotifications.ts`, `@emailjs/browser`), вызовы закомментированы.
-Чтобы активировать:
+Реализовано (`composables/useNotifications.ts`, `@emailjs/browser`, вызовы активны во всех трёх местах).
+Чтобы подключить EmailJS:
 
 1. Зарегистрироваться на [emailjs.com](https://www.emailjs.com/) (free tier: 200 писем/мес)
 2. Подключить email-сервис (Gmail / Outlook / SMTP)
@@ -301,10 +301,11 @@
    NUXT_PUBLIC_EMAILJS_ADMIN_TEMPLATE_ID=...
    NUXT_PUBLIC_EMAILJS_GUEST_TEMPLATE_ID=...
    ```
-5. Раскомментировать вызовы (`TODO: email notifications`) в:
-   - `pages/request/index.vue` — `notifyAdminNewRequest` после успешного submit
-   - `pages/admin/bookings/index.vue` — `notifyGuestStatusUpdate` при смене статуса на confirmed/rejected
-   - `pages/admin/calendar/index.vue` — `notifyGuestStatusUpdate` в `confirm()` и `doReject()`
+
+Вызовы уже активны в:
+- `pages/request/index.vue` — `notifyAdminNewRequest` после успешного submit
+- `pages/admin/bookings/index.vue` — `notifyGuestStatusUpdate` при confirm/reject
+- `pages/admin/calendar/index.vue` — `notifyGuestStatusUpdate` в `confirm()` и `doReject()`
 
 ---
 

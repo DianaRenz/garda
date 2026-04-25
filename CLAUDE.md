@@ -65,7 +65,7 @@ This is a Nuxt 4 + Vuetify 4 starter template. Vuetify is loaded via `vite-plugi
 
 **Landing page concept (`/`):** Public editorial page about the Prada / Monte Baldo / Lake Garda region — NOT apartment info. Five sections: Hero (region CTA), About (personal statement), Feature cards (6 topics: hiking, food, experiences, wellness, practical, family), Honest notes (region-focused: season, parking, cable car, wind, restaurants), Private CTA (`v-if="user"` only). Uses `$tm()` + `$rt()` for i18n arrays in Honest notes. No `useApartment()` here.
 
-**Apartment page (`/apartment`):** Protected page for registered users (guests and admins). Shows apartment info from Firestore via `useApartment()`: title, description, address, directions, rules. Buttons: "Request dates" → `/request`, "My bookings" → `/account`. Auth guard uses `onAuthStateChanged` promise (same pattern as `/account`) — do NOT use `isLoggedIn.value` directly as it may be `false` before Firebase resolves.
+**Apartment page (`/apartment`):** Full guest dashboard for registered users (guests and admins). Sections: profile header (name/email), stats (next visit date, total confirmed), calendar (`AppCalendar` with `publicBookings` + `highlightIds` for own bookings), "Request dates" → `/request` CTA, upcoming/past bookings list (cancel pending, rejection note), apartment info (address/directions/rules from `useApartment()`). Auth guard uses `onAuthStateChanged` promise — do NOT use `isLoggedIn.value` directly as it may be `false` before Firebase resolves.
 
 **Guest route protection pattern:** Guest-facing protected pages (`/apartment`, `/account`, `/request`) use a client-side `onAuthStateChanged` promise in `onMounted` — NOT middleware. Pattern:
 ```ts
@@ -78,7 +78,7 @@ Always show a loading spinner (`ref(true)` → `false` after data loads). Use lo
 
 **Navigation:** `layouts/default.vue` `accountLink` computed: guest → `/apartment`, admin → `/admin`, unauthenticated → `/login`. Landing page private CTA also routes guests → `/apartment`, admins → `/admin`.
 
-**Guest cabinet:** `pages/account/index.vue` — shows user profile from `users/{uid}`, own bookings (upcoming/past split), cancel pending, rejection note. Logout → navigates to `/`. Uses local `ref<Booking[]>` not shared state.
+**Guest cabinet:** `pages/account/index.vue` — just redirects to `/apartment` (all guest dashboard content lives in `apartment.vue`).
 
 **Request form (`/request`):** For **anonymous users** — shows full 3-section form: Guest (name, email, phone), Dates, Details. For **logged-in users** — shows a compact read-only VCard with profile info (name, email, phone) instead of the Guest section, then only Dates + Details. In both cases form fields are pre-filled from `users/{uid}`. Real-time conflict check against `publicBookings`: blocking conflicts (confirmed/blocked) disable submit; pending conflicts show a warning but allow submit. Start date must not be in the past.
 
