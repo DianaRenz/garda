@@ -27,19 +27,6 @@
     </VContainer>
   </section>
 
-  <!-- About -->
-  <section class="py-16">
-    <VContainer>
-      <VRow justify="center">
-        <VCol cols="12" md="8">
-          <h2 class="text-h4 font-weight-bold mb-6">{{ $t('home.about.title') }}</h2>
-          <p class="text-body-1 font-italic text-medium-emphasis mb-4">{{ $t('home.about.p1') }}</p>
-          <p class="text-body-1 text-medium-emphasis">{{ $t('home.about.p2') }}</p>
-        </VCol>
-      </VRow>
-    </VContainer>
-  </section>
-
   <!-- Feature cards -->
   <section class="landing-features py-16">
     <VContainer>
