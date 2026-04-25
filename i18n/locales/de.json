@@ -237,6 +237,7 @@
     "invalidToken": "Dieser Link ist ungültig oder wurde bereits verwendet.",
     "expiredToken": "Dieser Einladungslink ist abgelaufen.",
     "error": "Etwas ist schiefgelaufen. Bitte versuche es erneut.",
+    "emailInUse": "Diese E-Mail ist bereits registriert. Versuchen Sie sich anzumelden.",
     "passwordMismatch": "Passwörter stimmen nicht überein"
   },
   "invite": {
@@ -253,6 +254,8 @@
     "past": "Vergangene Reisen",
     "noUpcoming": "Keine bevorstehenden Reisen",
     "noPast": "Keine vergangenen Reisen",
+    "nextVisit": "Nächster Besuch",
+    "totalVisits": "Bestätigte Aufenthalte",
     "requestDates": "Termin anfragen",
     "cancelRequest": "Anfrage stornieren",
     "cancelConfirm": "Diese Anfrage stornieren?",

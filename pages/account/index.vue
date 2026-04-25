@@ -1,104 +1,133 @@
 <template>
   <VContainer class="py-8">
     <VRow justify="center">
-      <VCol cols="12" sm="10" md="8">
-        <div class="d-flex align-center justify-space-between mb-6">
-          <h1 class="text-h5 font-weight-bold">{{ $t('account.title') }}</h1>
-          <VBtn variant="text" prepend-icon="fluent:sign-out-24-regular" @click="logout">
-            {{ $t('nav.logout') }}
-          </VBtn>
-        </div>
+      <VCol cols="12" sm="10" md="8" lg="6">
 
-        <div v-if="loading" class="text-center py-8">
+        <div v-if="loading" class="text-center py-16">
           <VProgressCircular indeterminate color="primary" />
         </div>
 
         <template v-else>
-          <!-- User info -->
-          <VCard class="mb-6" variant="tonal">
-            <VCardText>
-              <div class="d-flex align-center ga-3">
-                <VIcon icon="fluent:person-circle-24-regular" size="40" color="primary" />
-                <div>
-                  <div class="font-weight-medium">{{ userData?.name || userData?.email }}</div>
-                  <div class="text-body-2 text-medium-emphasis">{{ userData?.email }}</div>
-                </div>
-              </div>
-            </VCardText>
-          </VCard>
-
-          <!-- Request button -->
-          <div class="mb-8">
-            <VBtn class="gradient primary" prepend-icon="fluent:calendar-add-24-regular" to="/request">
-              {{ $t('account.requestDates') }}
+          <!-- Header -->
+          <div class="d-flex align-center justify-space-between mb-8">
+            <div>
+              <h1 class="text-h5 font-weight-bold">{{ userData?.name || userData?.email }}</h1>
+              <p class="text-body-2 text-medium-emphasis">{{ userData?.email }}</p>
+            </div>
+            <VBtn icon variant="text" size="small" @click="logout">
+              <VIcon icon="fluent:sign-out-24-regular" />
             </VBtn>
           </div>
 
+          <!-- Stats -->
+          <VRow class="mb-6" dense>
+            <VCol cols="6">
+              <VCard variant="outlined" rounded="lg" class="pa-4" height="100%">
+                <div class="d-flex align-center justify-space-between mb-3">
+                  <span class="text-caption text-medium-emphasis">{{ $t('account.nextVisit') }}</span>
+                  <VIcon icon="fluent:calendar-arrow-right-24-regular" size="16" color="primary" />
+                </div>
+                <div class="text-body-1 font-weight-bold">{{ nextVisitDate }}</div>
+              </VCard>
+            </VCol>
+            <VCol cols="6">
+              <VCard variant="outlined" rounded="lg" class="pa-4" height="100%">
+                <div class="d-flex align-center justify-space-between mb-3">
+                  <span class="text-caption text-medium-emphasis">{{ $t('account.totalVisits') }}</span>
+                  <VIcon icon="fluent:checkmark-circle-24-regular" size="16" />
+                </div>
+                <div class="text-h4 font-weight-bold">{{ totalConfirmed }}</div>
+              </VCard>
+            </VCol>
+          </VRow>
+
+          <!-- CTA -->
+          <VBtn class="gradient primary mb-8" block min-height="44" prepend-icon="fluent:calendar-add-24-regular" to="/request">
+            {{ $t('account.requestDates') }}
+          </VBtn>
+
           <!-- Upcoming -->
-          <h2 class="text-h6 font-weight-bold mb-3">{{ $t('account.upcoming') }}</h2>
+          <h2 class="text-body-2 font-weight-medium text-medium-emphasis mb-3">
+            {{ $t('account.upcoming') }}
+          </h2>
 
-          <VAlert v-if="upcoming.length === 0" type="info" variant="tonal" class="mb-6">
-            {{ $t('account.noUpcoming') }}
-          </VAlert>
-
-          <div v-else class="d-flex flex-column ga-3 mb-8">
-            <VCard v-for="b in upcoming" :key="b.id" variant="outlined" rounded="lg">
-              <VCardText class="pa-4">
-                <div class="d-flex align-center justify-space-between flex-wrap ga-2">
-                  <div>
-                    <div class="font-weight-medium">
-                      {{ formatDate(b.startDate) }} — {{ formatDate(b.endDate) }}
+          <VCard variant="outlined" rounded="lg" class="mb-8">
+            <template v-if="upcoming.length">
+              <div v-for="(b, i) in upcoming" :key="b.id">
+                <VDivider v-if="i > 0" />
+                <div class="px-4 py-3">
+                  <div class="d-flex align-center justify-space-between ga-2 flex-wrap">
+                    <div>
+                      <div class="text-body-2 font-weight-medium">
+                        {{ formatDate(b.startDate) }} — {{ formatDate(b.endDate) }}
+                      </div>
+                      <div class="text-caption text-medium-emphasis mt-1">{{ bookingDuration(b) }}</div>
+                      <div v-if="b.notes" class="text-caption text-medium-emphasis mt-1">{{ b.notes }}</div>
                     </div>
-                    <div v-if="b.notes" class="text-body-2 text-medium-emphasis mt-1">{{ b.notes }}</div>
+                    <div class="d-flex align-center ga-2 flex-shrink-0">
+                      <VBtn
+                        v-if="b.status === 'pending'"
+                        size="x-small"
+                        variant="text"
+                        color="error"
+                        @click="askCancel(b.id)"
+                      >
+                        {{ $t('account.cancelRequest') }}
+                      </VBtn>
+                      <VChip :color="statusColor[b.status]" size="small" variant="tonal">
+                        {{ bookingStatusLabel(b) }}
+                      </VChip>
+                    </div>
                   </div>
-                  <VChip :color="statusColor[b.status]" size="small" variant="tonal">
-                    {{ bookingStatusLabel(b) }}
-                  </VChip>
+                  <div
+                    v-if="b.status === 'rejected' && b.rejectionNote"
+                    class="text-caption text-medium-emphasis mt-2 pa-2 rounded"
+                    style="background: rgba(0,0,0,0.04)"
+                  >
+                    {{ $t('account.rejectedNote') }} {{ b.rejectionNote }}
+                  </div>
                 </div>
-                <div
-                  v-if="b.status === 'rejected' && b.rejectionNote"
-                  class="text-body-2 text-medium-emphasis mt-2 pa-2 rounded"
-                  style="background: rgba(0,0,0,0.04)"
-                >
-                  {{ $t('account.rejectedNote') }} {{ b.rejectionNote }}
-                </div>
-              </VCardText>
-              <VCardActions v-if="b.status === 'pending'" class="px-4 pb-3 pt-0">
-                <VSpacer />
-                <VBtn size="small" variant="text" color="error" @click="askCancel(b.id)">
-                  {{ $t('account.cancelRequest') }}
-                </VBtn>
-              </VCardActions>
-            </VCard>
-          </div>
+              </div>
+            </template>
+            <div v-else class="py-10 text-center text-medium-emphasis text-caption">
+              <VIcon icon="fluent:calendar-empty-24-regular" size="24" class="mb-2 d-block mx-auto" style="opacity: 0.4" />
+              {{ $t('account.noUpcoming') }}
+            </div>
+          </VCard>
 
           <!-- Past -->
-          <h2 class="text-h6 font-weight-bold mb-3">{{ $t('account.past') }}</h2>
+          <h2 class="text-body-2 font-weight-medium text-medium-emphasis mb-3">
+            {{ $t('account.past') }}
+          </h2>
 
-          <VAlert v-if="past.length === 0" variant="tonal" class="mb-4">
-            {{ $t('account.noPast') }}
-          </VAlert>
-
-          <div v-else class="d-flex flex-column ga-3">
-            <VCard v-for="b in past" :key="b.id" variant="outlined" rounded="lg" style="opacity: 0.7">
-              <VCardText class="pa-4">
-                <div class="d-flex align-center justify-space-between flex-wrap ga-2">
-                  <div class="font-weight-medium">
-                    {{ formatDate(b.startDate) }} — {{ formatDate(b.endDate) }}
+          <VCard variant="outlined" rounded="lg">
+            <template v-if="past.length">
+              <div v-for="(b, i) in past" :key="b.id">
+                <VDivider v-if="i > 0" />
+                <div class="px-4 py-3" style="opacity: 0.65">
+                  <div class="d-flex align-center justify-space-between ga-2 flex-wrap">
+                    <div>
+                      <div class="text-body-2 font-weight-medium">
+                        {{ formatDate(b.startDate) }} — {{ formatDate(b.endDate) }}
+                      </div>
+                      <div class="text-caption text-medium-emphasis mt-1">{{ bookingDuration(b) }}</div>
+                    </div>
+                    <VChip :color="statusColor[b.status]" size="small" variant="tonal">
+                      {{ bookingStatusLabel(b) }}
+                    </VChip>
                   </div>
-                  <VChip :color="statusColor[b.status]" size="small" variant="tonal">
-                    {{ bookingStatusLabel(b) }}
-                  </VChip>
                 </div>
-                <div v-if="b.notes" class="text-body-2 text-medium-emphasis mt-1">{{ b.notes }}</div>
-              </VCardText>
-            </VCard>
-          </div>
+              </div>
+            </template>
+            <div v-else class="py-8 text-center text-medium-emphasis text-caption">
+              {{ $t('account.noPast') }}
+            </div>
+          </VCard>
         </template>
       </VCol>
     </VRow>
 
-    <!-- Cancel confirm dialog -->
+    <!-- Cancel dialog -->
     <VDialog v-model="cancelDialog" max-width="360">
       <VCard rounded="lg">
         <VCardText class="pa-5">
@@ -149,10 +178,27 @@ const past = computed(() =>
     .sort((a, b) => b.startDate.seconds - a.startDate.seconds)
 );
 
+const nextVisitDate = computed(() => {
+  const next = upcoming.value.find(b => b.status === 'confirmed' || b.status === 'pending');
+  return next ? formatDate(next.startDate) : '—';
+});
+
+const totalConfirmed = computed(() =>
+  myBookings.value.filter(b => b.status === 'confirmed').length
+);
+
 const bookingStatusLabel = (b: Booking): string => {
   if (b.status === 'pending') return t('account.pendingStatus');
   if (b.status === 'confirmed') return t('account.confirmedStatus');
   return t(`bookings.statuses.${b.status}`);
+};
+
+const bookingDuration = (b: Booking): string => {
+  if (!b.startDate || !b.endDate) return '';
+  const nights = Math.max(1, Math.round(
+    (b.endDate.toDate().getTime() - b.startDate.toDate().getTime()) / 86400000
+  ));
+  return t('bookings.nights', { count: nights });
 };
 
 let unsubscribe: (() => void) | null = null;

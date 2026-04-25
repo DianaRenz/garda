@@ -9,6 +9,7 @@ export interface Guest {
   phone: string;
   email: string;
   notes: string;
+  userId?: string | null; // Firebase Auth UID — set when guest self-registers
   createdAt: any;
 }
 

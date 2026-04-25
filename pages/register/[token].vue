@@ -72,7 +72,7 @@
           </div>
 
           <VAlert v-if="submitError" type="error" class="mt-4" variant="tonal">
-            {{ $t('register.error') }}
+            {{ $t(`register.${submitError}`) }}
           </VAlert>
 
           <div class="mt-6">
@@ -89,6 +89,7 @@
 <script setup lang="ts">
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { doc, runTransaction, serverTimestamp } from "firebase/firestore";
+import type { Guest } from '~/composables/useGuests';
 
 definePageMeta({ layout: "default" });
 
@@ -97,13 +98,14 @@ const route = useRoute();
 const token = route.params.token as string;
 
 const { validateToken } = useInvite();
+const { createGuest } = useGuests();
 const { ruleRequired, ruleEmail, rulePassLen } = useFormRules();
 
 const validating = ref(true);
 const tokenError = ref<string | null>(null);
 const inviteType = ref<"admin" | "guest">("admin");
 const loading = ref(false);
-const submitError = ref(false);
+const submitError = ref<string | null>(null);
 const formRef = ref();
 
 const name = ref("");
@@ -132,7 +134,7 @@ const submit = async () => {
   if (!valid) return;
 
   loading.value = true;
-  submitError.value = false;
+  submitError.value = null;
   try {
     const credential = await createUserWithEmailAndPassword($auth, email.value, password.value);
     await runTransaction($db, async (transaction) => {
@@ -155,9 +157,23 @@ const submit = async () => {
       });
       transaction.update(inviteRef, { used: true, usedAt: serverTimestamp() });
     });
-    await navigateTo(inviteType.value === "guest" ? "/account" : "/admin");
-  } catch {
-    submitError.value = true;
+    // Auto-create guest record so they appear in the admin guest book
+    if (inviteType.value === "guest") {
+      createGuest({
+        name: name.value,
+        phone: phone.value || "",
+        email: email.value,
+        notes: "",
+        userId: credential.user.uid,
+      }).catch(() => {}); // best-effort, don't block registration
+    }
+    await navigateTo(inviteType.value === "guest" ? "/apartment" : "/admin");
+  } catch (e: any) {
+    if (e?.code === "auth/email-already-in-use") {
+      submitError.value = "emailInUse";
+    } else {
+      submitError.value = "error";
+    }
   } finally {
     loading.value = false;
   }

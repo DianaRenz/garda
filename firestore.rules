@@ -167,6 +167,12 @@ service cloud.firestore {
 
     match /guests/{guestId} {
       allow read, write: if isAdmin();
+      // Guests can create their own record on self-registration
+      allow create: if signedIn()
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.name is string
+        && request.resource.data.email is string
+        && request.resource.data.createdAt == request.time;
     }
 
     match /apartment/{docId} {

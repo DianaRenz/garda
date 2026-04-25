@@ -261,7 +261,8 @@ const submit = async () => {
     //   notes: form.notes,
     // }).catch(() => {});
     success.value = true;
-  } catch {
+  } catch (e) {
+    console.error('[request] submit failed:', e);
     submitError.value = t('request.submitError');
   } finally {
     loading.value = false;
