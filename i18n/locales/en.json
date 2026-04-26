@@ -1,0 +1,276 @@
+{
+  "nav": {
+    "dashboard": "Dashboard",
+    "calendar": "Calendar",
+    "bookings": "Bookings",
+    "guests": "Guests",
+    "settings": "Settings",
+    "logout": "Logout"
+  },
+  "home": {
+    "hero": {
+      "title": "Your base for Prada, Monte Baldo & Lake Garda",
+      "subtitle": "A curated guide to the region — plus a private apartment for those we trust.",
+      "body": "We've been coming here for years. This site collects what we know: where to hike without the crowds, where to eat like a local, what to skip. The apartment is for family and close friends — not a rental.",
+      "ctaGuide": "Check availability",
+      "ctaDates": "Request dates"
+    },
+    "features": {
+      "title": "What you'll find here",
+      "hiking": {
+        "title": "Hiking",
+        "desc": "Routes from easy lakeside walks to the Monte Baldo ridge, with honest notes on difficulty and crowds."
+      },
+      "food": {
+        "title": "Food & wine",
+        "desc": "Our favourite restaurants, agriturismi, and producers — chosen for quality, not for tourists."
+      },
+      "experiences": {
+        "title": "Experiences",
+        "desc": "Paragliding, sailing, olive oil tastings, local markets. What's worth it and what to skip."
+      },
+      "wellness": {
+        "title": "Wellness",
+        "desc": "Thermal baths, quiet spots, slow mornings. The lake has a particular quality of light in the early hours."
+      },
+      "practical": {
+        "title": "Getting around",
+        "desc": "Ferries, buses, parking, the cable car. How to move without a car, and when you really need one."
+      },
+      "family": {
+        "title": "With kids",
+        "desc": "What works for families — beaches with shallow water, playgrounds, restaurants that genuinely welcome children."
+      }
+    },
+    "honest": {
+      "title": "Honest notes about the region",
+      "items": [
+        "July and August are the best months for swimming — but also the busiest. May, June, and September suit those who prefer fewer crowds over beach season.",
+        "Parking in Malcesine, Limone, and the larger lakeside towns is very difficult in summer. Arrive early or use park-and-ride options where available.",
+        "The Monte Baldo cable car has long queues on summer weekends. Book online in advance or arrive before 9 am.",
+        "The northern end of the lake is windier — perfect for sailing and windsurfing, less ideal for quiet swimming.",
+        "Many restaurants close on Mondays. Always check opening days before making plans.",
+        "The obvious tourist towns are beautiful but heavily commercial. The real character of the region is found inland and at altitude."
+      ]
+    },
+    "private": {
+      "title": "Your private access",
+      "desc": "Check your upcoming stays, request new dates, and access all the details.",
+      "cta": "Go to the apartment"
+    }
+  },
+  "calendar": {
+    "title": "Calendar",
+    "subtitle": "Check available dates",
+    "legend": {
+      "available": "Available",
+      "pending": "Requested",
+      "confirmed": "Occupied",
+      "blocked": "Unavailable",
+      "mine": "Your booking"
+    },
+    "requestBtn": "Request dates"
+  },
+  "request": {
+    "title": "Request dates",
+    "subtitle": "Fill in the form and we will get back to you to confirm.",
+    "back": "← Back to calendar",
+    "backToAccount": "← Back to account",
+    "name": "Your name",
+    "phone": "Phone number",
+    "phoneHint": "Optional, but useful for urgent questions",
+    "email": "Email address",
+    "startDate": "Check-in date",
+    "startDateError": "Check-in cannot be in the past",
+    "endDate": "Check-out date",
+    "endDateError": "Check-out must be after check-in",
+    "sections": {
+      "guest": "Guest details",
+      "dates": "Trip dates",
+      "details": "Details"
+    },
+    "availabilityUnknown": "We could not check the calendar. You can still send the request and we will verify the dates manually.",
+    "datesAvailable": "There are no confirmed bookings for these dates.",
+    "conflictBlocked": "These dates overlap with occupied or blocked days:",
+    "conflictPending": "There is already a request for these dates. You can still send yours, but confirmation depends on the owners:",
+    "conflictSubmitError": "Choose different dates: this range overlaps with occupied days.",
+    "submitError": "We could not send the request. Check the details and try again.",
+    "notes": "Note (optional)",
+    "submit": "Send request",
+    "success": "Request sent! We will contact you to confirm.",
+    "viewCalendar": "Open calendar",
+    "viewAccount": "Go to account"
+  },
+  "login": {
+    "subtitle": "Sign in to your account",
+    "email": "Email",
+    "password": "Password",
+    "submit": "Sign in",
+    "forgotPassword": "Forgot password?",
+    "error": "Invalid email or password"
+  },
+  "resetPassword": {
+    "title": "Reset password",
+    "subtitle": "Enter your email and we'll send a reset link",
+    "email": "Email",
+    "submit": "Send instructions",
+    "success": "Email sent! Check your inbox.",
+    "error": "Something went wrong. Check the email and try again.",
+    "backToLogin": "← Back to login"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "upcomingVisits": "Upcoming visits",
+    "pendingConfirm": "Pending confirmation",
+    "visitsThisYear": "Visits this year",
+    "totalGuests": "Total guests",
+    "upcomingBookings": "Upcoming bookings",
+    "noUpcoming": "No upcoming bookings"
+  },
+  "bookings": {
+    "title": "Bookings",
+    "add": "Add",
+    "empty": "No bookings",
+    "unassigned": "Unassigned",
+    "blockedGuest": "Blocked dates",
+    "nights": "{count} nights",
+    "statuses": {
+      "all": "All",
+      "pending": "Pending",
+      "confirmed": "Confirmed",
+      "blocked": "Blocked",
+      "rejected": "Rejected"
+    },
+    "sources": {
+      "admin": "Manual",
+      "request": "Request"
+    },
+    "actions": {
+      "confirm": "Confirm",
+      "reject": "Reject",
+      "delete": "Delete"
+    },
+    "rejectDialog": {
+      "title": "Reject request",
+      "note": "Reason (optional)",
+      "notePlaceholder": "E.g. these dates are taken, try different ones",
+      "conflict": "Conflict with another request:",
+      "confirm": "Reject"
+    },
+    "table": {
+      "guest": "Guest",
+      "dates": "Dates",
+      "status": "Status",
+      "source": "Source",
+      "notes": "Notes"
+    },
+    "form": {
+      "title": "New booking",
+      "editTitle": "Edit booking",
+      "guest": "Guest",
+      "guestName": "Guest name",
+      "accountGuest": "Guest account",
+      "optional": "(optional)",
+      "unlinked": "Not linked",
+      "accountHint": "If selected, the guest will see this trip in their account.",
+      "guestPlaceholder": "Choose from guest book",
+      "createNewGuest": "Create new guest",
+      "newGuest": "New guest",
+      "createAndAssign": "Create and assign",
+      "phone": "Phone",
+      "email": "Email",
+      "startDate": "Check-in date",
+      "endDate": "Check-out date",
+      "endDateError": "Check-out must be after check-in",
+      "status": "Status",
+      "notes": "Notes",
+      "conflicts": "This date range overlaps with other bookings:",
+      "cancel": "Cancel",
+      "save": "Save",
+      "update": "Update"
+    }
+  },
+  "guests": {
+    "title": "Guest book",
+    "add": "Add guest",
+    "empty": "No guests",
+    "table": {
+      "name": "Name",
+      "phone": "Phone",
+      "email": "Email",
+      "notes": "Notes"
+    },
+    "form": {
+      "title": "New guest",
+      "name": "Name",
+      "phone": "Phone",
+      "email": "Email",
+      "notes": "Notes",
+      "cancel": "Cancel",
+      "save": "Save"
+    }
+  },
+  "settings": {
+    "title": "Apartment settings",
+    "name": "Name",
+    "description": "Description",
+    "address": "Address",
+    "directions": "How to get there",
+    "rules": "House rules",
+    "save": "Save",
+    "saved": "Saved"
+  },
+  "register": {
+    "title": "Create account",
+    "subtitle": "Fill in your login details",
+    "name": "Your name",
+    "phone": "Phone",
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm password",
+    "submit": "Create account",
+    "invalidToken": "This link is invalid or has already been used.",
+    "expiredToken": "This invite link has expired.",
+    "error": "Something went wrong. Please try again.",
+    "emailInUse": "This email is already registered. Try signing in instead.",
+    "passwordMismatch": "Passwords do not match"
+  },
+  "invite": {
+    "title": "Invite links",
+    "generateAdmin": "Invite administrator",
+    "generateGuest": "Invite guest",
+    "copy": "Copy",
+    "copied": "Copied!",
+    "expires": "Link is valid for 7 days"
+  },
+  "account": {
+    "title": "My account",
+    "upcoming": "Upcoming trips",
+    "past": "Past trips",
+    "noUpcoming": "No upcoming trips",
+    "noPast": "No past trips",
+    "nextVisit": "Next visit",
+    "totalVisits": "Confirmed stays",
+    "requestDates": "Request dates",
+    "cancelRequest": "Cancel request",
+    "cancelConfirm": "Cancel this request?",
+    "rejectedNote": "Reason:",
+    "pendingStatus": "Awaiting confirmation",
+    "confirmedStatus": "Confirmed"
+  },
+  "apartment": {
+    "title": "The apartment",
+    "requestBtn": "Request dates",
+    "bookingsBtn": "My bookings"
+  },
+  "common": {
+    "cancel": "Cancel",
+    "save": "Save",
+    "add": "Add",
+    "delete": "Delete",
+    "deleteConfirmTitle": "Delete entry?",
+    "deleteConfirmText": "This action cannot be undone.",
+    "error": "Something went wrong. Please try again.",
+    "close": "Close"
+  }
+}

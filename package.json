@@ -1,0 +1,27 @@
+{
+  "private": true,
+  "scripts": {
+    "build": "nuxt build",
+    "check": "npm run typecheck && npm run build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "reset": "rm -rf .nuxt node_modules .output package-lock.json && npm install",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare",
+    "typecheck": "nuxt typecheck"
+  },
+  "devDependencies": {
+    "@iconify/vue": "^5.0.0",
+    "@vite-pwa/nuxt": "^0.10.6",
+    "nuxt": "4.4.2",
+    "sass": "^1.99.0",
+    "vue-tsc": "^3.2.7",
+    "vuetify": "^4.0.5"
+  },
+  "dependencies": {
+    "@emailjs/browser": "^4.4.1",
+    "@nuxtjs/i18n": "^10.2.4",
+    "firebase": "^12.12.0",
+    "vite-plugin-vuetify": "^2.1.3"
+  }
+}

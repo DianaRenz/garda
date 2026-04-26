@@ -1,0 +1,276 @@
+{
+  "nav": {
+    "dashboard": "Dashboard",
+    "calendar": "Kalender",
+    "bookings": "Buchungen",
+    "guests": "Gäste",
+    "settings": "Einstellungen",
+    "logout": "Abmelden"
+  },
+  "home": {
+    "hero": {
+      "title": "Ihre Basis für Prada, Monte Baldo & Gardasee",
+      "subtitle": "Ein persönlicher Reiseführer für die Region — plus eine private Wohnung für Menschen, denen wir vertrauen.",
+      "body": "Wir kommen seit Jahren hierher. Diese Website sammelt, was wir gelernt haben: wo man ohne Massen wandert, wo man wie ein Einheimischer isst, was man besser meidet. Die Wohnung ist für Familie und enge Freunde — keine Vermietung.",
+      "ctaGuide": "Verfügbarkeit prüfen",
+      "ctaDates": "Termine anfragen"
+    },
+    "features": {
+      "title": "Was Sie hier finden",
+      "hiking": {
+        "title": "Wandern",
+        "desc": "Routen von einfachen Seespaziergängen bis zum Monte-Baldo-Kamm, mit ehrlichen Hinweisen zu Schwierigkeit und Besucherzahlen."
+      },
+      "food": {
+        "title": "Essen & Wein",
+        "desc": "Unsere Lieblingsrestaurants, Agriturismi und Produzenten — ausgewählt nach Qualität, nicht für Touristen."
+      },
+      "experiences": {
+        "title": "Erlebnisse",
+        "desc": "Paragliding, Segeln, Olivenölverkostungen, lokale Märkte. Was sich lohnt und was man besser lässt."
+      },
+      "wellness": {
+        "title": "Wellness",
+        "desc": "Thermalbäder, ruhige Orte, langsame Morgen. Der See hat in den frühen Stunden ein besonderes Licht."
+      },
+      "practical": {
+        "title": "Mobilität",
+        "desc": "Fähren, Busse, Parkplätze, die Seilbahn. Wie man ohne Auto zurechtkommt — und wann man wirklich eines braucht."
+      },
+      "family": {
+        "title": "Mit Kindern",
+        "desc": "Was für Familien funktioniert — Strände mit flachem Wasser, Spielplätze, Restaurants die Kinder wirklich willkommen heißen."
+      }
+    },
+    "honest": {
+      "title": "Ehrliche Hinweise zur Region",
+      "items": [
+        "Juli und August sind die besten Monate zum Schwimmen — aber auch die belebtesten. Mai, Juni und September eignen sich besser für alle, die Ruhe dem Badespaß vorziehen.",
+        "Parken in Malcesine, Limone und den größeren Seeorten ist im Sommer sehr schwierig. Früh ankommen oder Park-and-Ride-Möglichkeiten nutzen.",
+        "Die Monte-Baldo-Seilbahn hat an Sommerwochenenden lange Warteschlangen. Online im Voraus buchen oder vor 9 Uhr ankommen.",
+        "Der nördliche Teil des Sees ist windiger — ideal zum Segeln und Windsurfen, weniger geeignet zum ruhigen Schwimmen.",
+        "Viele Restaurants sind montags geschlossen. Öffnungszeiten immer vor dem Besuch prüfen.",
+        "Die bekannten Touristenstädte am See sind wunderschön, aber sehr kommerziell. Der echte Charakter der Region zeigt sich im Hinterland und in der Höhe."
+      ]
+    },
+    "private": {
+      "title": "Ihr persönlicher Bereich",
+      "desc": "Prüfen Sie bevorstehende Aufenthalte, fordern Sie neue Termine an und rufen Sie alle Details ab.",
+      "cta": "Zur Wohnung"
+    }
+  },
+  "calendar": {
+    "title": "Kalender",
+    "subtitle": "Verfügbare Termine prüfen",
+    "legend": {
+      "available": "Frei",
+      "pending": "Angefragt",
+      "confirmed": "Belegt",
+      "blocked": "Nicht verfügbar",
+      "mine": "Ihre Buchung"
+    },
+    "requestBtn": "Termin anfragen"
+  },
+  "request": {
+    "title": "Termin anfragen",
+    "subtitle": "Füllen Sie das Formular aus und wir melden uns zur Bestätigung.",
+    "back": "← Zurück zum Kalender",
+    "backToAccount": "← Zurück zum Konto",
+    "name": "Ihr Name",
+    "phone": "Telefonnummer",
+    "phoneHint": "Optional, aber hilfreich für dringende Fragen",
+    "email": "E-Mail-Adresse",
+    "startDate": "Anreisedatum",
+    "startDateError": "Anreise darf nicht in der Vergangenheit liegen",
+    "endDate": "Abreisedatum",
+    "endDateError": "Abreise muss nach Anreise liegen",
+    "sections": {
+      "guest": "Gastdaten",
+      "dates": "Reisedaten",
+      "details": "Details"
+    },
+    "availabilityUnknown": "Der Kalender konnte nicht geprüft werden. Sie können die Anfrage trotzdem senden, wir prüfen die Daten manuell.",
+    "datesAvailable": "Für diese Daten gibt es keine bestätigten Buchungen.",
+    "conflictBlocked": "Diese Daten überschneiden sich mit belegten oder gesperrten Tagen:",
+    "conflictPending": "Für diese Daten gibt es bereits eine Anfrage. Sie können trotzdem anfragen, die Bestätigung hängt von den Eigentümern ab:",
+    "conflictSubmitError": "Bitte wählen Sie andere Daten: dieser Zeitraum überschneidet sich mit belegten Tagen.",
+    "submitError": "Die Anfrage konnte nicht gesendet werden. Prüfen Sie die Angaben und versuchen Sie es erneut.",
+    "notes": "Anmerkung (optional)",
+    "submit": "Anfrage senden",
+    "success": "Anfrage gesendet! Wir melden uns zur Bestätigung.",
+    "viewCalendar": "Kalender öffnen",
+    "viewAccount": "Zum Konto"
+  },
+  "login": {
+    "subtitle": "Bei Ihrem Konto anmelden",
+    "email": "E-Mail",
+    "password": "Passwort",
+    "submit": "Anmelden",
+    "forgotPassword": "Passwort vergessen?",
+    "error": "Falsche E-Mail oder falsches Passwort"
+  },
+  "resetPassword": {
+    "title": "Passwort zurücksetzen",
+    "subtitle": "E-Mail eingeben — wir senden einen Reset-Link",
+    "email": "E-Mail",
+    "submit": "Anweisungen senden",
+    "success": "E-Mail gesendet! Prüfen Sie Ihr Postfach.",
+    "error": "Etwas ist schiefgelaufen. Überprüfen Sie die E-Mail und versuchen Sie es erneut.",
+    "backToLogin": "← Zurück zur Anmeldung"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "upcomingVisits": "Bevorstehende Besuche",
+    "pendingConfirm": "Warten auf Bestätigung",
+    "visitsThisYear": "Besuche dieses Jahr",
+    "totalGuests": "Gäste gesamt",
+    "upcomingBookings": "Bevorstehende Buchungen",
+    "noUpcoming": "Keine bevorstehenden Buchungen"
+  },
+  "bookings": {
+    "title": "Buchungen",
+    "add": "Hinzufügen",
+    "empty": "Keine Buchungen",
+    "unassigned": "Nicht zugewiesen",
+    "blockedGuest": "Gesperrte Daten",
+    "nights": "{count} Nächte",
+    "statuses": {
+      "all": "Alle",
+      "pending": "Ausstehend",
+      "confirmed": "Bestätigt",
+      "blocked": "Gesperrt",
+      "rejected": "Abgelehnt"
+    },
+    "sources": {
+      "admin": "Manuell",
+      "request": "Anfrage"
+    },
+    "actions": {
+      "confirm": "Bestätigen",
+      "reject": "Ablehnen",
+      "delete": "Löschen"
+    },
+    "rejectDialog": {
+      "title": "Anfrage ablehnen",
+      "note": "Grund (optional)",
+      "notePlaceholder": "Z.B. diese Termine sind vergeben, versuche andere",
+      "conflict": "Konflikt mit einer anderen Anfrage:",
+      "confirm": "Ablehnen"
+    },
+    "table": {
+      "guest": "Gast",
+      "dates": "Termine",
+      "status": "Status",
+      "source": "Quelle",
+      "notes": "Anmerkungen"
+    },
+    "form": {
+      "title": "Neue Buchung",
+      "editTitle": "Buchung bearbeiten",
+      "guest": "Gast",
+      "guestName": "Name des Gasts",
+      "accountGuest": "Gastkonto",
+      "optional": "(optional)",
+      "unlinked": "Nicht verknüpft",
+      "accountHint": "Wenn ausgewählt, sieht der Gast diese Reise in seinem Konto.",
+      "guestPlaceholder": "Aus dem Gästebuch wählen",
+      "createNewGuest": "Neuen Gast erstellen",
+      "newGuest": "Neuer Gast",
+      "createAndAssign": "Erstellen und zuweisen",
+      "phone": "Telefon",
+      "email": "E-Mail",
+      "startDate": "Anreisedatum",
+      "endDate": "Abreisedatum",
+      "endDateError": "Abreise muss nach Anreise liegen",
+      "status": "Status",
+      "notes": "Anmerkungen",
+      "conflicts": "Dieser Zeitraum überschneidet sich mit anderen Buchungen:",
+      "cancel": "Abbrechen",
+      "save": "Speichern",
+      "update": "Aktualisieren"
+    }
+  },
+  "guests": {
+    "title": "Gästebuch",
+    "add": "Gast hinzufügen",
+    "empty": "Keine Gäste",
+    "table": {
+      "name": "Name",
+      "phone": "Telefon",
+      "email": "E-Mail",
+      "notes": "Anmerkungen"
+    },
+    "form": {
+      "title": "Neuer Gast",
+      "name": "Name",
+      "phone": "Telefon",
+      "email": "E-Mail",
+      "notes": "Anmerkungen",
+      "cancel": "Abbrechen",
+      "save": "Speichern"
+    }
+  },
+  "settings": {
+    "title": "Wohnungseinstellungen",
+    "name": "Name",
+    "description": "Beschreibung",
+    "address": "Adresse",
+    "directions": "Anfahrt",
+    "rules": "Hausregeln",
+    "save": "Speichern",
+    "saved": "Gespeichert"
+  },
+  "register": {
+    "title": "Konto erstellen",
+    "subtitle": "Geben Sie Ihre Anmeldedaten ein",
+    "name": "Ihr Name",
+    "phone": "Telefon",
+    "email": "E-Mail",
+    "password": "Passwort",
+    "confirmPassword": "Passwort bestätigen",
+    "submit": "Konto erstellen",
+    "invalidToken": "Dieser Link ist ungültig oder wurde bereits verwendet.",
+    "expiredToken": "Dieser Einladungslink ist abgelaufen.",
+    "error": "Etwas ist schiefgelaufen. Bitte versuche es erneut.",
+    "emailInUse": "Diese E-Mail ist bereits registriert. Versuchen Sie sich anzumelden.",
+    "passwordMismatch": "Passwörter stimmen nicht überein"
+  },
+  "invite": {
+    "title": "Einladungslinks",
+    "generateAdmin": "Administrator einladen",
+    "generateGuest": "Gast einladen",
+    "copy": "Kopieren",
+    "copied": "Kopiert!",
+    "expires": "Link ist 7 Tage gültig"
+  },
+  "account": {
+    "title": "Mein Konto",
+    "upcoming": "Bevorstehende Reisen",
+    "past": "Vergangene Reisen",
+    "noUpcoming": "Keine bevorstehenden Reisen",
+    "noPast": "Keine vergangenen Reisen",
+    "nextVisit": "Nächster Besuch",
+    "totalVisits": "Bestätigte Aufenthalte",
+    "requestDates": "Termin anfragen",
+    "cancelRequest": "Anfrage stornieren",
+    "cancelConfirm": "Diese Anfrage stornieren?",
+    "rejectedNote": "Grund:",
+    "pendingStatus": "Wartet auf Bestätigung",
+    "confirmedStatus": "Bestätigt"
+  },
+  "apartment": {
+    "title": "Die Wohnung",
+    "requestBtn": "Termin anfragen",
+    "bookingsBtn": "Meine Buchungen"
+  },
+  "common": {
+    "cancel": "Abbrechen",
+    "save": "Speichern",
+    "add": "Hinzufügen",
+    "delete": "Löschen",
+    "deleteConfirmTitle": "Eintrag löschen?",
+    "deleteConfirmText": "Diese Aktion kann nicht rückgängig gemacht werden.",
+    "error": "Etwas ist schiefgelaufen. Bitte versuche es erneut.",
+    "close": "Schließen"
+  }
+}

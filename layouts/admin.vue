@@ -1,0 +1,107 @@
+<template>
+  <VApp>
+    <!-- Mobile top bar -->
+    <VAppBar v-if="mobile" flat border="b">
+      <template #prepend>
+        <VBtn icon variant="text" @click="drawer = !drawer">
+          <VIcon icon="fluent:navigation-24-regular" />
+        </VBtn>
+      </template>
+      <VAppBarTitle class="font-weight-bold">Garda</VAppBarTitle>
+    </VAppBar>
+
+    <VNavigationDrawer
+      v-model="drawer"
+      :rail="!mobile && rail"
+      :temporary="mobile"
+    >
+      <VListItem title="Garda" nav class="py-4">
+        <template #append>
+          <VBtn
+            v-if="!mobile"
+            :icon="rail ? 'fluent:panel-right-expand-24-regular' : 'fluent:panel-right-contract-24-regular'"
+            variant="text"
+            @click="rail = !rail"
+          />
+        </template>
+      </VListItem>
+
+      <VDivider />
+
+      <VList density="compact" nav class="mt-2">
+        <VListItem
+          v-for="item in navItems"
+          :key="item.to"
+          :to="item.to"
+          :prepend-icon="item.icon"
+          :title="$t(item.titleKey)"
+          rounded="lg"
+          @click="mobile && (drawer = false)"
+        />
+      </VList>
+
+      <template #append>
+        <VDivider />
+        <div v-if="!rail || mobile" class="d-flex justify-center py-2">
+          <VMenu>
+            <template #activator="{ props }">
+              <VBtn v-bind="props" variant="text" size="small" append-icon="fluent:chevron-down-20-regular">
+                {{ locale.toUpperCase() }}
+              </VBtn>
+            </template>
+            <VList density="compact" min-width="100">
+              <VListItem
+                v-for="loc in locales"
+                :key="loc.code"
+                :title="loc.name"
+                :active="locale === loc.code"
+                active-color="primary"
+                rounded="lg"
+                @click="setLocale(loc.code)"
+              />
+            </VList>
+          </VMenu>
+        </div>
+        <VDivider />
+        <VList density="compact" nav class="my-2">
+          <VListItem
+            prepend-icon="fluent:arrow-exit-20-regular"
+            :title="$t('nav.logout')"
+            rounded="lg"
+            @click="logout"
+          />
+        </VList>
+      </template>
+    </VNavigationDrawer>
+
+    <VMain>
+      <VContainer class="py-6 py-md-8">
+        <slot />
+      </VContainer>
+    </VMain>
+  </VApp>
+</template>
+
+<script setup lang="ts">
+import { useDisplay } from 'vuetify'
+
+const { mobile } = useDisplay()
+const drawer = ref(true)
+const rail = ref(false)
+
+watch(mobile, (isMobile) => {
+  drawer.value = !isMobile
+  if (!isMobile) rail.value = false
+}, { immediate: false })
+
+const { logout } = useAuth()
+const { locale, locales, setLocale } = useI18n()
+
+const navItems = [
+  { to: "/admin",           icon: "fluent:home-24-regular",               titleKey: "nav.dashboard" },
+  { to: "/admin/calendar",  icon: "fluent:calendar-24-regular",           titleKey: "nav.calendar" },
+  { to: "/admin/bookings",  icon: "fluent:calendar-checkmark-24-regular", titleKey: "nav.bookings" },
+  { to: "/admin/guests",    icon: "fluent:people-24-regular",             titleKey: "nav.guests" },
+  { to: "/admin/settings",  icon: "fluent:settings-24-regular",           titleKey: "nav.settings" },
+]
+</script>

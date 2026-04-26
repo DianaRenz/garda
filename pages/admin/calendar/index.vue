@@ -1,0 +1,228 @@
+<template>
+  <div>
+    <h1 class="text-h5 font-weight-bold mb-4">{{ $t('calendar.title') }}</h1>
+
+    <div class="d-flex ga-4 flex-wrap mb-6">
+      <div v-for="item in legend" :key="item.key" class="d-flex align-center ga-2">
+        <div
+          class="rounded"
+          :style="{
+            background: item.color,
+            width: '14px',
+            height: '14px',
+            border: item.border ?? '1px solid rgba(0,0,0,0.08)',
+            boxSizing: 'border-box',
+          }"
+        />
+        <span class="text-body-2">{{ $t(`calendar.legend.${item.key}`) }}</span>
+      </div>
+    </div>
+
+    <AppCalendar :bookings="bookings" :show-names="true" @select="selected = $event" />
+
+    <!-- Booking detail dialog -->
+    <VDialog v-model="dialog" max-width="420">
+      <VCard v-if="selected" rounded="lg">
+        <VCardText class="pa-5">
+          <div class="d-flex align-center justify-space-between mb-3">
+            <span class="text-h6 font-weight-bold">{{ selected.guestName }}</span>
+            <VChip :color="statusColor[selected.status]" size="small" variant="tonal">
+              {{ $t(`bookings.statuses.${selected.status}`) }}
+            </VChip>
+          </div>
+
+          <div class="d-flex align-center ga-2 text-body-2 mb-2">
+            <VIcon icon="fluent:calendar-24-regular" size="16" />
+            {{ formatDate(selected.startDate) }} — {{ formatDate(selected.endDate) }}
+          </div>
+
+          <div v-if="selected.guestPhone || selected.guestContact" class="d-flex align-center ga-2 text-body-2 mb-2">
+            <VIcon icon="fluent:call-24-regular" size="16" />
+            {{ selected.guestPhone || selected.guestContact }}
+          </div>
+          <div v-if="selected.guestEmail" class="d-flex align-center ga-2 text-body-2 mb-2">
+            <VIcon icon="fluent:mail-24-regular" size="16" />
+            {{ selected.guestEmail }}
+          </div>
+
+          <div v-if="selected.notes" class="text-body-2 text-medium-emphasis mt-3 pa-3 rounded-lg" style="background: rgba(0,0,0,0.04)">
+            {{ selected.notes }}
+          </div>
+
+          <div v-if="selected.rejectionNote" class="text-body-2 text-medium-emphasis mt-3 pa-3 rounded-lg" style="background: rgba(0,0,0,0.04)">
+            <span class="font-weight-medium">{{ $t('account.rejectedNote') }}</span> {{ selected.rejectionNote }}
+          </div>
+        </VCardText>
+
+        <VCardActions class="px-5 pb-5 pt-0 flex-wrap ga-2">
+          <VBtn
+            v-if="selected.status === 'pending'"
+            variant="tonal"
+            color="primary"
+            :loading="confirming"
+            @click="confirm"
+          >
+            {{ $t('bookings.actions.confirm') }}
+          </VBtn>
+          <VBtn
+            v-if="selected.status === 'pending'"
+            variant="tonal"
+            color="error"
+            @click="openReject"
+          >
+            {{ $t('bookings.actions.reject') }}
+          </VBtn>
+          <VSpacer />
+          <VBtn variant="text" color="error" @click="deleteDialog = true">
+            {{ $t('bookings.actions.delete') }}
+          </VBtn>
+        </VCardActions>
+      </VCard>
+    </VDialog>
+
+    <!-- Reject dialog -->
+    <VDialog v-model="rejectDialog" max-width="480">
+      <VCard rounded="lg">
+        <VCardTitle class="pa-6 pb-2">{{ $t('bookings.rejectDialog.title') }}</VCardTitle>
+        <VCardText>
+          <VAlert v-if="rejectConflicts.length" type="info" variant="tonal" class="mb-4" density="compact">
+            <div class="font-weight-medium mb-1">{{ $t('bookings.rejectDialog.conflict') }}</div>
+            <div v-for="c in rejectConflicts" :key="c.id" class="text-body-2">
+              {{ c.guestName }}: {{ formatDate(c.startDate) }} — {{ formatDate(c.endDate) }}
+            </div>
+          </VAlert>
+          <div>
+            <label class="label text-grey-darken-2">{{ $t('bookings.rejectDialog.note') }}</label>
+            <VTextarea
+              v-model="rejectNote"
+              :placeholder="$t('bookings.rejectDialog.notePlaceholder')"
+              rows="3"
+            />
+          </div>
+        </VCardText>
+        <VCardActions class="pa-6 pt-0 ga-2">
+          <VSpacer />
+          <VBtn variant="text" @click="rejectDialog = false">{{ $t('common.cancel') }}</VBtn>
+          <VBtn color="error" variant="tonal" :loading="rejecting" @click="doReject">
+            {{ $t('bookings.rejectDialog.confirm') }}
+          </VBtn>
+        </VCardActions>
+      </VCard>
+    </VDialog>
+
+    <!-- Delete confirmation -->
+    <VDialog v-model="deleteDialog" max-width="340">
+      <VCard rounded="lg">
+        <VCardText class="pa-5">
+          <p class="text-body-1 font-weight-medium mb-1">{{ $t('common.deleteConfirmTitle') }}</p>
+          <p class="text-body-2 text-medium-emphasis">{{ $t('common.deleteConfirmText') }}</p>
+        </VCardText>
+        <VCardActions class="px-5 pb-5 pt-0">
+          <VBtn variant="text" @click="deleteDialog = false">{{ $t('common.cancel') }}</VBtn>
+          <VSpacer />
+          <VBtn color="error" variant="tonal" :loading="deleting" @click="remove">
+            {{ $t('common.delete') }}
+          </VBtn>
+        </VCardActions>
+      </VCard>
+    </VDialog>
+  </div>
+</template>
+
+<script setup lang="ts">
+import type { Booking } from '~/composables/useBookings'
+
+definePageMeta({ layout: "admin", middleware: "auth" });
+
+const { bookings, subscribe, updateBooking, deleteBooking, getConflicts, formatDate, statusColor } = useBookings();
+// TODO: email notifications — see GitHub issue #1
+// const { notifyGuestStatusUpdate } = useNotifications();
+
+type LegendItem = { key: string; color: string; border?: string };
+
+const legend: LegendItem[] = [
+  { key: "available", color: "rgba(0,0,0,0.04)" },
+  { key: "pending",   color: "rgba(255,193,7,0.45)" },
+  { key: "confirmed", color: "rgba(33,150,243,0.35)" },
+  { key: "blocked",   color: "rgba(244,67,54,0.35)" },
+];
+
+onMounted(() => {
+  const unsub = subscribe();
+  onUnmounted(unsub);
+});
+
+const selected = ref<Booking | null>(null);
+const dialog = computed({
+  get: () => !!selected.value,
+  set: (v) => { if (!v) selected.value = null },
+});
+
+const deleteDialog = ref(false);
+const rejectDialog = ref(false);
+const confirming = ref(false);
+const deleting = ref(false);
+const rejecting = ref(false);
+const rejectNote = ref('');
+
+const rejectConflicts = computed(() =>
+  selected.value ? getConflicts(selected.value) : []
+);
+
+const confirm = async () => {
+  if (!selected.value) return;
+  confirming.value = true;
+  const booking = selected.value;
+  try {
+    await updateBooking(booking.id, { status: 'confirmed' });
+    // TODO: notify guest on confirm — see GitHub issue #1
+    // if (booking.guestEmail) {
+    //   notifyGuestStatusUpdate({ guestName: booking.guestName, guestEmail: booking.guestEmail,
+    //     status: 'confirmed', startDate: formatDate(booking.startDate), endDate: formatDate(booking.endDate) }).catch(() => {});
+    // }
+    selected.value = null;
+  } finally {
+    confirming.value = false;
+  }
+};
+
+const openReject = () => {
+  rejectNote.value = '';
+  rejectDialog.value = true;
+};
+
+const doReject = async () => {
+  if (!selected.value) return;
+  rejecting.value = true;
+  const booking = selected.value;
+  const note = rejectNote.value || null;
+  try {
+    await updateBooking(booking.id, {
+      status: 'rejected',
+      rejectionNote: note,
+    });
+    // TODO: notify guest on reject — see GitHub issue #1
+    // if (booking.guestEmail) {
+    //   notifyGuestStatusUpdate({ guestName: booking.guestName, guestEmail: booking.guestEmail,
+    //     status: 'rejected', startDate: formatDate(booking.startDate), endDate: formatDate(booking.endDate),
+    //     rejectionNote: note }).catch(() => {});
+    // }
+    rejectDialog.value = false;
+    selected.value = null;
+  } finally {
+    rejecting.value = false;
+  }
+};
+
+const remove = async () => {
+  if (!selected.value) return;
+  deleting.value = true;
+  try {
+    await deleteBooking(selected.value.id);
+    deleteDialog.value = false;
+    selected.value = null;
+  } finally {
+    deleting.value = false;
+  }
+};
+</script>

@@ -1,0 +1,183 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isSelf(uid) {
+      return signedIn() && request.auth.uid == uid;
+    }
+
+    function userDoc(uid) {
+      return get(/databases/$(database)/documents/users/$(uid));
+    }
+
+    function isAdmin() {
+      return signedIn()
+        && exists(/databases/$(database)/documents/users/$(request.auth.uid))
+        && userDoc(request.auth.uid).data.role == 'admin';
+    }
+
+    function hasOnly(data, keys) {
+      return data.keys().hasOnly(keys);
+    }
+
+    function validInvite(token, role) {
+      return token is string
+        && exists(/databases/$(database)/documents/invites/$(token))
+        && get(/databases/$(database)/documents/invites/$(token)).data.type == role
+        && get(/databases/$(database)/documents/invites/$(token)).data.used == false
+        && get(/databases/$(database)/documents/invites/$(token)).data.expiresAt > request.time;
+    }
+
+    function validUserCreate(uid) {
+      return isSelf(uid)
+        && hasOnly(request.resource.data, [
+          'role',
+          'email',
+          'name',
+          'phone',
+          'inviteToken',
+          'createdAt'
+        ])
+        && request.resource.data.role in ['admin', 'guest']
+        && request.resource.data.email is string
+        && request.resource.data.createdAt == request.time
+        && validInvite(request.resource.data.inviteToken, request.resource.data.role)
+        && (
+          request.resource.data.role == 'admin'
+          || request.resource.data.name is string
+        );
+    }
+
+    function validRequestBookingCreate() {
+      return hasOnly(request.resource.data, [
+          'guestId',
+          'userId',
+          'guestName',
+          'guestPhone',
+          'guestEmail',
+          'startDate',
+          'endDate',
+          'status',
+          'source',
+          'notes',
+          'rejectionNote',
+          'createdAt',
+          'updatedAt'
+        ])
+        && request.resource.data.guestId == null
+        && (
+          request.resource.data.userId == null
+          || isSelf(request.resource.data.userId)
+        )
+        && request.resource.data.guestName is string
+        && request.resource.data.guestPhone is string
+        && request.resource.data.guestEmail is string
+        && request.resource.data.startDate is timestamp
+        && request.resource.data.endDate is timestamp
+        && request.resource.data.startDate <= request.resource.data.endDate
+        && request.resource.data.status == 'pending'
+        && request.resource.data.source == 'request'
+        && request.resource.data.notes is string
+        && request.resource.data.rejectionNote == null
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.updatedAt == request.time;
+    }
+
+    function validAdminBookingWrite() {
+      return request.resource.data.status in ['pending', 'confirmed', 'blocked', 'rejected']
+        && request.resource.data.startDate is timestamp
+        && request.resource.data.endDate is timestamp
+        && request.resource.data.startDate <= request.resource.data.endDate
+        && request.resource.data.updatedAt == request.time;
+    }
+
+    function validPublicBookingProjection(bookingId) {
+      return existsAfter(/databases/$(database)/documents/bookings/$(bookingId))
+        && hasOnly(request.resource.data, ['startDate', 'endDate', 'status', 'updatedAt'])
+        && getAfter(/databases/$(database)/documents/bookings/$(bookingId)).data.status in ['pending', 'confirmed', 'blocked']
+        && request.resource.data.startDate == getAfter(/databases/$(database)/documents/bookings/$(bookingId)).data.startDate
+        && request.resource.data.endDate == getAfter(/databases/$(database)/documents/bookings/$(bookingId)).data.endDate
+        && request.resource.data.status == getAfter(/databases/$(database)/documents/bookings/$(bookingId)).data.status
+        && request.resource.data.updatedAt == request.time;
+    }
+
+    match /users/{uid} {
+      allow get: if isSelf(uid) || isAdmin();
+      allow list: if isAdmin();
+      allow create: if validUserCreate(uid);
+      allow update: if isAdmin() || (
+        isSelf(uid)
+        && !('role' in request.resource.data.diff(resource.data).affectedKeys())
+      );
+      allow delete: if isAdmin();
+    }
+
+    match /invites/{token} {
+      allow get: if true;
+      allow list: if isAdmin();
+      allow create: if isAdmin()
+        && token == request.resource.data.token
+        && request.resource.data.type in ['admin', 'guest']
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.expiresAt > request.time
+        && request.resource.data.used == false
+        && request.resource.data.usedAt == null;
+      allow update: if isAdmin() || (
+        signedIn()
+        && resource.data.used == false
+        && request.resource.data.diff(resource.data).changedKeys().hasOnly(['used', 'usedAt'])
+        && request.resource.data.used == true
+        && request.resource.data.usedAt == request.time
+      );
+      allow delete: if isAdmin();
+    }
+
+    match /bookings/{bookingId} {
+      allow get, list: if isAdmin() || (
+        signedIn()
+        && resource.data.userId == request.auth.uid
+      );
+      allow create: if validRequestBookingCreate() || (
+        isAdmin()
+        && validAdminBookingWrite()
+        && request.resource.data.createdAt == request.time
+      );
+      allow update: if isAdmin() && validAdminBookingWrite();
+      allow delete: if isAdmin() || (
+        signedIn()
+        && resource.data.userId == request.auth.uid
+        && resource.data.status == 'pending'
+      );
+    }
+
+    match /publicBookings/{bookingId} {
+      allow read: if true;
+      allow create, update: if isAdmin() || validPublicBookingProjection(bookingId);
+      allow delete: if isAdmin() || (
+        signedIn()
+        && exists(/databases/$(database)/documents/bookings/$(bookingId))
+        && get(/databases/$(database)/documents/bookings/$(bookingId)).data.userId == request.auth.uid
+        && get(/databases/$(database)/documents/bookings/$(bookingId)).data.status == 'pending'
+      );
+    }
+
+    match /guests/{guestId} {
+      allow read, write: if isAdmin();
+      // Guests can create their own record on self-registration
+      allow create: if signedIn()
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.name is string
+        && request.resource.data.email is string
+        && request.resource.data.createdAt == request.time;
+    }
+
+    match /apartment/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+  }
+}
