@@ -5,6 +5,7 @@
     "check": "npm run typecheck && npm run build",
     "dev": "nuxt dev",
     "generate": "nuxt generate",
+    "deploy": "nuxt generate && firebase deploy --only hosting",
     "reset": "rm -rf .nuxt node_modules .output package-lock.json && npm install",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
@@ -21,7 +22,7 @@
   "dependencies": {
     "@emailjs/browser": "^4.4.1",
     "@nuxtjs/i18n": "^10.2.4",
-    "firebase": "^12.12.0",
+    "firebase": "^12.12.1",
     "vite-plugin-vuetify": "^2.1.3"
   }
 }
