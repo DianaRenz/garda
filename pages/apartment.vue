@@ -229,7 +229,7 @@
 </template>
 
 <script setup lang="ts">
-import { collection, query, where, orderBy, onSnapshot } from "firebase/firestore";
+import { collection, query, where, onSnapshot } from "firebase/firestore";
 import type { Booking, CalendarBooking } from '~/composables/useBookings';
 
 definePageMeta({ layout: "default" });
@@ -312,11 +312,7 @@ onMounted(async () => {
 
   currentUserId.value = user.uid;
 
-  await Promise.all([
-    fetchProfile(user.uid, user.email),
-    fetchApartment().catch(() => {}),
-  ]);
-
+  // Start listeners and fetches in parallel — don't block on profile/apartment data
   const calResult = subscribeCalendar();
   unsubCalendar = calResult.unsub;
   watch(calResult.calendarBookings, (v) => { calendarBookings.value = v; }, { immediate: true });
@@ -324,11 +320,22 @@ onMounted(async () => {
   const q = query(
     collection($db, "bookings"),
     where("userId", "==", user.uid),
-    orderBy("startDate", "asc")
   );
-  unsubOwn = onSnapshot(q, (snap) => {
-    myBookings.value = snap.docs.map((d) => ({ id: d.id, ...d.data() } as Booking));
-  });
+  unsubOwn = onSnapshot(q,
+    (snap) => {
+      myBookings.value = snap.docs
+        .map((d) => ({ id: d.id, ...d.data() } as Booking))
+        .sort((a, b) => a.startDate.seconds - b.startDate.seconds);
+    },
+    (err) => {
+      if (import.meta.dev) console.error('[apartment] bookings listener error:', err);
+    },
+  );
+
+  await Promise.all([
+    fetchProfile(user.uid, user.email),
+    fetchApartment().catch(() => {}),
+  ]);
 
   loading.value = false;
 });

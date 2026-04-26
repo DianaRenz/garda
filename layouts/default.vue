@@ -4,6 +4,22 @@
       <VAppBarTitle>
         <NuxtLink to="/" class="text-decoration-none text-high-emphasis font-weight-bold">Garda</NuxtLink>
       </VAppBarTitle>
+      <!-- Guest nav tabs -->
+      <template v-if="user && userRole !== 'admin'">
+        <VBtn
+          v-for="item in guestNav"
+          :key="item.to"
+          :to="item.to"
+          variant="text"
+          size="small"
+          :active="route.path === item.to"
+          :aria-label="$t(item.label)"
+        >
+          <VIcon :icon="item.icon" :start="!mobile" />
+          <span v-if="!mobile">{{ $t(item.label) }}</span>
+        </VBtn>
+      </template>
+
       <template #append>
         <!-- Language dropdown -->
         <VMenu>
@@ -69,11 +85,22 @@
 </template>
 
 <script setup lang="ts">
+import { useDisplay } from "vuetify";
+
+const { mobile } = useDisplay();
+const route = useRoute();
 const { locale, locales, setLocale } = useI18n();
 const { user, userRole, logout } = useAuth();
 
+const guestNav = [
+  { to: "/apartment", icon: "fluent:home-24-regular", label: "apartment.title" },
+  { to: "/calendar", icon: "fluent:calendar-24-regular", label: "nav.calendar" },
+  { to: "/guide", icon: "fluent:book-24-regular", label: "nav.guide" },
+];
+
 const accountLink = computed(() => {
   if (!user.value) return "/login";
-  return userRole.value === "guest" ? "/apartment" : "/admin";
+  if (userRole.value === "admin") return "/admin";
+  return "/apartment";
 });
 </script>
