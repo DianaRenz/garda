@@ -277,8 +277,7 @@ const { t } = useI18n();
 const { ruleRequired, ruleEmail } = useFormRules();
 const { bookings, subscribe, createBooking, updateBooking, deleteBooking, formatDate, statusColor } = useBookings();
 const { guests, subscribe: subscribeGuests, createGuest } = useGuests();
-// TODO: email notifications — see GitHub issue #1
-// const { notifyGuestStatusUpdate } = useNotifications();
+const { notifyGuestStatusUpdate } = useNotifications();
 
 interface RegisteredUser {
   uid: string;
@@ -484,12 +483,11 @@ const save = async () => {
         status: form.status,
         notes: form.notes,
       });
-      // TODO: notify guest on status change — see GitHub issue #1
-      // if (form.guestEmail && prevStatus !== form.status &&
-      //     (form.status === "confirmed" || form.status === "rejected")) {
-      //   notifyGuestStatusUpdate({ guestName: form.guestName, guestEmail: form.guestEmail,
-      //     status: form.status, startDate: form.startDate, endDate: form.endDate }).catch(() => {});
-      // }
+      if (form.guestEmail && prevStatus !== form.status &&
+          (form.status === "confirmed" || form.status === "rejected")) {
+        notifyGuestStatusUpdate({ guestName: form.guestName, guestEmail: form.guestEmail,
+          status: form.status, startDate: form.startDate, endDate: form.endDate }).catch(() => {});
+      }
     } else {
       await createBooking({
         guestId: form.status === "blocked" ? null : form.guestId,

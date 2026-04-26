@@ -306,6 +306,11 @@
     "checkoutPlaceholder": "Новый пункт чеклиста",
     "language": "Язык контента"
   },
+  "validation": {
+    "required": "Обязательное поле",
+    "email": "Введите корректный email",
+    "passwordLength": "Пароль должен быть не менее 6 символов"
+  },
   "common": {
     "cancel": "Отмена",
     "save": "Сохранить",

@@ -136,8 +136,7 @@ import type { Booking } from '~/composables/useBookings'
 definePageMeta({ layout: "admin", middleware: "auth" });
 
 const { bookings, subscribe, updateBooking, deleteBooking, getConflicts, formatDate, statusColor } = useBookings();
-// TODO: email notifications — see GitHub issue #1
-// const { notifyGuestStatusUpdate } = useNotifications();
+const { notifyGuestStatusUpdate } = useNotifications();
 const { t } = useI18n();
 
 type LegendItem = { key: string; color: string; border?: string };
@@ -172,12 +171,21 @@ const rejectConflicts = computed(() =>
   selected.value ? getConflicts(selected.value) : []
 );
 
+const toIso = (ts: any) => {
+  const d = ts?.toDate?.() ?? new Date(ts);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+};
+
 const confirm = async () => {
   if (!selected.value) return;
   confirming.value = true;
   const booking = selected.value;
   try {
     await updateBooking(booking.id, { status: 'confirmed' });
+    if (booking.guestEmail) {
+      notifyGuestStatusUpdate({ guestName: booking.guestName, guestEmail: booking.guestEmail,
+        status: 'confirmed', startDate: toIso(booking.startDate), endDate: toIso(booking.endDate) }).catch(() => {});
+    }
     selected.value = null;
   } catch {
     error.value = t('common.error');
@@ -201,6 +209,11 @@ const doReject = async () => {
       status: 'rejected',
       rejectionNote: note,
     });
+    if (booking.guestEmail) {
+      notifyGuestStatusUpdate({ guestName: booking.guestName, guestEmail: booking.guestEmail,
+        status: 'rejected', startDate: toIso(booking.startDate), endDate: toIso(booking.endDate),
+        rejectionNote: note }).catch(() => {});
+    }
     rejectDialog.value = false;
     selected.value = null;
   } catch {

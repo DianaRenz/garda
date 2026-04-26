@@ -9,6 +9,8 @@
 
         <template v-else>
 
+          <VAlert v-if="cancelError" type="error" variant="tonal" closable class="mb-4" @click:close="cancelError = ''">{{ cancelError }}</VAlert>
+
           <!-- Header -->
           <div class="mb-8">
             <h1 class="text-h5 font-weight-bold">{{ userData.name || userData.email }}</h1>
