@@ -4,6 +4,7 @@
     "calendar": "Kalender",
     "bookings": "Buchungen",
     "guests": "Gäste",
+    "guide": "Reiseführer",
     "settings": "Einstellungen",
     "logout": "Abmelden"
   },
@@ -107,7 +108,10 @@
     "password": "Passwort",
     "submit": "Anmelden",
     "forgotPassword": "Passwort vergessen?",
-    "error": "Falsche E-Mail oder falsches Passwort"
+    "error": "Falsche E-Mail oder falsches Passwort",
+    "notVerified": "E-Mail nicht bestätigt. Prüfen Sie Ihr Postfach und klicken Sie auf den Bestätigungslink.",
+    "resendVerification": "Erneut senden",
+    "verificationResent": "Gesendet!"
   },
   "resetPassword": {
     "title": "Passwort zurücksetzen",
@@ -233,7 +237,10 @@
     "expiredToken": "Dieser Einladungslink ist abgelaufen.",
     "error": "Etwas ist schiefgelaufen. Bitte versuche es erneut.",
     "emailInUse": "Diese E-Mail ist bereits registriert. Versuchen Sie sich anzumelden.",
-    "passwordMismatch": "Passwörter stimmen nicht überein"
+    "passwordMismatch": "Passwörter stimmen nicht überein",
+    "verifyTitle": "E-Mail bestätigen",
+    "verifyText": "Wir haben eine Bestätigungs-E-Mail an Ihre Adresse gesendet. Klicken Sie auf den Link in der E-Mail, um Ihr Konto zu aktivieren.",
+    "goToLogin": "Zur Anmeldung"
   },
   "invite": {
     "title": "Einladungslinks",
@@ -261,7 +268,40 @@
   "apartment": {
     "title": "Die Wohnung",
     "requestBtn": "Termin anfragen",
-    "bookingsBtn": "Meine Buchungen"
+    "bookingsBtn": "Meine Buchungen",
+    "guideBtn": "Wohnungsführer"
+  },
+  "guide": {
+    "title": "Wohnungsführer",
+    "galleryTitle": "Fotos",
+    "gallery": {
+      "apartment": "Wohnung",
+      "garden": "Garten",
+      "view": "Aussicht"
+    },
+    "sections": {
+      "directions": "Anfahrt",
+      "checkin": "An- und Abreise",
+      "electricity": "Strom",
+      "kitchen": "Küche & Haushalt",
+      "wifi": "WLAN",
+      "grounds": "Gelände & Nachbarn",
+      "trash": "Müllentsorgung",
+      "emergency": "Notfallkontakte"
+    },
+    "checkout": {
+      "title": "Abreise-Checkliste",
+      "description": "Bitte stellen Sie vor der Abreise sicher, dass alles auf der Liste erledigt ist."
+    },
+    "empty": "Noch keine Informationen hinzugefügt"
+  },
+  "adminGuide": {
+    "title": "Guide-Verwaltung",
+    "sections": "Guide-Abschnitte",
+    "sectionText": "Text",
+    "sectionPhotos": "Fotos",
+    "checkoutPlaceholder": "Neuer Checklisten-Punkt",
+    "language": "Inhaltssprache"
   },
   "common": {
     "cancel": "Abbrechen",

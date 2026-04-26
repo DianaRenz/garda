@@ -1,6 +1,7 @@
 <template>
   <div>
     <h1 class="text-h5 font-weight-bold mb-4">{{ $t('calendar.title') }}</h1>
+    <VAlert v-if="error" type="error" variant="tonal" closable class="mb-4" @click:close="error = ''">{{ error }}</VAlert>
 
     <div class="d-flex ga-4 flex-wrap mb-6">
       <div v-for="item in legend" :key="item.key" class="d-flex align-center ga-2">
@@ -137,6 +138,7 @@ definePageMeta({ layout: "admin", middleware: "auth" });
 const { bookings, subscribe, updateBooking, deleteBooking, getConflicts, formatDate, statusColor } = useBookings();
 // TODO: email notifications — see GitHub issue #1
 // const { notifyGuestStatusUpdate } = useNotifications();
+const { t } = useI18n();
 
 type LegendItem = { key: string; color: string; border?: string };
 
@@ -164,6 +166,7 @@ const confirming = ref(false);
 const deleting = ref(false);
 const rejecting = ref(false);
 const rejectNote = ref('');
+const error = ref('');
 
 const rejectConflicts = computed(() =>
   selected.value ? getConflicts(selected.value) : []
@@ -175,12 +178,9 @@ const confirm = async () => {
   const booking = selected.value;
   try {
     await updateBooking(booking.id, { status: 'confirmed' });
-    // TODO: notify guest on confirm — see GitHub issue #1
-    // if (booking.guestEmail) {
-    //   notifyGuestStatusUpdate({ guestName: booking.guestName, guestEmail: booking.guestEmail,
-    //     status: 'confirmed', startDate: formatDate(booking.startDate), endDate: formatDate(booking.endDate) }).catch(() => {});
-    // }
     selected.value = null;
+  } catch {
+    error.value = t('common.error');
   } finally {
     confirming.value = false;
   }
@@ -201,14 +201,10 @@ const doReject = async () => {
       status: 'rejected',
       rejectionNote: note,
     });
-    // TODO: notify guest on reject — see GitHub issue #1
-    // if (booking.guestEmail) {
-    //   notifyGuestStatusUpdate({ guestName: booking.guestName, guestEmail: booking.guestEmail,
-    //     status: 'rejected', startDate: formatDate(booking.startDate), endDate: formatDate(booking.endDate),
-    //     rejectionNote: note }).catch(() => {});
-    // }
     rejectDialog.value = false;
     selected.value = null;
+  } catch {
+    error.value = t('common.error');
   } finally {
     rejecting.value = false;
   }
@@ -221,6 +217,8 @@ const remove = async () => {
     await deleteBooking(selected.value.id);
     deleteDialog.value = false;
     selected.value = null;
+  } catch {
+    error.value = t('common.error');
   } finally {
     deleting.value = false;
   }

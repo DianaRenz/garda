@@ -11,8 +11,8 @@
 
           <!-- Header -->
           <div class="mb-8">
-            <h1 class="text-h5 font-weight-bold">{{ userData?.name || userData?.email }}</h1>
-            <p class="text-body-2 text-medium-emphasis">{{ userData?.email }}</p>
+            <h1 class="text-h5 font-weight-bold">{{ userData.name || userData.email }}</h1>
+            <p class="text-body-2 text-medium-emphasis">{{ userData.email }}</p>
           </div>
 
           <!-- Stats -->
@@ -152,6 +152,18 @@
             </div>
           </VCard>
 
+          <!-- Guide link -->
+          <VBtn
+            variant="outlined"
+            block
+            min-height="44"
+            prepend-icon="fluent:book-24-regular"
+            to="/guide"
+            class="mb-8"
+          >
+            {{ $t('apartment.guideBtn') }}
+          </VBtn>
+
           <!-- Apartment info -->
           <template v-if="apartment && (apartment.address || apartment.directions || apartment.rules)">
             <h2 class="text-body-2 font-weight-medium text-medium-emphasis mb-3">
@@ -194,7 +206,7 @@
     <RequestSheet
       v-model="showRequestSheet"
       :calendar-bookings="calendarBookings"
-      :user-data="userData ?? {}"
+      :user-data="userData"
     />
 
     <!-- Cancel dialog -->
@@ -217,19 +229,18 @@
 </template>
 
 <script setup lang="ts">
-import { onAuthStateChanged } from "firebase/auth";
-import { doc, getDoc, collection, query, where, orderBy, onSnapshot } from "firebase/firestore";
+import { collection, query, where, orderBy, onSnapshot } from "firebase/firestore";
 import type { Booking, CalendarBooking } from '~/composables/useBookings';
 
 definePageMeta({ layout: "default" });
 
-const { $auth, $db } = useNuxtApp();
+const { $db } = useNuxtApp();
 const { apartment, fetchApartment } = useApartment();
 const { subscribeCalendar, deleteBooking, formatDate, statusColor } = useBookings();
+const { userData, fetchProfile } = useUserProfile();
 const { t } = useI18n();
 
 const loading = ref(true);
-const userData = ref<{ name?: string; email?: string; phone?: string } | null>(null);
 const myBookings = ref<Booking[]>([]);
 const calendarBookings = ref<CalendarBooking[]>([]);
 const showRequestSheet = ref(false);
@@ -296,21 +307,13 @@ let unsubOwn: (() => void) | null = null;
 onMounted(async () => {
   if (import.meta.server) return;
 
-  const user = await new Promise<any>((resolve) => {
-    const unsub = onAuthStateChanged($auth, (u) => { unsub(); resolve(u); });
-  });
-
-  if (!user) {
-    await navigateTo("/login");
-    return;
-  }
+  const user = await useAuthGuard();
+  if (!user) return;
 
   currentUserId.value = user.uid;
 
   await Promise.all([
-    getDoc(doc($db, "users", user.uid)).then(snap => {
-      if (snap.exists()) userData.value = snap.data() as { name?: string; email?: string; phone?: string };
-    }).catch(() => {}),
+    fetchProfile(user.uid, user.email),
     fetchApartment().catch(() => {}),
   ]);
 
@@ -340,12 +343,16 @@ const askCancel = (id: string) => {
   cancelDialog.value = true;
 };
 
+const cancelError = ref('');
+
 const doCancel = async () => {
   if (!cancelId.value) return;
   cancelling.value = true;
   try {
     await deleteBooking(cancelId.value);
     cancelDialog.value = false;
+  } catch {
+    cancelError.value = t('common.error');
   } finally {
     cancelling.value = false;
   }

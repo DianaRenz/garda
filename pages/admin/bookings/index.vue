@@ -6,6 +6,7 @@
         {{ $t('bookings.add') }}
       </VBtn>
     </div>
+    <VAlert v-if="error" type="error" variant="tonal" closable class="mb-4" @click:close="error = ''">{{ error }}</VAlert>
 
     <!-- Filters -->
     <div class="d-flex ga-3 mb-6 flex-wrap">
@@ -299,6 +300,7 @@ const editDialog = ref(false);
 const deleteDialog = ref(false);
 const saving = ref(false);
 const deleting = ref(false);
+const error = ref('');
 const deleteId = ref<string | null>(null);
 const filterStatus = ref("all");
 const formRef = ref();
@@ -449,6 +451,7 @@ const bookingDuration = (booking: Booking) => {
 
 const addGuestAndAssign = async () => {
   if (!newGuestForm.name) return;
+  try {
   await createGuest({ name: newGuestForm.name, phone: newGuestForm.phone, email: newGuestForm.email, notes: "" });
   const newGuest = guests.value.find(g => g.name === newGuestForm.name);
   if (newGuest) {
@@ -459,6 +462,7 @@ const addGuestAndAssign = async () => {
   }
   Object.assign(newGuestForm, { name: "", phone: "", email: "" });
   createNewGuestInline.value = false;
+  } catch { error.value = t('common.error'); }
 };
 
 const save = async () => {
@@ -501,6 +505,8 @@ const save = async () => {
       });
     }
     editDialog.value = false;
+  } catch {
+    error.value = t('common.error');
   } finally {
     saving.value = false;
   }
@@ -517,6 +523,8 @@ const doDelete = async () => {
   try {
     await deleteBooking(deleteId.value);
     deleteDialog.value = false;
+  } catch {
+    error.value = t('common.error');
   } finally {
     deleting.value = false;
   }
@@ -527,11 +535,13 @@ onMounted(async () => {
   const u2 = subscribeGuests();
   onUnmounted(() => { u1(); u2(); });
 
-  const snap = await getDocs(query(collection($db, 'users'), where('role', '==', 'guest')));
-  registeredUsers.value = snap.docs.map((d) => {
-    const data = d.data() as Omit<RegisteredUser, "uid">;
-    return { uid: d.id, ...data };
-  });
+  try {
+    const snap = await getDocs(query(collection($db, 'users'), where('role', '==', 'guest')));
+    registeredUsers.value = snap.docs.map((d) => {
+      const data = d.data() as Omit<RegisteredUser, "uid">;
+      return { uid: d.id, ...data };
+    });
+  } catch { /* registered users list is optional — don't block page */ }
 });
 
 </script>

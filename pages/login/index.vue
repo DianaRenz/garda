@@ -29,6 +29,22 @@
             />
           </div>
 
+          <VAlert v-if="notVerified" type="warning" class="mt-4" variant="tonal">
+            {{ $t('login.notVerified') }}
+            <template #append>
+              <VBtn
+                v-if="!resent"
+                variant="text"
+                size="small"
+                :loading="resending"
+                @click="resendVerification"
+              >
+                {{ $t('login.resendVerification') }}
+              </VBtn>
+              <span v-else class="text-body-2 text-success">{{ $t('login.verificationResent') }}</span>
+            </template>
+          </VAlert>
+
           <VAlert v-if="error" type="error" class="mt-4" variant="tonal">
             {{ $t('login.error') }}
           </VAlert>
@@ -52,6 +68,7 @@
 
 <script setup lang="ts">
 import { doc, getDoc } from "firebase/firestore";
+import { sendEmailVerification } from "firebase/auth";
 
 definePageMeta({ layout: "default" });
 
@@ -63,6 +80,9 @@ const email = ref("");
 const password = ref("");
 const loading = ref(false);
 const error = ref(false);
+const notVerified = ref(false);
+const resending = ref(false);
+const resent = ref(false);
 const formRef = ref();
 
 // Already logged in — redirect immediately
@@ -72,6 +92,19 @@ onMounted(() => {
   }
 });
 
+const resendVerification = async () => {
+  if (!$auth.currentUser) return;
+  resending.value = true;
+  try {
+    await sendEmailVerification($auth.currentUser);
+    resent.value = true;
+  } catch {
+    // silently fail
+  } finally {
+    resending.value = false;
+  }
+};
+
 const submit = async () => {
   const { valid } = await formRef.value.validate();
   if (!valid) return;
@@ -79,7 +112,13 @@ const submit = async () => {
   error.value = false;
   try {
     await login(email.value, password.value);
-    const uid = $auth.currentUser?.uid;
+    const currentUser = $auth.currentUser;
+    if (currentUser && !currentUser.emailVerified) {
+      notVerified.value = true;
+      loading.value = false;
+      return;
+    }
+    const uid = currentUser?.uid;
     if (uid) {
       const snap = await getDoc(doc($db, "users", uid));
       const role = snap.data()?.role;

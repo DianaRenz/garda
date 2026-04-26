@@ -3,7 +3,7 @@
     <VCard rounded="t-xl">
       <VCardTitle class="pa-5 pb-3 d-flex align-center justify-space-between">
         <span>{{ $t('request.title') }}</span>
-        <VBtn icon="fluent:dismiss-24-regular" variant="text" size="small" @click="model = false" />
+        <VBtn icon="fluent:dismiss-24-regular" variant="text" size="small" aria-label="Close" @click="model = false" />
       </VCardTitle>
 
       <VCardText class="pa-5 pt-0">
@@ -205,7 +205,7 @@ const submit = async () => {
     }).catch(() => {});
     success.value = true;
   } catch (e) {
-    console.error('[RequestSheet] submit failed:', e);
+    if (import.meta.dev) console.error('[RequestSheet] submit failed:', e);
     submitError.value = t('request.submitError');
   } finally {
     loading.value = false;

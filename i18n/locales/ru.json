@@ -4,6 +4,7 @@
     "calendar": "Календарь",
     "bookings": "Бронирования",
     "guests": "Гости",
+    "guide": "Гид",
     "settings": "Настройки",
     "logout": "Выйти"
   },
@@ -107,7 +108,10 @@
     "password": "Пароль",
     "submit": "Войти",
     "forgotPassword": "Забыли пароль?",
-    "error": "Неверный email или пароль"
+    "error": "Неверный email или пароль",
+    "notVerified": "Email не подтверждён. Проверьте почту и перейдите по ссылке.",
+    "resendVerification": "Отправить ещё раз",
+    "verificationResent": "Отправлено!"
   },
   "resetPassword": {
     "title": "Восстановление пароля",
@@ -233,7 +237,10 @@
     "expiredToken": "Срок действия ссылки истёк.",
     "error": "Что-то пошло не так. Попробуйте ещё раз.",
     "emailInUse": "Этот email уже зарегистрирован. Попробуйте войти.",
-    "passwordMismatch": "Пароли не совпадают"
+    "passwordMismatch": "Пароли не совпадают",
+    "verifyTitle": "Подтвердите email",
+    "verifyText": "Мы отправили письмо на ваш адрес. Перейдите по ссылке в письме, чтобы активировать аккаунт.",
+    "goToLogin": "Перейти ко входу"
   },
   "invite": {
     "title": "Пригласительные ссылки",
@@ -261,7 +268,40 @@
   "apartment": {
     "title": "Квартира",
     "requestBtn": "Запросить даты",
-    "bookingsBtn": "Мои бронирования"
+    "bookingsBtn": "Мои бронирования",
+    "guideBtn": "Гид по квартире"
+  },
+  "guide": {
+    "title": "Гид по квартире",
+    "galleryTitle": "Фотографии",
+    "gallery": {
+      "apartment": "Квартира",
+      "garden": "Сад",
+      "view": "Вид"
+    },
+    "sections": {
+      "directions": "Как добраться",
+      "checkin": "Заезд и выезд",
+      "electricity": "Электричество",
+      "kitchen": "Кухня и быт",
+      "wifi": "Wi-Fi",
+      "grounds": "Территория и соседи",
+      "trash": "Мусор",
+      "emergency": "Экстренные контакты"
+    },
+    "checkout": {
+      "title": "Чеклист при выезде",
+      "description": "Пожалуйста, перед выездом убедитесь, что всё из списка выполнено."
+    },
+    "empty": "Информация пока не добавлена"
+  },
+  "adminGuide": {
+    "title": "Управление гидом",
+    "sections": "Секции гида",
+    "sectionText": "Текст",
+    "sectionPhotos": "Фотографии",
+    "checkoutPlaceholder": "Новый пункт чеклиста",
+    "language": "Язык контента"
   },
   "common": {
     "cancel": "Отмена",

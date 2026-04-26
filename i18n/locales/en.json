@@ -4,6 +4,7 @@
     "calendar": "Calendar",
     "bookings": "Bookings",
     "guests": "Guests",
+    "guide": "Guide",
     "settings": "Settings",
     "logout": "Logout"
   },
@@ -107,7 +108,10 @@
     "password": "Password",
     "submit": "Sign in",
     "forgotPassword": "Forgot password?",
-    "error": "Invalid email or password"
+    "error": "Invalid email or password",
+    "notVerified": "Email not verified. Check your inbox and click the verification link.",
+    "resendVerification": "Resend",
+    "verificationResent": "Sent!"
   },
   "resetPassword": {
     "title": "Reset password",
@@ -233,7 +237,10 @@
     "expiredToken": "This invite link has expired.",
     "error": "Something went wrong. Please try again.",
     "emailInUse": "This email is already registered. Try signing in instead.",
-    "passwordMismatch": "Passwords do not match"
+    "passwordMismatch": "Passwords do not match",
+    "verifyTitle": "Verify your email",
+    "verifyText": "We sent a verification email to your address. Click the link in the email to activate your account.",
+    "goToLogin": "Go to login"
   },
   "invite": {
     "title": "Invite links",
@@ -261,7 +268,40 @@
   "apartment": {
     "title": "The apartment",
     "requestBtn": "Request dates",
-    "bookingsBtn": "My bookings"
+    "bookingsBtn": "My bookings",
+    "guideBtn": "Apartment guide"
+  },
+  "guide": {
+    "title": "Apartment guide",
+    "galleryTitle": "Photos",
+    "gallery": {
+      "apartment": "Apartment",
+      "garden": "Garden",
+      "view": "View"
+    },
+    "sections": {
+      "directions": "How to get there",
+      "checkin": "Check-in & check-out",
+      "electricity": "Electricity",
+      "kitchen": "Kitchen & household",
+      "wifi": "Wi-Fi",
+      "grounds": "Grounds & neighbours",
+      "trash": "Waste disposal",
+      "emergency": "Emergency contacts"
+    },
+    "checkout": {
+      "title": "Checkout checklist",
+      "description": "Please make sure everything on the list is done before you leave."
+    },
+    "empty": "No information added yet"
+  },
+  "adminGuide": {
+    "title": "Guide management",
+    "sections": "Guide sections",
+    "sectionText": "Text",
+    "sectionPhotos": "Photos",
+    "checkoutPlaceholder": "New checklist item",
+    "language": "Content language"
   },
   "common": {
     "cancel": "Cancel",

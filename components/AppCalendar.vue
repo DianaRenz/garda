@@ -2,11 +2,11 @@
   <div>
     <!-- Month navigation -->
     <div class="d-flex align-center justify-space-between mb-4">
-      <VBtn icon variant="text" density="comfortable" @click="prev">
+      <VBtn icon variant="text" density="comfortable" aria-label="Previous month" @click="prev">
         <VIcon icon="fluent:chevron-left-24-regular" />
       </VBtn>
       <span class="font-weight-medium text-body-1 text-capitalize">{{ label }}</span>
-      <VBtn icon variant="text" density="comfortable" @click="next">
+      <VBtn icon variant="text" density="comfortable" aria-label="Next month" @click="next">
         <VIcon icon="fluent:chevron-right-24-regular" />
       </VBtn>
     </div>
@@ -39,12 +39,10 @@
 </template>
 
 <script setup lang="ts">
-import type { Booking, PublicBooking } from '~/composables/useBookings'
-
-type CalendarBooking = Booking | PublicBooking
+import type { Booking, CalendarBooking } from '~/composables/useBookings'
 
 const props = withDefaults(defineProps<{
-  bookings: CalendarBooking[]
+  bookings: (Booking | CalendarBooking)[]
   showNames?: boolean
   highlightIds?: string[]
 }>(), { showNames: false, highlightIds: () => [] })
@@ -95,7 +93,7 @@ const BG: Record<string, string> = {
   blocked:   'rgba(244,  67,  54, 0.14)',
 }
 
-const getBooking = (dateStr: string): CalendarBooking | null => {
+const getBooking = (dateStr: string): (Booking | CalendarBooking) | null => {
   const matches = props.bookings.filter(b => {
     if (!b.startDate || !b.endDate) return false
     return dateStr >= toStr(b.startDate.toDate()) && dateStr <= toStr(b.endDate.toDate())
@@ -156,7 +154,7 @@ const cellStyle = (cell: typeof cells.value[0]) => {
   text-align: center;
   font-size: 11px;
   padding: 4px 0 6px;
-  opacity: 0.45;
+  opacity: 0.6;
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }

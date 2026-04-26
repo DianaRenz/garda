@@ -155,12 +155,14 @@
 /register/[token]        → регистрация по инвайт-ссылке (тип admin/guest из токена)
 
 /apartment               → детали квартиры (protected: любой залогиненный пользователь)
+/guide                   → гид по квартире: фото, секции, чеклист (protected: любой залогиненный)
 /account                 → личный кабинет гостя: свои бронирования (role: guest, protected)
 
 /admin                   → дашборд (role: admin, protected)
 /admin/calendar          → полный календарь (protected)
 /admin/bookings          → список бронирований (protected)
 /admin/guests            → гостевая книга (protected)
+/admin/guide             → управление гидом: галерея, секции, чеклист (protected)
 /admin/settings          → настройки + генерация admin/guest инвайтов (protected)
 ```
 
@@ -319,8 +321,63 @@
 
 ---
 
+### Фаза 9 — Страница квартиры (Guide) и фотогалерея (завершено)
+- [x] `composables/useGuide.ts` — `GuideData` интерфейс, CRUD для секций/галереи/чеклиста, Firebase Storage upload/delete
+- [x] `components/PhotoUploader.vue` — переиспользуемый компонент загрузки фото (сетка миниатюр + upload + delete)
+- [x] `components/PhotoGallery.vue` — компонент галереи с табами по категориям и fullscreen-диалогом
+- [x] `pages/admin/guide/index.vue` — админская страница управления гидом (галерея, секции с VExpansionPanels, чеклист)
+- [x] `layouts/admin.vue` — добавлен навигационный пункт `/admin/guide`
+- [x] `pages/guide/index.vue` — гостевая страница-гид (галерея, секции, чеклист при выезде, auth guard)
+- [x] `pages/apartment.vue` — добавлена кнопка-ссылка на `/guide`
+- [x] i18n — ключи `nav.guide`, `guide.*`, `adminGuide.*` во всех трёх локалях
+
+Firestore модель: `/apartment/guide` — gallery (apartment/garden/view), sections (8 ключей с text+photos), checkoutItems, updatedAt.
+Firebase Storage: `guide/gallery/{category}/`, `guide/sections/{sectionKey}/`.
+
+---
+
+### Фаза 9.1 — Мультиязычный контент гида (завершено)
+- [x] `composables/useGuide.ts` — `sections.{key}.text` → `Record<string, string>`, `checkoutItems` → `Record<string, string[]>`, миграция старого формата при чтении, `getSectionText(key, locale)` / `getCheckoutItems(locale)` с fallback на `ru`
+- [x] `pages/admin/guide/index.vue` — табы языков (RU/EN/DE) выше секций, textarea и чеклист привязаны к текущей локали
+- [x] `pages/guide/index.vue` — `locale` из `useI18n()`, отображение текста и чеклиста по текущей локали с fallback
+- [x] i18n — ключ `adminGuide.language` во всех трёх локалях
+
+Firestore модель обновлена: `sections.{key}.text` = `{ ru, en, de }`, `checkoutItems` = `{ ru: [], en: [], de: [] }`. Фото остались без языков.
+
+---
+
+### Фаза 10 — Верификация email при регистрации (завершено)
+- [x] `pages/register/[token].vue` — после `createUserWithEmailAndPassword` вызывается `sendEmailVerification()`, показывается экран «проверьте почту» вместо редиректа
+- [x] `pages/login/index.vue` — при логине проверяется `emailVerified`; если не подтверждён — предупреждение + кнопка «отправить ещё раз»
+- [x] i18n — ключи `register.verifyTitle/verifyText/goToLogin`, `login.notVerified/resendVerification/verificationResent`
+
+---
+
+## ToDo
+
+### Фаза 11 — Cookie-баннер и Datenschutz / Impressum
+- [ ] **Cookie-баннер** — компонент `CookieBanner.vue`, показывается один раз (согласие хранится в `localStorage`). Два варианта: «Принять» / «Только необходимые». Если отклонено — не инициализировать аналитику (если появится). Firebase Auth + Firestore — necessary cookies, не требуют согласия.
+- [ ] **Страница Datenschutz** (`/datenschutz`) — политика конфиденциальности на немецком (основной юрисдикция — Германия/Австрия). Содержание:
+  - Ответственный (имя, контакт)
+  - Какие данные собираются: email, имя, телефон (при регистрации по инвайту), данные бронирований
+  - Хостинг: Firebase Hosting (Google LLC, US) — ссылка на DPA Google
+  - Аутентификация: Firebase Auth (Google LLC, US) — email + пароль
+  - База данных: Cloud Firestore (Google LLC, US) — данные бронирований, профили
+  - Хранилище файлов: Firebase Storage (Google LLC, US, `us-central1`) — фотографии загружаются только админом, персональные данные пользователей НЕ хранятся в Storage
+  - Email-уведомления: EmailJS (сервис отправки email) — передаются email, имя, даты бронирования
+  - Cookies: только технически необходимые (Firebase Auth session), аналитические — нет
+  - Передача данных в третьи страны (US): на основании Standard Contractual Clauses (SCC) Google
+  - Права пользователя: доступ, исправление, удаление, ограничение обработки, переносимость, жалоба в надзорный орган
+  - Срок хранения: данные хранятся до удаления аккаунта или по запросу
+- [ ] **Страница Impressum** (`/impressum`) — обязательно для DE/AT. Имя, адрес, контакт, ответственный за контент (§ 5 TMG / § 25 MedienG)
+- [ ] **Ссылки в footer** — Datenschutz + Impressum в `layouts/default.vue`
+- [ ] **i18n** — ключи для cookie-баннера во всех 3 локалях; страницы Datenschutz/Impressum — только на немецком (юридически достаточно)
+
+Примечание по Firebase US (бесплатный тариф — только `us-central1`): передача данных в US легальна на основании Google DPA + Standard Contractual Clauses (SCC). Когда появятся пользовательские фото/комментарии — достаточно: (1) чекбокс согласия с Datenschutz при регистрации, (2) упоминание в Datenschutz, что пользовательский контент хранится в US (Firebase Storage/Firestore, Google SCC), (3) возможность удалить свои данные. Миграция в EU-регион не требуется.
+
+---
+
 ## Nice-to-Have (не в MVP)
 
 - iCal экспорт календаря
 - История посещений / статистика (кто чаще всего, любимые месяцы)
-- ~~Фото квартиры~~ — не нужно, приложение для своих

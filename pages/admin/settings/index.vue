@@ -1,6 +1,7 @@
 <template>
   <div>
     <h1 class="text-h5 font-weight-bold mb-6">{{ $t('settings.title') }}</h1>
+    <VAlert v-if="error" type="error" variant="tonal" closable class="mb-4" @click:close="error = ''">{{ error }}</VAlert>
 
     <VForm ref="formRef" @submit.prevent="save">
       <div class="mt-1">
@@ -98,9 +99,11 @@ definePageMeta({ layout: "admin", middleware: "auth" });
 
 const { ruleRequired } = useFormRules();
 const { apartment, fetchApartment, saveApartment } = useApartment();
+const { t } = useI18n();
 
 const loading = ref(false);
 const success = ref(false);
+const error = ref('');
 const formRef = ref();
 
 const form = reactive({
@@ -122,6 +125,8 @@ const save = async () => {
   try {
     await saveApartment({ ...form });
     success.value = true;
+  } catch {
+    error.value = t('common.error');
   } finally {
     loading.value = false;
   }
@@ -145,6 +150,8 @@ const createAdminInvite = async () => {
     const token = await generateInvite("admin");
     adminInviteLink.value = `${window.location.origin}/register/${token}`;
     copiedAdmin.value = false;
+  } catch {
+    error.value = t('common.error');
   } finally {
     adminInviteLoading.value = false;
   }
@@ -156,6 +163,8 @@ const createGuestInvite = async () => {
     const token = await generateInvite("guest");
     guestInviteLink.value = `${window.location.origin}/register/${token}`;
     copiedGuest.value = false;
+  } catch {
+    error.value = t('common.error');
   } finally {
     guestInviteLoading.value = false;
   }

@@ -33,7 +33,7 @@ export const useNotifications = () => {
         { publicKey: config.public.emailjsPublicKey },
       );
     } catch (e) {
-      console.warn("[notifications] admin notification failed", e);
+      if (import.meta.dev) console.warn("[notifications] admin notification failed", e);
     }
   };
 
@@ -66,7 +66,7 @@ export const useNotifications = () => {
         { publicKey: config.public.emailjsPublicKey },
       );
     } catch (e) {
-      console.warn("[notifications] guest notification failed", e);
+      if (import.meta.dev) console.warn("[notifications] guest notification failed", e);
     }
   };
 

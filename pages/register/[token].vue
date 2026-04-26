@@ -17,6 +17,14 @@
           <VProgressCircular indeterminate color="primary" />
         </div>
 
+        <!-- Email verification sent -->
+        <div v-else-if="emailSent" class="text-center py-4">
+          <VIcon icon="fluent:mail-checkmark-24-regular" size="64" color="primary" class="mb-4" />
+          <h2 class="text-h6 font-weight-bold mb-2">{{ $t('register.verifyTitle') }}</h2>
+          <p class="text-body-2 text-medium-emphasis mb-6">{{ $t('register.verifyText') }}</p>
+          <VBtn to="/login" variant="tonal" color="primary">{{ $t('register.goToLogin') }}</VBtn>
+        </div>
+
         <!-- Registration form -->
         <VForm v-else ref="formRef" @submit.prevent="submit">
           <!-- Guest-only: name and phone -->
@@ -87,7 +95,7 @@
 </template>
 
 <script setup lang="ts">
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
 import { doc, runTransaction, serverTimestamp } from "firebase/firestore";
 import type { Guest } from '~/composables/useGuests';
 
@@ -107,6 +115,7 @@ const inviteType = ref<"admin" | "guest">("admin");
 const loading = ref(false);
 const submitError = ref<string | null>(null);
 const formRef = ref();
+const emailSent = ref(false);
 
 const name = ref("");
 const phone = ref("");
@@ -167,7 +176,9 @@ const submit = async () => {
         userId: credential.user.uid,
       }).catch(() => {}); // best-effort, don't block registration
     }
-    await navigateTo(inviteType.value === "guest" ? "/apartment" : "/admin");
+    // Send verification email and show confirmation screen
+    await sendEmailVerification(credential.user);
+    emailSent.value = true;
   } catch (e: any) {
     if (e?.code === "auth/email-already-in-use") {
       submitError.value = "emailInUse";
