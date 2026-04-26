@@ -273,10 +273,12 @@
   },
   "guide": {
     "title": "Wohnungsführer",
-    "gallery": "Fotos",
-    "gallery.apartment": "Wohnung",
-    "gallery.garden": "Garten",
-    "gallery.view": "Aussicht",
+    "galleryTitle": "Fotos",
+    "gallery": {
+      "apartment": "Wohnung",
+      "garden": "Garten",
+      "view": "Aussicht"
+    },
     "sections": {
       "directions": "Anfahrt",
       "checkin": "An- und Abreise",
@@ -298,7 +300,8 @@
     "sections": "Guide-Abschnitte",
     "sectionText": "Text",
     "sectionPhotos": "Fotos",
-    "checkoutPlaceholder": "Neuer Checklisten-Punkt"
+    "checkoutPlaceholder": "Neuer Checklisten-Punkt",
+    "language": "Inhaltssprache"
   },
   "common": {
     "cancel": "Abbrechen",

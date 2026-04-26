@@ -99,6 +99,7 @@ definePageMeta({ layout: "admin", middleware: "auth" });
 
 const { ruleRequired } = useFormRules();
 const { apartment, fetchApartment, saveApartment } = useApartment();
+const { t } = useI18n();
 
 const loading = ref(false);
 const success = ref(false);
@@ -125,7 +126,7 @@ const save = async () => {
     await saveApartment({ ...form });
     success.value = true;
   } catch {
-    error.value = 'Error';
+    error.value = t('common.error');
   } finally {
     loading.value = false;
   }
@@ -150,7 +151,7 @@ const createAdminInvite = async () => {
     adminInviteLink.value = `${window.location.origin}/register/${token}`;
     copiedAdmin.value = false;
   } catch {
-    error.value = 'Error';
+    error.value = t('common.error');
   } finally {
     adminInviteLoading.value = false;
   }
@@ -163,7 +164,7 @@ const createGuestInvite = async () => {
     guestInviteLink.value = `${window.location.origin}/register/${token}`;
     copiedGuest.value = false;
   } catch {
-    error.value = 'Error';
+    error.value = t('common.error');
   } finally {
     guestInviteLoading.value = false;
   }

@@ -138,6 +138,7 @@ definePageMeta({ layout: "admin", middleware: "auth" });
 const { bookings, subscribe, updateBooking, deleteBooking, getConflicts, formatDate, statusColor } = useBookings();
 // TODO: email notifications — see GitHub issue #1
 // const { notifyGuestStatusUpdate } = useNotifications();
+const { t } = useI18n();
 
 type LegendItem = { key: string; color: string; border?: string };
 
@@ -179,7 +180,7 @@ const confirm = async () => {
     await updateBooking(booking.id, { status: 'confirmed' });
     selected.value = null;
   } catch {
-    error.value = 'Error';
+    error.value = t('common.error');
   } finally {
     confirming.value = false;
   }
@@ -203,7 +204,7 @@ const doReject = async () => {
     rejectDialog.value = false;
     selected.value = null;
   } catch {
-    error.value = 'Error';
+    error.value = t('common.error');
   } finally {
     rejecting.value = false;
   }
@@ -217,7 +218,7 @@ const remove = async () => {
     deleteDialog.value = false;
     selected.value = null;
   } catch {
-    error.value = 'Error';
+    error.value = t('common.error');
   } finally {
     deleting.value = false;
   }

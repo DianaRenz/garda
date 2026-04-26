@@ -2,8 +2,11 @@ import { doc, getDoc, setDoc, updateDoc, serverTimestamp } from "firebase/firest
 import { ref as storageRef, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
 import { arrayUnion, arrayRemove } from "firebase/firestore";
 
+export const GUIDE_LOCALES = ["ru", "en", "de"] as const;
+export type GuideLocale = (typeof GUIDE_LOCALES)[number];
+
 export interface GuideSection {
-  text: string;
+  text: Record<string, string>;
   photos: string[];
 }
 
@@ -14,7 +17,7 @@ export interface GuideData {
     view: string[];
   };
   sections: Record<string, GuideSection>;
-  checkoutItems: string[];
+  checkoutItems: Record<string, string[]>;
   updatedAt: any;
 }
 
@@ -45,12 +48,18 @@ export const GUIDE_SECTION_ICONS: Record<GuideSectionKey, string> = {
 export const GALLERY_CATEGORIES = ["apartment", "garden", "view"] as const;
 export type GalleryCategory = (typeof GALLERY_CATEGORIES)[number];
 
+const emptyLocalizedText = (): Record<string, string> =>
+  Object.fromEntries(GUIDE_LOCALES.map((l) => [l, ""]));
+
+const emptyLocalizedList = (): Record<string, string[]> =>
+  Object.fromEntries(GUIDE_LOCALES.map((l) => [l, []]));
+
 const emptyGuide = (): GuideData => ({
   gallery: { apartment: [], garden: [], view: [] },
   sections: Object.fromEntries(
-    GUIDE_SECTION_KEYS.map((k) => [k, { text: "", photos: [] }])
+    GUIDE_SECTION_KEYS.map((k) => [k, { text: emptyLocalizedText(), photos: [] }])
   ),
-  checkoutItems: [],
+  checkoutItems: emptyLocalizedList(),
   updatedAt: null,
 });
 
@@ -72,15 +81,26 @@ export const useGuide = () => {
           view: data.gallery?.view ?? base.gallery.view,
         },
         sections: Object.fromEntries(
-          GUIDE_SECTION_KEYS.map((k) => [
-            k,
-            {
-              text: data.sections?.[k]?.text ?? "",
-              photos: data.sections?.[k]?.photos ?? [],
-            },
-          ])
+          GUIDE_SECTION_KEYS.map((k) => {
+            const raw = data.sections?.[k]?.text;
+            // Migration: string → { ru: text }
+            const text =
+              typeof raw === "string"
+                ? { ...emptyLocalizedText(), ru: raw }
+                : { ...emptyLocalizedText(), ...(raw ?? {}) };
+            return [
+              k,
+              {
+                text,
+                photos: data.sections?.[k]?.photos ?? [],
+              },
+            ];
+          })
         ),
-        checkoutItems: data.checkoutItems ?? [],
+        // Migration: string[] → { ru: items }
+        checkoutItems: Array.isArray(data.checkoutItems)
+          ? { ...emptyLocalizedList(), ru: data.checkoutItems }
+          : { ...emptyLocalizedList(), ...(data.checkoutItems ?? {}) },
         updatedAt: data.updatedAt,
       };
     }
@@ -93,24 +113,38 @@ export const useGuide = () => {
     }
   };
 
-  const saveSection = async (key: string, text: string) => {
+  const saveSection = async (key: string, locale: GuideLocale, text: string) => {
     await ensureDoc();
     await updateDoc(docRef, {
-      [`sections.${key}.text`]: text,
+      [`sections.${key}.text.${locale}`]: text,
       updatedAt: serverTimestamp(),
     });
     if (guide.value.sections[key]) {
-      guide.value.sections[key].text = text;
+      guide.value.sections[key].text[locale] = text;
     }
   };
 
-  const saveCheckoutItems = async (items: string[]) => {
+  const saveCheckoutItems = async (locale: GuideLocale, items: string[]) => {
     await ensureDoc();
     await updateDoc(docRef, {
-      checkoutItems: items,
+      [`checkoutItems.${locale}`]: items,
       updatedAt: serverTimestamp(),
     });
-    guide.value.checkoutItems = items;
+    guide.value.checkoutItems[locale] = items;
+  };
+
+  const getSectionText = (key: string, locale: string): string => {
+    const texts = guide.value.sections[key]?.text;
+    if (!texts) return "";
+    return texts[locale] || texts.ru || "";
+  };
+
+  const getCheckoutItems = (locale: string): string[] => {
+    const items = guide.value.checkoutItems;
+    if (!items) return [];
+    const list = items[locale];
+    if (list && list.length) return list;
+    return items.ru || [];
   };
 
   const uploadPhoto = async (
@@ -185,6 +219,8 @@ export const useGuide = () => {
     fetchGuide,
     saveSection,
     saveCheckoutItems,
+    getSectionText,
+    getCheckoutItems,
     addGalleryPhoto,
     removeGalleryPhoto,
     addSectionPhoto,

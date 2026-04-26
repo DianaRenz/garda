@@ -10,7 +10,7 @@
     <template v-else>
 
       <!-- Gallery -->
-      <h2 class="text-h6 font-weight-bold mb-4">{{ $t('guide.gallery') }}</h2>
+      <h2 class="text-h6 font-weight-bold mb-4">{{ $t('guide.galleryTitle') }}</h2>
 
       <VTabs v-model="galleryTab" class="mb-4">
         <VTab
@@ -38,6 +38,12 @@
 
       <VDivider class="my-8" />
 
+      <!-- Language tabs -->
+      <label class="label text-grey-darken-2 mb-1">{{ $t('adminGuide.language') }}</label>
+      <VTabs v-model="editLocale" class="mb-6">
+        <VTab v-for="loc in GUIDE_LOCALES" :key="loc" :value="loc">{{ LOCALE_LABELS[loc] }}</VTab>
+      </VTabs>
+
       <!-- Sections -->
       <h2 class="text-h6 font-weight-bold mb-4">{{ $t('adminGuide.sections') }}</h2>
 
@@ -56,7 +62,7 @@
             <div class="mt-2">
               <label class="label text-grey-darken-2">{{ $t('adminGuide.sectionText') }}</label>
               <VTextarea
-                v-model="sectionForms[key]!.text"
+                v-model="sectionForms[key]!.text[editLocale]"
                 rows="4"
                 auto-grow
               />
@@ -96,7 +102,7 @@
 
       <VList density="compact">
         <VListItem
-          v-for="(item, i) in checkoutItems"
+          v-for="(item, i) in checkoutItems[editLocale]"
           :key="i"
         >
           <template #prepend>
@@ -155,7 +161,7 @@
 </template>
 
 <script setup lang="ts">
-import type { GalleryCategory, GuideSectionKey } from '~/composables/useGuide';
+import type { GalleryCategory, GuideSectionKey, GuideLocale } from '~/composables/useGuide';
 
 definePageMeta({ layout: "admin", middleware: "auth" });
 
@@ -166,21 +172,26 @@ const {
   addSectionPhoto, removeSectionPhoto,
 } = useGuide();
 
-const { GUIDE_SECTION_KEYS, GUIDE_SECTION_ICONS, GALLERY_CATEGORIES } = await import('~/composables/useGuide');
+const { GUIDE_SECTION_KEYS, GUIDE_SECTION_ICONS, GALLERY_CATEGORIES, GUIDE_LOCALES } = await import('~/composables/useGuide');
 const { t } = useI18n();
 
 const loading = ref(true);
 const galleryTab = ref<GalleryCategory>('apartment');
+const editLocale = ref<GuideLocale>('ru');
 
-// Section forms (local copy for editing)
-const sectionForms = reactive<Record<string, { text: string }>>(
-  Object.fromEntries(GUIDE_SECTION_KEYS.map(k => [k, { text: '' }]))
+const LOCALE_LABELS: Record<GuideLocale, string> = { ru: 'RU', en: 'EN', de: 'DE' };
+
+// Section forms (local copy for editing, per locale)
+const sectionForms = reactive<Record<string, { text: Record<string, string> }>>(
+  Object.fromEntries(GUIDE_SECTION_KEYS.map(k => [k, { text: Object.fromEntries(GUIDE_LOCALES.map(l => [l, ''])) }]))
 );
 const savingSection = ref<string | null>(null);
 const savedSection = ref<string | null>(null);
 
-// Checkout
-const checkoutItems = ref<string[]>([]);
+// Checkout (per locale)
+const checkoutItems = reactive<Record<string, string[]>>(
+  Object.fromEntries(GUIDE_LOCALES.map(l => [l, []]))
+);
 const newCheckoutItem = ref('');
 const savingCheckout = ref(false);
 const savedCheckout = ref(false);
@@ -189,9 +200,13 @@ onMounted(async () => {
   await fetchGuide();
   // Sync local forms
   for (const key of GUIDE_SECTION_KEYS) {
-    sectionForms[key]!.text = guide.value.sections[key]?.text ?? '';
+    for (const loc of GUIDE_LOCALES) {
+      sectionForms[key]!.text[loc] = guide.value.sections[key]?.text?.[loc] ?? '';
+    }
   }
-  checkoutItems.value = [...guide.value.checkoutItems];
+  for (const loc of GUIDE_LOCALES) {
+    checkoutItems[loc] = [...(guide.value.checkoutItems[loc] ?? [])];
+  }
   loading.value = false;
 });
 
@@ -213,7 +228,7 @@ const handleSaveSection = async (key: string) => {
   savingSection.value = key;
   savedSection.value = null;
   try {
-    await saveSection(key, sectionForms[key]!.text);
+    await saveSection(key, editLocale.value, sectionForms[key]!.text[editLocale.value]);
     savedSection.value = key;
     setTimeout(() => { if (savedSection.value === key) savedSection.value = null; }, 2000);
   } catch {
@@ -237,19 +252,19 @@ const handleSectionRemove = async (key: string, url: string) => {
 const addCheckoutItem = () => {
   const text = newCheckoutItem.value.trim();
   if (!text) return;
-  checkoutItems.value.push(text);
+  checkoutItems[editLocale.value].push(text);
   newCheckoutItem.value = '';
 };
 
 const removeCheckoutItem = (index: number) => {
-  checkoutItems.value.splice(index, 1);
+  checkoutItems[editLocale.value].splice(index, 1);
 };
 
 const handleSaveCheckout = async () => {
   savingCheckout.value = true;
   savedCheckout.value = false;
   try {
-    await saveCheckoutItems([...checkoutItems.value]);
+    await saveCheckoutItems(editLocale.value, [...checkoutItems[editLocale.value]]);
     savedCheckout.value = true;
     setTimeout(() => { savedCheckout.value = false; }, 2000);
   } catch {

@@ -20,7 +20,7 @@
           <!-- Photo gallery -->
           <template v-if="hasGallery">
             <h2 class="text-body-2 font-weight-medium text-medium-emphasis mb-3">
-              {{ $t('guide.gallery') }}
+              {{ $t('guide.galleryTitle') }}
             </h2>
             <VCard variant="outlined" rounded="lg" class="pa-4 mb-8">
               <PhotoGallery
@@ -32,7 +32,7 @@
 
           <!-- Guide sections -->
           <template v-for="key in GUIDE_SECTION_KEYS" :key="key">
-            <template v-if="guide.sections[key]?.text || guide.sections[key]?.photos?.length">
+            <template v-if="getSectionText(key, locale) || guide.sections[key]?.photos?.length">
               <VCard
                 rounded="lg"
                 class="mb-4"
@@ -51,11 +51,11 @@
                     </span>
                   </div>
                   <div
-                    v-if="guide.sections[key]?.text"
+                    v-if="getSectionText(key, locale)"
                     class="text-body-2 text-medium-emphasis"
                     style="white-space:pre-line"
                   >
-                    {{ guide.sections[key].text }}
+                    {{ getSectionText(key, locale) }}
                   </div>
                   <VRow
                     v-if="guide.sections[key]?.photos?.length"
@@ -83,7 +83,7 @@
           </template>
 
           <!-- Checkout checklist -->
-          <template v-if="guide.checkoutItems.length">
+          <template v-if="currentCheckoutItems.length">
             <h2 class="text-body-2 font-weight-medium text-medium-emphasis mb-3 mt-8">
               {{ $t('guide.checkout.title') }}
             </h2>
@@ -94,7 +94,7 @@
                 </p>
                 <VList density="compact">
                   <VListItem
-                    v-for="(item, i) in guide.checkoutItems"
+                    v-for="(item, i) in currentCheckoutItems"
                     :key="i"
                   >
                     <template #prepend>
@@ -160,14 +160,20 @@
 import { GUIDE_SECTION_KEYS, GUIDE_SECTION_ICONS } from '~/composables/useGuide';
 
 definePageMeta({ layout: "default" });
-const { guide, fetchGuide } = useGuide();
+const { guide, fetchGuide, getSectionText, getCheckoutItems } = useGuide();
 const { apartment, fetchApartment } = useApartment();
-const { t } = useI18n();
+const { t, locale } = useI18n();
 
 const loading = ref(true);
 const checked = ref<boolean[]>([]);
 const photoDialog = ref(false);
 const selectedPhoto = ref<string | null>(null);
+
+const currentCheckoutItems = computed(() => getCheckoutItems(locale.value));
+
+watch(currentCheckoutItems, (items) => {
+  checked.value = items.map(() => false);
+});
 
 const galleryCategoryLabels = computed(() => ({
   apartment: t('guide.gallery.apartment'),
@@ -181,9 +187,9 @@ const hasGallery = computed(() =>
 
 const isEmpty = computed(() => {
   if (hasGallery.value) return false;
-  if (guide.value.checkoutItems.length) return false;
+  if (currentCheckoutItems.value.length) return false;
   return GUIDE_SECTION_KEYS.every(
-    k => !guide.value.sections[k]?.text && !guide.value.sections[k]?.photos?.length
+    k => !getSectionText(k, locale.value) && !guide.value.sections[k]?.photos?.length
   );
 });
 
@@ -203,7 +209,7 @@ onMounted(async () => {
     fetchApartment().catch(() => {}),
   ]);
 
-  checked.value = guide.value.checkoutItems.map(() => false);
+  checked.value = currentCheckoutItems.value.map(() => false);
   loading.value = false;
 });
 </script>

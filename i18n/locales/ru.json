@@ -273,10 +273,12 @@
   },
   "guide": {
     "title": "Гид по квартире",
-    "gallery": "Фотографии",
-    "gallery.apartment": "Квартира",
-    "gallery.garden": "Сад",
-    "gallery.view": "Вид",
+    "galleryTitle": "Фотографии",
+    "gallery": {
+      "apartment": "Квартира",
+      "garden": "Сад",
+      "view": "Вид"
+    },
     "sections": {
       "directions": "Как добраться",
       "checkin": "Заезд и выезд",
@@ -298,7 +300,8 @@
     "sections": "Секции гида",
     "sectionText": "Текст",
     "sectionPhotos": "Фотографии",
-    "checkoutPlaceholder": "Новый пункт чеклиста"
+    "checkoutPlaceholder": "Новый пункт чеклиста",
+    "language": "Язык контента"
   },
   "common": {
     "cancel": "Отмена",

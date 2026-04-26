@@ -273,10 +273,12 @@
   },
   "guide": {
     "title": "Apartment guide",
-    "gallery": "Photos",
-    "gallery.apartment": "Apartment",
-    "gallery.garden": "Garden",
-    "gallery.view": "View",
+    "galleryTitle": "Photos",
+    "gallery": {
+      "apartment": "Apartment",
+      "garden": "Garden",
+      "view": "View"
+    },
     "sections": {
       "directions": "How to get there",
       "checkin": "Check-in & check-out",
@@ -298,7 +300,8 @@
     "sections": "Guide sections",
     "sectionText": "Text",
     "sectionPhotos": "Photos",
-    "checkoutPlaceholder": "New checklist item"
+    "checkoutPlaceholder": "New checklist item",
+    "language": "Content language"
   },
   "common": {
     "cancel": "Cancel",
