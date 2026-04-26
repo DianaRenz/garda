@@ -88,7 +88,7 @@ const formRef = ref();
 // Already logged in — redirect immediately
 onMounted(() => {
   if (user.value && userRole.value) {
-    navigateTo(userRole.value === "guest" ? "/account" : "/admin");
+    navigateTo(userRole.value === "admin" ? "/admin" : "/apartment");
   }
 });
 
@@ -122,7 +122,7 @@ const submit = async () => {
     if (uid) {
       const snap = await getDoc(doc($db, "users", uid));
       const role = snap.data()?.role;
-      await navigateTo(role === "guest" ? "/account" : "/admin");
+      await navigateTo(role === "admin" ? "/admin" : "/apartment");
     } else {
       await navigateTo("/admin");
     }

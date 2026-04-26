@@ -306,6 +306,11 @@
     "checkoutPlaceholder": "New checklist item",
     "language": "Content language"
   },
+  "validation": {
+    "required": "Required",
+    "email": "Enter a valid email",
+    "passwordLength": "Password must be 6 characters or more"
+  },
   "common": {
     "cancel": "Cancel",
     "save": "Save",
