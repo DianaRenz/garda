@@ -63,7 +63,7 @@ This is a Nuxt 4 + Vuetify 4 starter template. Vuetify is loaded via `vite-plugi
 
 **Bookings:** `composables/useBookings.ts` — `Booking` fields include `userId: string | null` (Firebase UID), `guestPhone: string`, `guestEmail: string`, `guestContact?: string` (legacy). Single Firestore collection: `bookings` (full data, auth-required). Writes use plain `addDoc`/`updateDoc`/`deleteDoc`. `subscribeCalendar()` returns `{ calendarBookings: Ref<CalendarBooking[]>, unsub }` — local ref with stripped fields `{ id, startDate, endDate, status, userId }`, `rejected` filtered out client-side. Used by `/apartment` and `/calendar` for the calendar display. `formatDate(ts)` uses `ru-RU` locale. `statusColor` maps status to Vuetify color names.
 
-**Landing page concept (`/`):** Public editorial page about the Prada / Monte Baldo / Lake Garda region — NOT apartment info. Five sections: Hero (region CTA), About (personal statement), Feature cards (6 topics: hiking, food, experiences, wellness, practical, family), Honest notes (region-focused: season, parking, cable car, wind, restaurants), Private CTA (`v-if="user"` only). Uses `$tm()` + `$rt()` for i18n arrays in Honest notes. No `useApartment()` here.
+**Landing page concept (`/`):** Public editorial page about the Prada / Monte Baldo / Lake Garda region — NOT apartment info. Four sections: Hero (two CTAs: `to="/calendar"` and `to="/request"` which redirects to `/apartment`), Feature cards (6 topics: hiking, food, experiences, wellness, practical, family), Honest notes (region-focused: season, parking, cable car, wind, restaurants), Private CTA (`v-if="user"` only). Uses `$tm()` + `$rt()` for i18n arrays in Honest notes. No `useApartment()` here.
 
 **Apartment page (`/apartment`):** Full guest dashboard for registered users (guests and admins). Sections: profile header (name/email), stats (next visit date, total confirmed), calendar (`AppCalendar` with `calendarBookings` from `subscribeCalendar()` + `highlightIds` computed from userId match), "Request dates" button → opens `RequestSheet` bottom sheet, upcoming/past bookings list (cancel pending, rejection note), apartment info (address/directions/rules from `useApartment()`). Auth guard uses `onAuthStateChanged` promise — do NOT use `isLoggedIn.value` directly as it may be `false` before Firebase resolves.
 
@@ -97,6 +97,8 @@ Always show a loading spinner (`ref(true)` → `false` after data loads). Use lo
 **i18n:** Locale files at `i18n/locales/{ru,en,de}.json`. Always add keys to all three files. Use `$t('key')` in templates, `useI18n().t('key')` in `<script setup>`. Use `$tm('key')` for arrays + `$rt(item)` per item. Import types from Vuetify with `import type` to avoid runtime errors.
 
 **Environment variables:** See `env.example` at project root for all required variables. Firebase vars map via Nuxt's convention: `NUXT_PUBLIC_FIREBASE_API_KEY` → `runtimeConfig.public.firebaseApiKey`. EmailJS vars follow the same pattern.
+
+**Deployment:** `ssr: false` in `nuxt.config.ts` (SPA mode). `npm run deploy` = `nuxt generate && firebase deploy --only hosting`. Output goes to `.output/public`. Firebase project: `garda-prada` (`.firebaserc`). `firebase.json` has SPA rewrite (`** → /index.html`). `.firebase/` cache is gitignored.
 
 **Always update PLAN.md and CLAUDE.md** after implementing significant features.
 

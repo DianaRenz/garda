@@ -34,8 +34,7 @@
 ### Публичная часть
 
 #### `/` — Лендинг (редакционный гид по региону)
-- Hero: заголовок, подзаголовок, два CTA (гид → `/calendar`, запрос дат → `/request`)
-- About: личное вступление и история проекта
+- Hero: заголовок, подзаголовок, два CTA (гид → `/calendar`, запрос дат → `/request` → редирект на `/apartment`)
 - Feature cards: 6 тем (походы, еда, впечатления, велнес, транспорт, с детьми)
 - Честные заметки о регионе (сезон, парковки, канатная дорога, ветер, рестораны)
 - Private CTA (только для залогиненных): кнопка → `/apartment` (гость) или `/admin` (админ)
@@ -305,9 +304,18 @@
    ```
 
 Вызовы уже активны в:
-- `pages/request/index.vue` — `notifyAdminNewRequest` после успешного submit
+- `components/RequestSheet.vue` — `notifyAdminNewRequest` после успешного submit
 - `pages/admin/bookings/index.vue` — `notifyGuestStatusUpdate` при confirm/reject
 - `pages/admin/calendar/index.vue` — `notifyGuestStatusUpdate` в `confirm()` и `doReject()`
+
+---
+
+### Фаза 8 — Деплой на Firebase Hosting (завершено)
+- [x] `nuxt.config.ts` — `ssr: false` (SPA-режим для статического деплоя)
+- [x] `firebase.json` — public: `.output/public`, SPA rewrite `** → /index.html`
+- [x] `.firebaserc` — проект `garda-prada`
+- [x] `package.json` — скрипт `deploy`: `nuxt generate && firebase deploy --only hosting`
+- [x] `.gitignore` — добавлен `.firebase/` (кеш CLI)
 
 ---
 
