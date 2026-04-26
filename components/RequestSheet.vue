@@ -19,28 +19,42 @@
           </VCard>
 
           <VForm ref="formRef" @submit.prevent="submit">
-            <!-- Dates -->
-            <VRow dense>
-              <VCol cols="12" sm="6">
-                <label class="label text-grey-darken-2">{{ $t('request.startDate') }}</label>
-                <VTextField v-model="form.startDate" :rules="startDateRules" :min="todayIso" type="date" />
-              </VCol>
-              <VCol cols="12" sm="6">
-                <label class="label text-grey-darken-2">{{ $t('request.endDate') }}</label>
-                <VTextField v-model="form.endDate" :rules="endDateRules" :min="minEndDate" type="date" />
-              </VCol>
-            </VRow>
+            <!-- Date range picker -->
+            <label class="label text-grey-darken-2">{{ $t('request.selectDates') }}</label>
+            <div class="d-flex justify-center mb-2">
+              <VDatePicker
+                v-model="dateRange"
+                multiple="range"
+                :min="todayDate"
+                :first-day-of-week="1"
+                color="primary"
+                show-adjacent-months
+                hide-header
+                class="request-date-picker"
+              />
+            </div>
+
+            <!-- Selected range display -->
+            <div v-if="dateRangeReady" class="text-body-2 font-weight-medium text-center mb-2">
+              {{ formatDateShort(formStartDate) }} — {{ formatDateShort(formEndDate) }}
+              <span class="text-medium-emphasis ml-1">({{ nightsLabel }})</span>
+            </div>
+
+            <!-- Validation error -->
+            <div v-if="showDateError" class="text-caption text-error text-center mb-2">
+              {{ $t('request.datesRequired') }}
+            </div>
 
             <VAlert v-if="blockingConflicts.length" type="error" variant="tonal" density="comfortable" class="mt-2 mb-3">
               {{ $t('request.conflictBlocked') }}
               <div v-for="b in blockingConflicts" :key="b.id" class="text-body-2 mt-1">
-                {{ formatDate(b.startDate) }} — {{ formatDate(b.endDate) }}
+                {{ formatBookingDate(b.startDate) }} — {{ formatBookingDate(b.endDate) }}
               </div>
             </VAlert>
             <VAlert v-else-if="pendingConflicts.length" type="warning" variant="tonal" density="comfortable" class="mt-2 mb-3">
               {{ $t('request.conflictPending') }}
               <div v-for="b in pendingConflicts" :key="b.id" class="text-body-2 mt-1">
-                {{ formatDate(b.startDate) }} — {{ formatDate(b.endDate) }}
+                {{ formatBookingDate(b.startDate) }} — {{ formatBookingDate(b.endDate) }}
               </div>
             </VAlert>
 
@@ -100,51 +114,73 @@ const model = computed({
 });
 
 const { $auth } = useNuxtApp();
-const { ruleRequired } = useFormRules();
-const { createBooking, formatDate } = useBookings();
+const { createBooking, formatDate: formatBookingDate } = useBookings();
 const { notifyAdminNewRequest } = useNotifications();
-const { t } = useI18n();
+const { t, locale } = useI18n();
+
+const intlLocale = computed(() =>
+  ({ ru: 'ru-RU', en: 'en-US', de: 'de-DE' }[locale.value] ?? locale.value)
+);
 
 const formRef = ref();
 const loading = ref(false);
 const success = ref(false);
 const submitError = ref("");
+const showDateError = ref(false);
 const currentUserId = ref<string | null>(null);
 
+const dateRange = ref<Date[]>([]);
 const form = reactive({
-  startDate: "",
-  endDate: "",
   notes: "",
 });
+
+const todayDate = new Date();
+todayDate.setHours(0, 0, 0, 0);
 
 const toIso = (date: Date) =>
   `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
 
-const addDays = (value: string, days: number) => {
-  const date = new Date(`${value}T00:00:00`);
-  date.setDate(date.getDate() + days);
-  return toIso(date);
+// Derive start/end from the range picker
+const sortedRange = computed<{ start: Date; end: Date } | null>(() => {
+  if (dateRange.value.length < 2) return null;
+  const sorted = [...dateRange.value].sort((a, b) => a.getTime() - b.getTime());
+  const start = sorted[0];
+  const end = sorted[sorted.length - 1];
+  if (!start || !end) return null;
+  return { start, end };
+});
+
+const formStartDate = computed(() => sortedRange.value ? toIso(sortedRange.value.start) : "");
+const formEndDate = computed(() => sortedRange.value ? toIso(sortedRange.value.end) : "");
+const dateRangeReady = computed(() => !!sortedRange.value && formStartDate.value < formEndDate.value);
+
+const nights = computed(() => {
+  if (!sortedRange.value) return 0;
+  const { start, end } = sortedRange.value;
+  return Math.max(1, Math.round((end.getTime() - start.getTime()) / 86400000));
+});
+
+const nightsLabel = computed(() => t('bookings.nights', { count: nights.value }));
+
+const formatDateShort = (isoDate: string) => {
+  if (!isoDate) return "";
+  const date = new Date(`${isoDate}T00:00:00`);
+  return date.toLocaleDateString(intlLocale.value, {
+    day: "numeric",
+    month: "short",
+  });
 };
 
-const todayIso = toIso(new Date());
-const minEndDate = computed(() => form.startDate ? addDays(form.startDate, 1) : todayIso);
-const dateRangeReady = computed(() => !!form.startDate && !!form.endDate && form.endDate > form.startDate);
-
-const startDateRules = computed(() => [
-  ruleRequired,
-  (v: string) => !v || v >= todayIso || t('request.startDateError'),
-]);
-
-const endDateRules = computed(() => [
-  ruleRequired,
-  (v: string) => !form.startDate || !v || v > form.startDate || t('request.endDateError'),
-]);
+// Clear date error when user picks dates
+watch(dateRange, () => {
+  showDateError.value = false;
+});
 
 const overlapsSelectedRange = (booking: CalendarBooking) => {
   if (!dateRangeReady.value || !booking.startDate || !booking.endDate) return false;
   const start = toIso(booking.startDate.toDate());
   const end = toIso(booking.endDate.toDate());
-  return form.startDate < end && form.endDate > start;
+  return formStartDate.value < end && formEndDate.value > start;
 };
 
 const rangeConflicts = computed(() =>
@@ -169,15 +205,19 @@ onMounted(() => {
 // Reset form when sheet opens
 watch(() => props.modelValue, (open) => {
   if (open) {
-    form.startDate = "";
-    form.endDate = "";
+    dateRange.value = [];
     form.notes = "";
     submitError.value = "";
+    showDateError.value = false;
     success.value = false;
   }
 });
 
 const submit = async () => {
+  if (!dateRangeReady.value) {
+    showDateError.value = true;
+    return;
+  }
   const { valid } = await formRef.value.validate();
   if (!valid || blockingConflicts.value.length) return;
   loading.value = true;
@@ -187,8 +227,8 @@ const submit = async () => {
       guestName: props.userData.name || props.userData.email || "",
       guestPhone: props.userData.phone || "",
       guestEmail: props.userData.email || "",
-      startDate: form.startDate,
-      endDate: form.endDate,
+      startDate: formStartDate.value,
+      endDate: formEndDate.value,
       notes: form.notes,
       status: "pending",
       source: "request",
@@ -199,8 +239,8 @@ const submit = async () => {
       guestName: props.userData.name || props.userData.email || "",
       guestEmail: props.userData.email || "",
       guestPhone: props.userData.phone || "",
-      startDate: form.startDate,
-      endDate: form.endDate,
+      startDate: formStartDate.value,
+      endDate: formEndDate.value,
       notes: form.notes,
     }).catch(() => {});
     success.value = true;
@@ -212,3 +252,13 @@ const submit = async () => {
   }
 };
 </script>
+
+<style scoped>
+.request-date-picker {
+  border: none !important;
+  box-shadow: none !important;
+}
+.request-date-picker :deep(.v-picker__body) {
+  max-width: 100%;
+}
+</style>

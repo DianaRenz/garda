@@ -228,7 +228,7 @@ const handleSaveSection = async (key: string) => {
   savingSection.value = key;
   savedSection.value = null;
   try {
-    await saveSection(key, editLocale.value, sectionForms[key]!.text[editLocale.value]);
+    await saveSection(key, editLocale.value, sectionForms[key]?.text[editLocale.value] ?? '');
     savedSection.value = key;
     setTimeout(() => { if (savedSection.value === key) savedSection.value = null; }, 2000);
   } catch {
@@ -252,19 +252,19 @@ const handleSectionRemove = async (key: string, url: string) => {
 const addCheckoutItem = () => {
   const text = newCheckoutItem.value.trim();
   if (!text) return;
-  checkoutItems[editLocale.value].push(text);
+  (checkoutItems[editLocale.value] ??= []).push(text);
   newCheckoutItem.value = '';
 };
 
 const removeCheckoutItem = (index: number) => {
-  checkoutItems[editLocale.value].splice(index, 1);
+  checkoutItems[editLocale.value]?.splice(index, 1);
 };
 
 const handleSaveCheckout = async () => {
   savingCheckout.value = true;
   savedCheckout.value = false;
   try {
-    await saveCheckoutItems(editLocale.value, [...checkoutItems[editLocale.value]]);
+    await saveCheckoutItems(editLocale.value, [...(checkoutItems[editLocale.value] ?? [])]);
     savedCheckout.value = true;
     setTimeout(() => { savedCheckout.value = false; }, 2000);
   } catch {
