@@ -42,19 +42,16 @@
 </template>
 
 <script setup lang="ts">
-import { onAuthStateChanged } from "firebase/auth";
-import { doc, getDoc } from "firebase/firestore";
 import type { CalendarBooking } from '~/composables/useBookings';
 
 definePageMeta({ layout: "default" });
 
-const { $auth, $db } = useNuxtApp();
 const { subscribeCalendar } = useBookings();
+const { userData, fetchProfile } = useUserProfile();
 
 const loading = ref(true);
 const calendarBookings = ref<CalendarBooking[]>([]);
 const currentUserId = ref<string | null>(null);
-const userData = ref<{ name?: string; email?: string; phone?: string }>({});
 const showRequestSheet = ref(false);
 
 const legend = [
@@ -76,23 +73,11 @@ let unsubCalendar: (() => void) | null = null;
 onMounted(async () => {
   if (import.meta.server) return;
 
-  const user = await new Promise<any>((resolve) => {
-    const unsub = onAuthStateChanged($auth, (u) => { unsub(); resolve(u); });
-  });
-
-  if (!user) {
-    await navigateTo("/login");
-    return;
-  }
+  const user = await useAuthGuard();
+  if (!user) return;
 
   currentUserId.value = user.uid;
-
-  getDoc(doc($db, "users", user.uid)).then(snap => {
-    if (snap.exists()) userData.value = snap.data() as { name?: string; email?: string; phone?: string };
-    else if (user.email) userData.value = { email: user.email };
-  }).catch(() => {
-    if (user.email) userData.value = { email: user.email };
-  });
+  fetchProfile(user.uid, user.email);
 
   const calResult = subscribeCalendar();
   unsubCalendar = calResult.unsub;

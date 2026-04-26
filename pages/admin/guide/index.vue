@@ -1,6 +1,7 @@
 <template>
   <div>
     <h1 class="text-h5 font-weight-bold mb-6">{{ $t('adminGuide.title') }}</h1>
+    <VAlert v-if="error" type="error" variant="tonal" closable class="mb-4" @click:close="error = ''">{{ error }}</VAlert>
 
     <div v-if="loading" class="text-center py-16">
       <VProgressCircular indeterminate color="primary" />
@@ -55,7 +56,7 @@
             <div class="mt-2">
               <label class="label text-grey-darken-2">{{ $t('adminGuide.sectionText') }}</label>
               <VTextarea
-                v-model="sectionForms[key].text"
+                v-model="sectionForms[key]!.text"
                 rows="4"
                 auto-grow
               />
@@ -166,6 +167,7 @@ const {
 } = useGuide();
 
 const { GUIDE_SECTION_KEYS, GUIDE_SECTION_ICONS, GALLERY_CATEGORIES } = await import('~/composables/useGuide');
+const { t } = useI18n();
 
 const loading = ref(true);
 const galleryTab = ref<GalleryCategory>('apartment');
@@ -187,19 +189,23 @@ onMounted(async () => {
   await fetchGuide();
   // Sync local forms
   for (const key of GUIDE_SECTION_KEYS) {
-    sectionForms[key].text = guide.value.sections[key]?.text ?? '';
+    sectionForms[key]!.text = guide.value.sections[key]?.text ?? '';
   }
   checkoutItems.value = [...guide.value.checkoutItems];
   loading.value = false;
 });
 
 // Gallery handlers
+const error = ref('');
+
 const handleGalleryUpload = async (cat: GalleryCategory, file: File) => {
-  await addGalleryPhoto(cat, file);
+  try { await addGalleryPhoto(cat, file); }
+  catch { error.value = t('common.error'); }
 };
 
 const handleGalleryRemove = async (cat: GalleryCategory, url: string) => {
-  await removeGalleryPhoto(cat, url);
+  try { await removeGalleryPhoto(cat, url); }
+  catch { error.value = t('common.error'); }
 };
 
 // Section handlers
@@ -207,20 +213,24 @@ const handleSaveSection = async (key: string) => {
   savingSection.value = key;
   savedSection.value = null;
   try {
-    await saveSection(key, sectionForms[key].text);
+    await saveSection(key, sectionForms[key]!.text);
     savedSection.value = key;
     setTimeout(() => { if (savedSection.value === key) savedSection.value = null; }, 2000);
+  } catch {
+    error.value = t('common.error');
   } finally {
     savingSection.value = null;
   }
 };
 
 const handleSectionUpload = async (key: string, file: File) => {
-  await addSectionPhoto(key, file);
+  try { await addSectionPhoto(key, file); }
+  catch { error.value = t('common.error'); }
 };
 
 const handleSectionRemove = async (key: string, url: string) => {
-  await removeSectionPhoto(key, url);
+  try { await removeSectionPhoto(key, url); }
+  catch { error.value = t('common.error'); }
 };
 
 // Checkout handlers
@@ -242,6 +252,8 @@ const handleSaveCheckout = async () => {
     await saveCheckoutItems([...checkoutItems.value]);
     savedCheckout.value = true;
     setTimeout(() => { savedCheckout.value = false; }, 2000);
+  } catch {
+    error.value = t('common.error');
   } finally {
     savingCheckout.value = false;
   }

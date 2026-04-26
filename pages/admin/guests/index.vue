@@ -6,6 +6,7 @@
         {{ $t('guests.add') }}
       </VBtn>
     </div>
+    <VAlert v-if="error" type="error" variant="tonal" closable class="mb-4" @click:close="error = ''">{{ error }}</VAlert>
 
     <!-- Desktop table -->
     <VCard v-if="!mobile" variant="outlined">
@@ -128,6 +129,7 @@ definePageMeta({ layout: "admin", middleware: "auth" })
 
 const { mobile } = useDisplay()
 
+const { t } = useI18n();
 const { ruleRequired } = useFormRules();
 const { guests, subscribe, createGuest, deleteGuest } = useGuests();
 
@@ -135,6 +137,7 @@ const dialog = ref(false);
 const deleteDialog = ref(false);
 const saving = ref(false);
 const deleting = ref(false);
+const error = ref('');
 const deleteId = ref<string | null>(null);
 const formRef = ref();
 
@@ -152,6 +155,8 @@ const save = async () => {
   try {
     await createGuest({ ...form });
     dialog.value = false;
+  } catch {
+    error.value = t('common.error');
   } finally {
     saving.value = false;
   }
@@ -168,6 +173,8 @@ const doDelete = async () => {
   try {
     await deleteGuest(deleteId.value);
     deleteDialog.value = false;
+  } catch {
+    error.value = t('common.error');
   } finally {
     deleting.value = false;
   }

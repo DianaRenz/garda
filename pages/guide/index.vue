@@ -73,7 +73,7 @@
                         style="aspect-ratio:4/3;overflow:hidden;cursor:pointer"
                         @click="openPhoto(photo)"
                       >
-                        <img :src="photo" alt="" style="width:100%;height:100%;object-fit:cover" />
+                        <img :src="photo" :alt="$t(`guide.sections.${key}`)" style="width:100%;height:100%;object-fit:cover" />
                       </div>
                     </VCol>
                   </VRow>
@@ -139,6 +139,7 @@
           icon
           size="small"
           variant="text"
+          aria-label="Close"
           style="position:absolute;top:8px;right:8px;z-index:1;color:#fff"
           @click="photoDialog = false"
         >
@@ -147,7 +148,7 @@
         <img
           v-if="selectedPhoto"
           :src="selectedPhoto"
-          alt=""
+          alt="Full size photo"
           style="width:100%;max-height:85vh;object-fit:contain;display:block"
         />
       </VCard>
@@ -156,12 +157,9 @@
 </template>
 
 <script setup lang="ts">
-import { onAuthStateChanged } from "firebase/auth";
 import { GUIDE_SECTION_KEYS, GUIDE_SECTION_ICONS } from '~/composables/useGuide';
 
 definePageMeta({ layout: "default" });
-
-const { $auth } = useNuxtApp();
 const { guide, fetchGuide } = useGuide();
 const { apartment, fetchApartment } = useApartment();
 const { t } = useI18n();
@@ -197,14 +195,8 @@ const openPhoto = (url: string) => {
 onMounted(async () => {
   if (import.meta.server) return;
 
-  const user = await new Promise<any>((resolve) => {
-    const unsub = onAuthStateChanged($auth, (u) => { unsub(); resolve(u); });
-  });
-
-  if (!user) {
-    await navigateTo("/login");
-    return;
-  }
+  const user = await useAuthGuard();
+  if (!user) return;
 
   await Promise.all([
     fetchGuide().catch(() => {}),

@@ -31,7 +31,7 @@
             >
               <img
                 :src="photo"
-                alt=""
+                :alt="categoryLabels[cat] || 'Photo'"
                 style="width:100%;height:100%;object-fit:cover"
               />
             </div>
@@ -47,6 +47,7 @@
           icon
           size="small"
           variant="text"
+          aria-label="Close"
           style="position:absolute;top:8px;right:8px;z-index:1;color:#fff"
           @click="dialog = false"
         >
@@ -55,7 +56,7 @@
         <img
           v-if="selectedPhoto"
           :src="selectedPhoto"
-          alt=""
+          alt="Full size photo"
           style="width:100%;max-height:85vh;object-fit:contain;display:block"
         />
       </VCard>
@@ -70,10 +71,10 @@ const props = defineProps<{
 }>();
 
 const visibleCategories = computed(() =>
-  Object.keys(props.categories).filter(k => props.categories[k]?.length > 0)
+  Object.keys(props.categories).filter(k => (props.categories[k]?.length ?? 0) > 0)
 );
 
-const activeTab = ref(visibleCategories.value[0] ?? '');
+const activeTab = ref(visibleCategories.value[0] ?? '' as string);
 const dialog = ref(false);
 const selectedPhoto = ref<string | null>(null);
 
@@ -84,7 +85,7 @@ const openPhoto = (url: string) => {
 
 watch(visibleCategories, (cats) => {
   if (cats.length && !cats.includes(activeTab.value)) {
-    activeTab.value = cats[0];
+    activeTab.value = cats[0] ?? '';
   }
 });
 </script>

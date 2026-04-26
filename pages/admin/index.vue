@@ -1,6 +1,7 @@
 <template>
   <div>
     <h1 class="text-h5 font-weight-bold mb-6">{{ $t('dashboard.title') }}</h1>
+    <VAlert v-if="error" type="error" variant="tonal" closable class="mb-4" @click:close="error = ''">{{ error }}</VAlert>
 
     <VRow>
       <VCol v-for="stat in statCards" :key="stat.key" cols="6" md="3">
@@ -24,7 +25,7 @@
           <VDivider v-if="i > 0" />
           <div class="d-flex align-center justify-space-between px-4 py-3 ga-3 cursor-pointer hover:bg-gray-50" @click="goToBookings(b.id)">
             <div class="flex-grow-1 min-width-0">
-              <div class="text-body-2 font-weight-medium">{{ b.guestName || '(не назначен)' }}</div>
+              <div class="text-body-2 font-weight-medium">{{ b.guestName || $t('bookings.unassigned') }}</div>
               <div class="text-caption text-medium-emphasis mt-1">
                 {{ formatDate(b.startDate) }} — {{ formatDate(b.endDate) }}
               </div>
@@ -96,11 +97,14 @@ const rejectDialog = ref(false);
 const rejecting = ref(false);
 const rejectNote = ref('');
 const rejectId = ref<string | null>(null);
+const error = ref('');
 
 const confirm = async (id: string) => {
   confirming.value = id;
   try {
     await updateBooking(id, { status: "confirmed" });
+  } catch {
+    error.value = t('common.error');
   } finally {
     confirming.value = null;
   }
@@ -118,6 +122,8 @@ const doReject = async () => {
   try {
     await updateBooking(rejectId.value, { status: 'rejected', rejectionNote: rejectNote.value || null });
     rejectDialog.value = false;
+  } catch {
+    error.value = t('common.error');
   } finally {
     rejecting.value = false;
   }

@@ -8,13 +8,14 @@
       md="2"
     >
       <div class="photo-thumb rounded-lg" style="position:relative;aspect-ratio:1;overflow:hidden">
-        <img :src="photo" alt="" style="width:100%;height:100%;object-fit:cover" />
+        <img :src="photo" alt="Uploaded photo" style="width:100%;height:100%;object-fit:cover" />
         <VBtn
           icon
           size="x-small"
           color="error"
           variant="flat"
           style="position:absolute;top:4px;right:4px"
+          aria-label="Remove photo"
           :loading="removingIndex === i"
           @click="handleRemove(photo, i)"
         >
@@ -41,6 +42,7 @@
         type="file"
         accept="image/*"
         hidden
+        aria-label="Upload photo"
         @change="handleUpload"
       />
     </VCol>
