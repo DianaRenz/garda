@@ -58,9 +58,14 @@ export const useBookings = () => {
 
   const subscribe = () => {
     const q = query(collection($db, "bookings"), orderBy("startDate", "asc"));
-    return onSnapshot(q, (snap) => {
-      bookings.value = snap.docs.map((d) => ({ id: d.id, ...d.data() } as Booking));
-    });
+    return onSnapshot(q,
+      (snap) => {
+        bookings.value = snap.docs.map((d) => ({ id: d.id, ...d.data() } as Booking));
+      },
+      (err) => {
+        if (import.meta.dev) console.error('[useBookings] subscribe error:', err);
+      },
+    );
   };
 
   const subscribeByUser = (uid: string) => {
@@ -69,28 +74,38 @@ export const useBookings = () => {
       where("userId", "==", uid),
       orderBy("startDate", "asc")
     );
-    return onSnapshot(q, (snap) => {
-      bookings.value = snap.docs.map((d) => ({ id: d.id, ...d.data() } as Booking));
-    });
+    return onSnapshot(q,
+      (snap) => {
+        bookings.value = snap.docs.map((d) => ({ id: d.id, ...d.data() } as Booking));
+      },
+      (err) => {
+        if (import.meta.dev) console.error('[useBookings] subscribeByUser error:', err);
+      },
+    );
   };
 
   const subscribeCalendar = () => {
     const calendarBookings = vueRef<CalendarBooking[]>([]);
     const q = query(collection($db, "bookings"), orderBy("startDate", "asc"));
-    const unsub = onSnapshot(q, (snap) => {
-      calendarBookings.value = snap.docs
-        .map((d) => {
-          const data = d.data();
-          return {
-            id: d.id,
-            startDate: data.startDate,
-            endDate: data.endDate,
-            status: data.status,
-            userId: data.userId ?? null,
-          };
-        })
-        .filter((b) => b.status !== "rejected") as CalendarBooking[];
-    });
+    const unsub = onSnapshot(q,
+      (snap) => {
+        calendarBookings.value = snap.docs
+          .map((d) => {
+            const data = d.data();
+            return {
+              id: d.id,
+              startDate: data.startDate,
+              endDate: data.endDate,
+              status: data.status,
+              userId: data.userId ?? null,
+            };
+          })
+          .filter((b) => b.status !== "rejected") as CalendarBooking[];
+      },
+      (err) => {
+        if (import.meta.dev) console.error('[useBookings] calendar listener error:', err);
+      },
+    );
     return { calendarBookings, unsub };
   };
 
@@ -137,9 +152,14 @@ export const useBookings = () => {
     await deleteDoc(doc($db, "bookings", id));
   };
 
+  const { locale } = useI18n();
+  const intlLocale = computed(() =>
+    ({ ru: 'ru-RU', en: 'en-US', de: 'de-DE' }[locale.value] ?? locale.value)
+  );
+
   const formatDate = (ts: Timestamp | undefined) => {
     if (!ts) return "—";
-    return ts.toDate().toLocaleDateString("ru-RU", {
+    return ts.toDate().toLocaleDateString(intlLocale.value, {
       day: "numeric",
       month: "short",
       year: "numeric",

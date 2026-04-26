@@ -137,10 +137,12 @@ service cloud.firestore {
     }
 
     match /bookings/{bookingId} {
-      allow get, list: if isAdmin() || (
+      allow get: if isAdmin() || (
         signedIn()
         && resource.data.userId == request.auth.uid
       );
+      // list: any authenticated user can query bookings (needed for calendar display)
+      allow list: if signedIn();
       allow create: if validRequestBookingCreate() || (
         isAdmin()
         && validAdminBookingWrite()
