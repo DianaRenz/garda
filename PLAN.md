@@ -155,12 +155,14 @@
 /register/[token]        → регистрация по инвайт-ссылке (тип admin/guest из токена)
 
 /apartment               → детали квартиры (protected: любой залогиненный пользователь)
+/guide                   → гид по квартире: фото, секции, чеклист (protected: любой залогиненный)
 /account                 → личный кабинет гостя: свои бронирования (role: guest, protected)
 
 /admin                   → дашборд (role: admin, protected)
 /admin/calendar          → полный календарь (protected)
 /admin/bookings          → список бронирований (protected)
 /admin/guests            → гостевая книга (protected)
+/admin/guide             → управление гидом: галерея, секции, чеклист (protected)
 /admin/settings          → настройки + генерация admin/guest инвайтов (protected)
 ```
 
@@ -319,8 +321,22 @@
 
 ---
 
+### Фаза 9 — Страница квартиры (Guide) и фотогалерея (завершено)
+- [x] `composables/useGuide.ts` — `GuideData` интерфейс, CRUD для секций/галереи/чеклиста, Firebase Storage upload/delete
+- [x] `components/PhotoUploader.vue` — переиспользуемый компонент загрузки фото (сетка миниатюр + upload + delete)
+- [x] `components/PhotoGallery.vue` — компонент галереи с табами по категориям и fullscreen-диалогом
+- [x] `pages/admin/guide/index.vue` — админская страница управления гидом (галерея, секции с VExpansionPanels, чеклист)
+- [x] `layouts/admin.vue` — добавлен навигационный пункт `/admin/guide`
+- [x] `pages/guide/index.vue` — гостевая страница-гид (галерея, секции, чеклист при выезде, auth guard)
+- [x] `pages/apartment.vue` — добавлена кнопка-ссылка на `/guide`
+- [x] i18n — ключи `nav.guide`, `guide.*`, `adminGuide.*` во всех трёх локалях
+
+Firestore модель: `/apartment/guide` — gallery (apartment/garden/view), sections (8 ключей с text+photos), checkoutItems, updatedAt.
+Firebase Storage: `guide/gallery/{category}/`, `guide/sections/{sectionKey}/`.
+
+---
+
 ## Nice-to-Have (не в MVP)
 
 - iCal экспорт календаря
 - История посещений / статистика (кто чаще всего, любимые месяцы)
-- ~~Фото квартиры~~ — не нужно, приложение для своих

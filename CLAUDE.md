@@ -15,6 +15,29 @@ npm run reset      # Full reset: removes .nuxt, node_modules, .output, then rein
 
 No test runner is configured in this project.
 
+## Git Workflow
+
+When the user says **"ветка"** or **"branch"** — create a new branch and push it:
+```bash
+git checkout -b feature/<short-name>
+git push -u origin feature/<short-name>
+```
+
+When the user says **"коммит"** or **"commit"** — stage all changed files, commit, and push:
+```bash
+git add <changed files>
+git commit -m "<message>"
+git push
+```
+Commit message in English, concise, conventional-commits style (`feat:`, `fix:`, `chore:`, `docs:`).
+
+When the user says **"мердж"** or **"merge"** — create a PR and squash-merge it:
+```bash
+gh pr create --title "<title>" --body "<body>"
+gh pr merge --squash --auto --delete-branch
+```
+Always squash merge. Always delete the branch after merge.
+
 ## Starting a New Project from This Starter
 
 Update these four values in `nuxt.config.ts`:
@@ -53,7 +76,7 @@ This is a Nuxt 4 + Vuetify 4 starter template. Vuetify is loaded via `vite-plugi
 
 **PWA:** Configured via `@kevinmarrec/nuxt-pwa` in `nuxt.config.ts`. Replace `public/favicon.ico` and `public/icon.png` for a new app.
 
-**Firebase:** `plugins/firebase.ts` initializes Firebase and provides `$auth`, `$db`, `$storage` via `useNuxtApp()`. (`$storage` is initialized but unused — no photo feature planned.) Auth composable is `composables/useAuth.ts`. Admin routes protected by `middleware/auth.ts` (checks `role === 'admin'` in `users/{uid}`).
+**Firebase:** `plugins/firebase.ts` initializes Firebase and provides `$auth`, `$db`, `$storage` via `useNuxtApp()`. `$storage` is used by the guide feature for photo uploads. Auth composable is `composables/useAuth.ts`. Admin routes protected by `middleware/auth.ts` (checks `role === 'admin'` in `users/{uid}`).
 
 **Roles:** Two roles stored in Firestore `users/{uid}` — `admin` (full `/admin` access) and `guest` (only `/apartment`, `/calendar`, public pages). User doc fields: `role`, `email`, `name` (guest only), `phone` (guest only), `createdAt`.
 
@@ -65,7 +88,17 @@ This is a Nuxt 4 + Vuetify 4 starter template. Vuetify is loaded via `vite-plugi
 
 **Landing page concept (`/`):** Public editorial page about the Prada / Monte Baldo / Lake Garda region — NOT apartment info. Four sections: Hero (two CTAs: `to="/calendar"` and `to="/request"` which redirects to `/apartment`), Feature cards (6 topics: hiking, food, experiences, wellness, practical, family), Honest notes (region-focused: season, parking, cable car, wind, restaurants), Private CTA (`v-if="user"` only). Uses `$tm()` + `$rt()` for i18n arrays in Honest notes. No `useApartment()` here.
 
-**Apartment page (`/apartment`):** Full guest dashboard for registered users (guests and admins). Sections: profile header (name/email), stats (next visit date, total confirmed), calendar (`AppCalendar` with `calendarBookings` from `subscribeCalendar()` + `highlightIds` computed from userId match), "Request dates" button → opens `RequestSheet` bottom sheet, upcoming/past bookings list (cancel pending, rejection note), apartment info (address/directions/rules from `useApartment()`). Auth guard uses `onAuthStateChanged` promise — do NOT use `isLoggedIn.value` directly as it may be `false` before Firebase resolves.
+**Apartment page (`/apartment`):** Full guest dashboard for registered users (guests and admins). Sections: profile header (name/email), stats (next visit date, total confirmed), calendar (`AppCalendar` with `calendarBookings` from `subscribeCalendar()` + `highlightIds` computed from userId match), "Request dates" button → opens `RequestSheet` bottom sheet, upcoming/past bookings list (cancel pending, rejection note), guide link button (→ `/guide`), apartment info (address/directions/rules from `useApartment()`). Auth guard uses `onAuthStateChanged` promise — do NOT use `isLoggedIn.value` directly as it may be `false` before Firebase resolves.
+
+**Guide page (`/guide`):** Auth-guarded guest page with apartment guide content. Sections: hero (title + description from `useApartment()`), photo gallery (`PhotoGallery` with tabs: apartment/garden/view), guide sections (8 hardcoded keys with icon, title, text, photos), checkout checklist (interactive checkboxes). Data from Firestore `/apartment/guide` via `composables/useGuide.ts`. Empty state shown if no content added yet.
+
+**Guide composable (`composables/useGuide.ts`):** `GuideData` interface with `gallery` (3 categories), `sections` (8 keys, each with `text` + `photos`), `checkoutItems`. Functions: `fetchGuide()`, `saveSection(key, text)`, `saveCheckoutItems(items)`, `addGalleryPhoto(category, file)`, `removeGalleryPhoto(category, url)`, `addSectionPhoto(sectionKey, file)`, `removeSectionPhoto(sectionKey, url)`. Uses Firebase Storage paths: `guide/gallery/{category}/`, `guide/sections/{sectionKey}/`. State via `useState('guide')`.
+
+**Admin guide (`/admin/guide`):** Admin page for managing guide content. Three sections: gallery (3 tabs with `PhotoUploader`), sections (VExpansionPanels — each with textarea + `PhotoUploader` + save button), checkout checklist (add/remove items + save). Uses `composables/useGuide.ts` for all operations.
+
+**PhotoUploader (`components/PhotoUploader.vue`):** Reusable admin component for photo management. Props: `photos: string[]`, `maxPhotos?: number`. Emits: `upload(file)`, `remove(url)`. Grid of thumbnails with delete buttons + "+" upload button. Loading states on upload/remove.
+
+**PhotoGallery (`components/PhotoGallery.vue`):** Guest-facing gallery component. Props: `categories: Record<string, string[]>`, `categoryLabels: Record<string, string>`. Tabs by category, grid of photos (cols="6" sm="4" md="3"), click → VDialog with fullscreen image. Skips empty categories.
 
 **RequestSheet (`components/RequestSheet.vue`):** VBottomSheet for requesting dates. Props: `modelValue`, `calendarBookings: CalendarBooking[]`, `userData: { name?, email?, phone? }`. Shows profile card, date inputs, conflict alerts (blocking = disabled submit, pending = warning), notes textarea. Calls `createBooking()` + `notifyAdminNewRequest()` on submit. Success state with close button. Resets form on each open. Used in `/apartment` and `/calendar`.
 

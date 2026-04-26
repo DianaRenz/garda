@@ -4,6 +4,7 @@
     "calendar": "Календарь",
     "bookings": "Бронирования",
     "guests": "Гости",
+    "guide": "Гид",
     "settings": "Настройки",
     "logout": "Выйти"
   },
@@ -261,7 +262,37 @@
   "apartment": {
     "title": "Квартира",
     "requestBtn": "Запросить даты",
-    "bookingsBtn": "Мои бронирования"
+    "bookingsBtn": "Мои бронирования",
+    "guideBtn": "Гид по квартире"
+  },
+  "guide": {
+    "title": "Гид по квартире",
+    "gallery": "Фотографии",
+    "gallery.apartment": "Квартира",
+    "gallery.garden": "Сад",
+    "gallery.view": "Вид",
+    "sections": {
+      "directions": "Как добраться",
+      "checkin": "Заезд и выезд",
+      "electricity": "Электричество",
+      "kitchen": "Кухня и быт",
+      "wifi": "Wi-Fi",
+      "grounds": "Территория и соседи",
+      "trash": "Мусор",
+      "emergency": "Экстренные контакты"
+    },
+    "checkout": {
+      "title": "Чеклист при выезде",
+      "description": "Пожалуйста, перед выездом убедитесь, что всё из списка выполнено."
+    },
+    "empty": "Информация пока не добавлена"
+  },
+  "adminGuide": {
+    "title": "Управление гидом",
+    "sections": "Секции гида",
+    "sectionText": "Текст",
+    "sectionPhotos": "Фотографии",
+    "checkoutPlaceholder": "Новый пункт чеклиста"
   },
   "common": {
     "cancel": "Отмена",

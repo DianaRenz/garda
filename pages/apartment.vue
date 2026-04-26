@@ -152,6 +152,18 @@
             </div>
           </VCard>
 
+          <!-- Guide link -->
+          <VBtn
+            variant="outlined"
+            block
+            min-height="44"
+            prepend-icon="fluent:book-24-regular"
+            to="/guide"
+            class="mb-8"
+          >
+            {{ $t('apartment.guideBtn') }}
+          </VBtn>
+
           <!-- Apartment info -->
           <template v-if="apartment && (apartment.address || apartment.directions || apartment.rules)">
             <h2 class="text-body-2 font-weight-medium text-medium-emphasis mb-3">

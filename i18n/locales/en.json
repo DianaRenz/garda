@@ -4,6 +4,7 @@
     "calendar": "Calendar",
     "bookings": "Bookings",
     "guests": "Guests",
+    "guide": "Guide",
     "settings": "Settings",
     "logout": "Logout"
   },
@@ -261,7 +262,37 @@
   "apartment": {
     "title": "The apartment",
     "requestBtn": "Request dates",
-    "bookingsBtn": "My bookings"
+    "bookingsBtn": "My bookings",
+    "guideBtn": "Apartment guide"
+  },
+  "guide": {
+    "title": "Apartment guide",
+    "gallery": "Photos",
+    "gallery.apartment": "Apartment",
+    "gallery.garden": "Garden",
+    "gallery.view": "View",
+    "sections": {
+      "directions": "How to get there",
+      "checkin": "Check-in & check-out",
+      "electricity": "Electricity",
+      "kitchen": "Kitchen & household",
+      "wifi": "Wi-Fi",
+      "grounds": "Grounds & neighbours",
+      "trash": "Waste disposal",
+      "emergency": "Emergency contacts"
+    },
+    "checkout": {
+      "title": "Checkout checklist",
+      "description": "Please make sure everything on the list is done before you leave."
+    },
+    "empty": "No information added yet"
+  },
+  "adminGuide": {
+    "title": "Guide management",
+    "sections": "Guide sections",
+    "sectionText": "Text",
+    "sectionPhotos": "Photos",
+    "checkoutPlaceholder": "New checklist item"
   },
   "common": {
     "cancel": "Cancel",

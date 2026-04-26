@@ -4,6 +4,7 @@
     "calendar": "Kalender",
     "bookings": "Buchungen",
     "guests": "Gäste",
+    "guide": "Reiseführer",
     "settings": "Einstellungen",
     "logout": "Abmelden"
   },
@@ -261,7 +262,37 @@
   "apartment": {
     "title": "Die Wohnung",
     "requestBtn": "Termin anfragen",
-    "bookingsBtn": "Meine Buchungen"
+    "bookingsBtn": "Meine Buchungen",
+    "guideBtn": "Wohnungsführer"
+  },
+  "guide": {
+    "title": "Wohnungsführer",
+    "gallery": "Fotos",
+    "gallery.apartment": "Wohnung",
+    "gallery.garden": "Garten",
+    "gallery.view": "Aussicht",
+    "sections": {
+      "directions": "Anfahrt",
+      "checkin": "An- und Abreise",
+      "electricity": "Strom",
+      "kitchen": "Küche & Haushalt",
+      "wifi": "WLAN",
+      "grounds": "Gelände & Nachbarn",
+      "trash": "Müllentsorgung",
+      "emergency": "Notfallkontakte"
+    },
+    "checkout": {
+      "title": "Abreise-Checkliste",
+      "description": "Bitte stellen Sie vor der Abreise sicher, dass alles auf der Liste erledigt ist."
+    },
+    "empty": "Noch keine Informationen hinzugefügt"
+  },
+  "adminGuide": {
+    "title": "Guide-Verwaltung",
+    "sections": "Guide-Abschnitte",
+    "sectionText": "Text",
+    "sectionPhotos": "Fotos",
+    "checkoutPlaceholder": "Neuer Checklisten-Punkt"
   },
   "common": {
     "cancel": "Abbrechen",

@@ -102,6 +102,7 @@ const navItems = [
   { to: "/admin/calendar",  icon: "fluent:calendar-24-regular",           titleKey: "nav.calendar" },
   { to: "/admin/bookings",  icon: "fluent:calendar-checkmark-24-regular", titleKey: "nav.bookings" },
   { to: "/admin/guests",    icon: "fluent:people-24-regular",             titleKey: "nav.guests" },
+  { to: "/admin/guide",     icon: "fluent:book-24-regular",               titleKey: "nav.guide" },
   { to: "/admin/settings",  icon: "fluent:settings-24-regular",           titleKey: "nav.settings" },
 ]
 </script>
