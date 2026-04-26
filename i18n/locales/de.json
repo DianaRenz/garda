@@ -108,7 +108,10 @@
     "password": "Passwort",
     "submit": "Anmelden",
     "forgotPassword": "Passwort vergessen?",
-    "error": "Falsche E-Mail oder falsches Passwort"
+    "error": "Falsche E-Mail oder falsches Passwort",
+    "notVerified": "E-Mail nicht bestätigt. Prüfen Sie Ihr Postfach und klicken Sie auf den Bestätigungslink.",
+    "resendVerification": "Erneut senden",
+    "verificationResent": "Gesendet!"
   },
   "resetPassword": {
     "title": "Passwort zurücksetzen",
@@ -234,7 +237,10 @@
     "expiredToken": "Dieser Einladungslink ist abgelaufen.",
     "error": "Etwas ist schiefgelaufen. Bitte versuche es erneut.",
     "emailInUse": "Diese E-Mail ist bereits registriert. Versuchen Sie sich anzumelden.",
-    "passwordMismatch": "Passwörter stimmen nicht überein"
+    "passwordMismatch": "Passwörter stimmen nicht überein",
+    "verifyTitle": "E-Mail bestätigen",
+    "verifyText": "Wir haben eine Bestätigungs-E-Mail an Ihre Adresse gesendet. Klicken Sie auf den Link in der E-Mail, um Ihr Konto zu aktivieren.",
+    "goToLogin": "Zur Anmeldung"
   },
   "invite": {
     "title": "Einladungslinks",

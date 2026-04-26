@@ -336,6 +336,13 @@ Firebase Storage: `guide/gallery/{category}/`, `guide/sections/{sectionKey}/`.
 
 ---
 
+### Фаза 10 — Верификация email при регистрации (завершено)
+- [x] `pages/register/[token].vue` — после `createUserWithEmailAndPassword` вызывается `sendEmailVerification()`, показывается экран «проверьте почту» вместо редиректа
+- [x] `pages/login/index.vue` — при логине проверяется `emailVerified`; если не подтверждён — предупреждение + кнопка «отправить ещё раз»
+- [x] i18n — ключи `register.verifyTitle/verifyText/goToLogin`, `login.notVerified/resendVerification/verificationResent`
+
+---
+
 ## Nice-to-Have (не в MVP)
 
 - iCal экспорт календаря
