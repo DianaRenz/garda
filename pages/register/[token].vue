@@ -106,7 +106,7 @@ const route = useRoute();
 const token = route.params.token as string;
 
 const { validateToken } = useInvite();
-const { createGuest } = useGuests();
+const { createGuest, getGuest, linkGuestToUser } = useGuests();
 const { ruleRequired, ruleEmail, rulePassLen } = useFormRules();
 
 const validating = ref(true);
@@ -122,6 +122,7 @@ const phone = ref("");
 const email = ref("");
 const password = ref("");
 const confirmPassword = ref("");
+const linkedGuestId = ref<string | null>(null);
 
 const { t } = useI18n();
 
@@ -134,6 +135,16 @@ onMounted(async () => {
     tokenError.value = result.error ?? "not_found";
   } else {
     inviteType.value = result.type ?? "admin";
+    // Personal guest invite — prefill form with guest data
+    if (result.guestId) {
+      const guest = await getGuest(result.guestId);
+      if (guest) {
+        linkedGuestId.value = result.guestId;
+        name.value = guest.name || "";
+        phone.value = guest.phone || "";
+        email.value = guest.email || "";
+      }
+    }
   }
   validating.value = false;
 });
@@ -166,15 +177,25 @@ const submit = async () => {
       });
       transaction.update(inviteRef, { used: true, usedAt: serverTimestamp() });
     });
-    // Auto-create guest record so they appear in the admin guest book
+    // Link or create guest record
     if (inviteType.value === "guest") {
-      createGuest({
-        name: name.value,
-        phone: phone.value || "",
-        email: email.value,
-        notes: "",
-        userId: credential.user.uid,
-      }).catch(() => {}); // best-effort, don't block registration
+      if (linkedGuestId.value) {
+        // Personal invite → link existing guest + migrate bookings
+        await linkGuestToUser(linkedGuestId.value, credential.user.uid, {
+          name: name.value,
+          phone: phone.value || "",
+          email: email.value,
+        });
+      } else {
+        // Generic invite → create new guest record
+        createGuest({
+          name: name.value,
+          phone: phone.value || "",
+          email: email.value,
+          notes: "",
+          userId: credential.user.uid,
+        }).catch(() => {}); // best-effort, don't block registration
+      }
     }
     // Send verification email and show confirmation screen
     await sendEmailVerification(credential.user);

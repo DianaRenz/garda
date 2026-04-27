@@ -21,7 +21,7 @@
           <VForm ref="formRef" @submit.prevent="submit">
             <!-- Date range picker -->
             <label class="label text-grey-darken-2">{{ $t('request.selectDates') }}</label>
-            <div class="d-flex justify-center mb-2">
+            <div class="d-flex justify-center mb-1">
               <VDatePicker
                 v-model="dateRange"
                 multiple="range"
@@ -30,8 +30,22 @@
                 color="primary"
                 show-adjacent-months
                 hide-header
+                :events="Object.keys(bookingEvents)"
+                :event-color="(date: string) => bookingEvents[date] ?? ''"
                 class="request-date-picker"
               />
+            </div>
+
+            <!-- Legend for booking dots -->
+            <div class="d-flex justify-center ga-4 mb-3">
+              <div class="d-flex align-center ga-1 text-caption">
+                <span class="event-dot bg-error" />
+                {{ $t('calendar.legend.confirmed') }}
+              </div>
+              <div class="d-flex align-center ga-1 text-caption">
+                <span class="event-dot bg-warning" />
+                {{ $t('calendar.legend.pending') }}
+              </div>
             </div>
 
             <!-- Selected range display -->
@@ -139,6 +153,25 @@ todayDate.setHours(0, 0, 0, 0);
 
 const toIso = (date: Date) =>
   `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+
+// Map booked dates → color for VDatePicker events
+const bookingEvents = computed<Record<string, string>>(() => {
+  const map: Record<string, string> = {};
+  for (const b of props.calendarBookings) {
+    if (!b.startDate || !b.endDate) continue;
+    const color = b.status === 'pending' ? 'warning' : 'error';
+    const start = b.startDate.toDate();
+    const end = b.endDate.toDate();
+    const cursor = new Date(start);
+    while (cursor <= end) {
+      const key = toIso(cursor);
+      // error takes priority over warning
+      if (!map[key] || color === 'error') map[key] = color;
+      cursor.setDate(cursor.getDate() + 1);
+    }
+  }
+  return map;
+});
 
 // Derive start/end from the range picker
 const sortedRange = computed<{ start: Date; end: Date } | null>(() => {
@@ -260,5 +293,11 @@ const submit = async () => {
 }
 .request-date-picker :deep(.v-picker__body) {
   max-width: 100%;
+}
+.event-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
 }
 </style>

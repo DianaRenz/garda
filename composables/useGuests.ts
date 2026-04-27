@@ -1,6 +1,7 @@
 import {
-  collection, addDoc, deleteDoc, doc,
-  query, orderBy, onSnapshot, serverTimestamp,
+  collection, addDoc, deleteDoc, doc, getDoc,
+  query, orderBy, where, onSnapshot, getDocs,
+  serverTimestamp, writeBatch, updateDoc,
 } from "firebase/firestore";
 
 export interface Guest {
@@ -35,5 +36,37 @@ export const useGuests = () => {
     await deleteDoc(doc($db, "guests", id));
   };
 
-  return { guests, subscribe, createGuest, deleteGuest };
+  const getGuest = async (id: string): Promise<Guest | null> => {
+    const snap = await getDoc(doc($db, "guests", id));
+    if (!snap.exists()) return null;
+    return { id: snap.id, ...snap.data() } as Guest;
+  };
+
+  const linkGuestToUser = async (
+    guestId: string,
+    userId: string,
+    profileData: { name: string; phone: string; email: string }
+  ) => {
+    const batch = writeBatch($db);
+    // Update guest record with userId and fresh profile data
+    batch.update(doc($db, "guests", guestId), {
+      userId,
+      name: profileData.name,
+      phone: profileData.phone,
+      email: profileData.email,
+    });
+    // Migrate bookings: add userId to bookings linked by guestId that have no userId
+    const bookingsQ = query(
+      collection($db, "bookings"),
+      where("guestId", "==", guestId),
+      where("userId", "==", null)
+    );
+    const bookingSnaps = await getDocs(bookingsQ);
+    for (const bookingDoc of bookingSnaps.docs) {
+      batch.update(bookingDoc.ref, { userId });
+    }
+    await batch.commit();
+  };
+
+  return { guests, subscribe, createGuest, deleteGuest, getGuest, linkGuestToUser };
 };
