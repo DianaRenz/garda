@@ -10,6 +10,50 @@
           }
         ]
       }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/check-i18n.sh",
+            "statusMessage": "Checking i18n keys..."
+          },
+          {
+            "type": "agent",
+            "prompt": "Read the file that was just edited. Check these project rules:\n1. Vuetify types must use 'import type' (not 'import')\n2. Auth guards must use onAuthStateChanged promise, never isLoggedIn.value directly\n3. User-visible strings in templates must use $t() or v-html=\"$t()\", not hardcoded text\n4. useDisplay() must be explicitly imported from 'vuetify'\n5. No 'any' types where Timestamp, User, or other specific types should be used\n6. Firebase composables accessed via useNuxtApp() ($auth, $db, $storage)\n\nOnly check rules relevant to the file type (.vue, .ts). Skip if not applicable.\nReturn 'yes' if all rules pass. Return 'no' with a brief list of violations if any fail.",
+            "model": "fast",
+            "timeout": 30,
+            "statusMessage": "Reviewing code conventions..."
+          }
+        ]
+      }
+    ],
+    "TaskCompleted": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cd \"$CLAUDE_PROJECT_DIR\" && npm run build >/dev/null 2>&1 || (echo 'Build fails. Fix errors before marking task complete.' >&2; exit 2)",
+            "timeout": 60,
+            "statusMessage": "Verifying build..."
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "agent",
+            "prompt": "Before the session ends, do a quick quality check:\n1. Check git diff (staged and unstaged) for debugging artifacts: console.log, debugger statements, TODO/FIXME comments that weren't there before\n2. If any i18n locale files (i18n/locales/*.json) were changed, verify all 3 files (ru.json, en.json, de.json) have the same key structure\n3. Check that no .env or secret files were modified\n\nReturn a brief summary. If issues found, list them clearly. If all clean, say 'All checks passed.'",
+            "model": "fast",
+            "timeout": 60,
+            "statusMessage": "Running quality checks..."
+          }
+        ]
+      }
     ]
   }
 }
