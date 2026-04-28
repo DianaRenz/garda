@@ -40,6 +40,9 @@ export default defineNuxtConfig({
     defaultLocale: "ru",
     langDir: "locales",
     strategy: "no_prefix",
+    compilation: {
+      strictMessage: false,
+    },
   },
 
   modules: [
