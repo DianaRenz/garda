@@ -96,6 +96,7 @@ const guestNav = [
   { to: "/apartment", icon: "fluent:home-24-regular", label: "apartment.title" },
   { to: "/calendar", icon: "fluent:calendar-24-regular", label: "nav.calendar" },
   { to: "/guide", icon: "fluent:book-24-regular", label: "nav.guide" },
+  { to: "/photos", icon: "fluent:image-multiple-24-regular", label: "photos.title" },
 ];
 
 const accountLink = computed(() => {

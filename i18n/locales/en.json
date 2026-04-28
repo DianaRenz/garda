@@ -316,6 +316,16 @@
     "mapBtn": "Apartment on map",
     "empty": "No information added yet"
   },
+  "photos": {
+    "title": "Photos",
+    "subtitle": "All photos of the house and apartment",
+    "carouselTitle": "Photos",
+    "tabs": {
+      "house": "House & Garden",
+      "apartment": "Apartment"
+    },
+    "allPhotosBtn": "All photos"
+  },
   "adminGuide": {
     "title": "Guide management",
     "sections": "Guide sections",
