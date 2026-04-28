@@ -27,9 +27,26 @@ export const useInvite = () => {
     return token;
   };
 
+  const generateGuestInvite = async (guestId: string): Promise<string> => {
+    const token = crypto.randomUUID();
+    const ref = doc(collection($db, "invites"), token);
+    await setDoc(ref, {
+      token,
+      type: "guest" as const,
+      guestId,
+      createdAt: serverTimestamp(),
+      expiresAt: Timestamp.fromDate(
+        new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+      ),
+      used: false,
+      usedAt: null,
+    });
+    return token;
+  };
+
   const validateToken = async (
     token: string
-  ): Promise<{ valid: boolean; type?: "admin" | "guest"; error?: "not_found" | "used" | "expired" }> => {
+  ): Promise<{ valid: boolean; type?: "admin" | "guest"; guestId?: string | null; error?: "not_found" | "used" | "expired" }> => {
     const ref = doc($db, "invites", token);
     const snap = await getDoc(ref);
     if (!snap.exists()) return { valid: false, error: "not_found" };
@@ -37,7 +54,7 @@ export const useInvite = () => {
     if (data.used) return { valid: false, error: "used" };
     if (data.expiresAt.toDate() < new Date())
       return { valid: false, error: "expired" };
-    return { valid: true, type: data.type ?? "admin" };
+    return { valid: true, type: data.type ?? "admin", guestId: data.guestId ?? null };
   };
 
   const markTokenUsed = async (token: string) => {
@@ -45,5 +62,5 @@ export const useInvite = () => {
     await updateDoc(ref, { used: true, usedAt: serverTimestamp() });
   };
 
-  return { generateInvite, validateToken, markTokenUsed };
+  return { generateInvite, generateGuestInvite, validateToken, markTokenUsed };
 };

@@ -201,10 +201,17 @@
     "title": "Guest book",
     "add": "Add guest",
     "empty": "No guests",
+    "registered": "Registered",
+    "notRegistered": "Not registered",
+    "invite": {
+      "title": "Invite for {name}",
+      "description": "Send the link to the guest. On registration, their bookings will be linked to the account."
+    },
     "table": {
       "name": "Name",
       "phone": "Phone",
       "email": "Email",
+      "status": "Status",
       "notes": "Notes"
     },
     "form": {

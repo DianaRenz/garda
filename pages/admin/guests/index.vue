@@ -16,6 +16,7 @@
             <th>{{ $t('guests.table.name') }}</th>
             <th>{{ $t('guests.table.phone') }}</th>
             <th>{{ $t('guests.table.email') }}</th>
+            <th>{{ $t('guests.table.status') }}</th>
             <th>{{ $t('guests.table.notes') }}</th>
             <th></th>
           </tr>
@@ -25,8 +26,25 @@
             <td class="font-weight-medium">{{ g.name }}</td>
             <td class="text-medium-emphasis">{{ g.phone || '—' }}</td>
             <td class="text-medium-emphasis">{{ g.email || '—' }}</td>
+            <td>
+              <VChip
+                size="small"
+                :color="g.userId ? 'success' : undefined"
+                variant="tonal"
+              >
+                {{ g.userId ? $t('guests.registered') : $t('guests.notRegistered') }}
+              </VChip>
+            </td>
             <td class="text-body-2 text-medium-emphasis" style="max-width:200px;">{{ g.notes || '—' }}</td>
             <td>
+              <VBtn
+                v-if="!g.userId"
+                size="small"
+                variant="text"
+                color="primary"
+                icon="fluent:mail-arrow-right-24-regular"
+                @click="openInvite(g)"
+              />
               <VBtn
                 size="small"
                 variant="text"
@@ -53,7 +71,16 @@
           <VCardText class="pa-4">
             <div class="d-flex align-start justify-space-between">
               <div>
-                <div class="font-weight-medium">{{ g.name }}</div>
+                <div class="d-flex align-center ga-2">
+                  <span class="font-weight-medium">{{ g.name }}</span>
+                  <VChip
+                    size="x-small"
+                    :color="g.userId ? 'success' : undefined"
+                    variant="tonal"
+                  >
+                    {{ g.userId ? $t('guests.registered') : $t('guests.notRegistered') }}
+                  </VChip>
+                </div>
                 <div v-if="g.phone" class="text-body-2 text-medium-emphasis mt-1">
                   <VIcon icon="fluent:phone-24-regular" size="14" class="mr-1" />{{ g.phone }}
                 </div>
@@ -62,13 +89,23 @@
                 </div>
                 <div v-if="g.notes" class="text-body-2 text-medium-emphasis mt-1">{{ g.notes }}</div>
               </div>
-              <VBtn
-                size="small"
-                variant="text"
-                color="error"
-                icon="fluent:delete-24-regular"
-                @click="askDelete(g.id)"
-              />
+              <div class="d-flex flex-column">
+                <VBtn
+                  v-if="!g.userId"
+                  size="small"
+                  variant="text"
+                  color="primary"
+                  icon="fluent:mail-arrow-right-24-regular"
+                  @click="openInvite(g)"
+                />
+                <VBtn
+                  size="small"
+                  variant="text"
+                  color="error"
+                  icon="fluent:delete-24-regular"
+                  @click="askDelete(g.id)"
+                />
+              </div>
             </div>
           </VCardText>
         </VCard>
@@ -119,11 +156,44 @@
         </VCardActions>
       </VCard>
     </VDialog>
+
+    <!-- Invite dialog -->
+    <VDialog v-model="inviteDialog" max-width="480">
+      <VCard>
+        <VCardTitle class="pa-6 pb-2">{{ $t('guests.invite.title', { name: inviteGuestName }) }}</VCardTitle>
+        <VCardText>
+          <p class="text-body-2 text-medium-emphasis mb-4">{{ $t('guests.invite.description') }}</p>
+          <template v-if="inviteLink">
+            <VTextField
+              :model-value="inviteLink"
+              readonly
+              variant="outlined"
+              hide-details
+              @click="copyInviteLink"
+            />
+            <div class="d-flex align-center ga-2 mt-3">
+              <VBtn variant="tonal" color="primary" @click="copyInviteLink" prepend-icon="fluent:copy-24-regular">
+                {{ inviteCopied ? $t('invite.copied') : $t('invite.copy') }}
+              </VBtn>
+              <span class="text-caption text-medium-emphasis">{{ $t('invite.expires') }}</span>
+            </div>
+          </template>
+          <div v-else class="text-center py-4">
+            <VProgressCircular indeterminate color="primary" />
+          </div>
+        </VCardText>
+        <VCardActions class="pa-6 pt-0">
+          <VSpacer />
+          <VBtn variant="text" @click="inviteDialog = false">{{ $t('common.close') }}</VBtn>
+        </VCardActions>
+      </VCard>
+    </VDialog>
   </div>
 </template>
 
 <script setup lang="ts">
 import { useDisplay } from 'vuetify'
+import type { Guest } from '~/composables/useGuests'
 
 definePageMeta({ layout: "admin", middleware: "auth" })
 
@@ -132,14 +202,19 @@ const { mobile } = useDisplay()
 const { t } = useI18n();
 const { ruleRequired } = useFormRules();
 const { guests, subscribe, createGuest, deleteGuest } = useGuests();
+const { generateGuestInvite } = useInvite();
 
 const dialog = ref(false);
 const deleteDialog = ref(false);
+const inviteDialog = ref(false);
 const saving = ref(false);
 const deleting = ref(false);
 const error = ref('');
 const deleteId = ref<string | null>(null);
 const formRef = ref();
+const inviteLink = ref('');
+const inviteCopied = ref(false);
+const inviteGuestName = ref('');
 
 const form = reactive({ name: "", phone: "", email: "", notes: "" });
 
@@ -178,6 +253,29 @@ const doDelete = async () => {
   } finally {
     deleting.value = false;
   }
+};
+
+const openInvite = async (g: Guest) => {
+  inviteGuestName.value = g.name;
+  inviteLink.value = '';
+  inviteCopied.value = false;
+  inviteDialog.value = true;
+  try {
+    const token = await generateGuestInvite(g.id);
+    const base = window.location.origin;
+    inviteLink.value = `${base}/register/${token}`;
+  } catch {
+    error.value = t('common.error');
+    inviteDialog.value = false;
+  }
+};
+
+const copyInviteLink = async () => {
+  try {
+    await navigator.clipboard.writeText(inviteLink.value);
+    inviteCopied.value = true;
+    setTimeout(() => { inviteCopied.value = false; }, 2000);
+  } catch {}
 };
 
 onMounted(() => {

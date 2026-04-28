@@ -85,6 +85,7 @@
 /invites/{token}        // UUID как ID документа
   token: string          // дублируется для удобства
   type: 'admin' | 'guest'  // тип инвайта
+  guestId?: string | null  // персональный инвайт для конкретного гостя (из гостевой книги)
   createdAt: Timestamp
   expiresAt: Timestamp   // +7 дней от createdAt
   used: boolean
@@ -118,6 +119,7 @@
   phone: string
   email: string
   notes: string
+  userId?: string | null   // Firebase Auth UID — привязка к зарегистрированному пользователю
   createdAt: Timestamp
 
 /apartment/{docId}         // один документ 'info'
@@ -350,6 +352,15 @@ Firestore модель обновлена: `sections.{key}.text` = `{ ru, en, de
 - [x] `pages/register/[token].vue` — после `createUserWithEmailAndPassword` вызывается `sendEmailVerification()`, показывается экран «проверьте почту» вместо редиректа
 - [x] `pages/login/index.vue` — при логине проверяется `emailVerified`; если не подтверждён — предупреждение + кнопка «отправить ещё раз»
 - [x] i18n — ключи `register.verifyTitle/verifyText/goToLogin`, `login.notVerified/resendVerification/verificationResent`
+
+---
+
+### Фаза 10.1 — Привязка гостей к зарегистрированным пользователям (завершено)
+- [x] `composables/useInvite.ts` — `generateGuestInvite(guestId)` создаёт инвайт с полем `guestId`; `validateToken` возвращает `guestId`
+- [x] `composables/useGuests.ts` — `getGuest(id)` получение одного гостя, `linkGuestToUser(guestId, userId, profileData)` обновляет гостя + мигрирует бронирования (writeBatch)
+- [x] `pages/register/[token].vue` — при персональном инвайте предзаполняет форму данными гостя; при submit вызывает `linkGuestToUser` вместо `createGuest`
+- [x] `pages/admin/guests/index.vue` — статус-чип (зарегистрирован/нет), кнопка инвайта для незарегистрированных, диалог с ссылкой + копирование
+- [x] i18n — `guests.registered`, `guests.notRegistered`, `guests.table.status`, `guests.invite.title/description`
 
 ---
 

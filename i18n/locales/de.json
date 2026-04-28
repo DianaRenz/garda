@@ -201,10 +201,17 @@
     "title": "Gästebuch",
     "add": "Gast hinzufügen",
     "empty": "Keine Gäste",
+    "registered": "Registriert",
+    "notRegistered": "Nicht registriert",
+    "invite": {
+      "title": "Einladung für {name}",
+      "description": "Senden Sie den Link an den Gast. Bei der Registrierung werden die Buchungen mit dem Konto verknüpft."
+    },
     "table": {
       "name": "Name",
       "phone": "Telefon",
       "email": "E-Mail",
+      "status": "Status",
       "notes": "Anmerkungen"
     },
     "form": {
