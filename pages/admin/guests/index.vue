@@ -38,11 +38,17 @@
             <td class="text-body-2 text-medium-emphasis" style="max-width:200px;">{{ g.notes || '—' }}</td>
             <td>
               <VBtn
+                size="small"
+                variant="text"
+                icon="fluent:edit-24-regular"
+                @click="openEdit(g)"
+              />
+              <VBtn
                 v-if="!g.userId"
                 size="small"
                 variant="text"
                 color="primary"
-                icon="fluent:mail-arrow-right-24-regular"
+                icon="fluent:send-24-regular"
                 @click="openInvite(g)"
               />
               <VBtn
@@ -91,11 +97,17 @@
               </div>
               <div class="d-flex flex-column">
                 <VBtn
+                  size="small"
+                  variant="text"
+                  icon="fluent:edit-24-regular"
+                  @click="openEdit(g)"
+                />
+                <VBtn
                   v-if="!g.userId"
                   size="small"
                   variant="text"
                   color="primary"
-                  icon="fluent:mail-arrow-right-24-regular"
+                  icon="fluent:send-24-regular"
                   @click="openInvite(g)"
                 />
                 <VBtn
@@ -115,7 +127,7 @@
     <!-- Create dialog -->
     <VDialog v-model="dialog" max-width="440">
       <VCard>
-        <VCardTitle class="pa-6 pb-2">{{ $t('guests.form.title') }}</VCardTitle>
+        <VCardTitle class="pa-6 pb-2">{{ editId ? $t('guests.form.editTitle') : $t('guests.form.title') }}</VCardTitle>
         <VCardText>
           <VForm ref="formRef" @submit.prevent="save">
             <div class="mt-1">
@@ -201,7 +213,7 @@ const { mobile } = useDisplay()
 
 const { t } = useI18n();
 const { ruleRequired } = useFormRules();
-const { guests, subscribe, createGuest, deleteGuest } = useGuests();
+const { guests, subscribe, createGuest, updateGuest, deleteGuest } = useGuests();
 const { generateGuestInvite } = useInvite();
 
 const dialog = ref(false);
@@ -217,9 +229,17 @@ const inviteCopied = ref(false);
 const inviteGuestName = ref('');
 
 const form = reactive({ name: "", phone: "", email: "", notes: "" });
+const editId = ref<string | null>(null);
 
 const openCreate = () => {
+  editId.value = null;
   Object.assign(form, { name: "", phone: "", email: "", notes: "" });
+  dialog.value = true;
+};
+
+const openEdit = (g: Guest) => {
+  editId.value = g.id;
+  Object.assign(form, { name: g.name, phone: g.phone || "", email: g.email || "", notes: g.notes || "" });
   dialog.value = true;
 };
 
@@ -228,7 +248,11 @@ const save = async () => {
   if (!valid) return;
   saving.value = true;
   try {
-    await createGuest({ ...form });
+    if (editId.value) {
+      await updateGuest(editId.value, { ...form });
+    } else {
+      await createGuest({ ...form });
+    }
     dialog.value = false;
   } catch {
     error.value = t('common.error');

@@ -216,6 +216,7 @@
     },
     "form": {
       "title": "Neuer Gast",
+      "editTitle": "Gast bearbeiten",
       "name": "Name",
       "phone": "Telefon",
       "email": "E-Mail",
