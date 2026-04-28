@@ -316,6 +316,17 @@
     "mapBtn": "Wohnung auf der Karte",
     "empty": "Noch keine Informationen hinzugefügt"
   },
+  "photos": {
+    "title": "Fotos",
+    "subtitle": "Alle Fotos von Haus und Wohnung",
+    "carouselTitle": "Fotos",
+    "tabs": {
+      "house": "Haus & Garten",
+      "apartment": "Wohnung",
+      "lake": "See"
+    },
+    "allPhotosBtn": "Alle Fotos"
+  },
   "adminGuide": {
     "title": "Guide-Verwaltung",
     "sections": "Guide-Abschnitte",

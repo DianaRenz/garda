@@ -17,6 +17,51 @@
             </p>
           </div>
 
+          <!-- Photo carousels -->
+          <h2 class="text-body-2 font-weight-medium text-medium-emphasis mb-3">
+            {{ $t('photos.carouselTitle') }}
+          </h2>
+
+          <p class="text-body-2 font-weight-bold mb-2">{{ $t('photos.tabs.house') }}</p>
+          <VCarousel
+            :height="carouselHeight"
+            show-arrows="hover"
+            hide-delimiter-background
+            class="rounded-lg mb-4"
+          >
+            <VCarouselItem
+              v-for="photo in HOUSE_CAROUSEL"
+              :key="photo"
+              :src="photo"
+              cover
+            />
+          </VCarousel>
+
+          <p class="text-body-2 font-weight-bold mb-2">{{ $t('photos.tabs.apartment') }}</p>
+          <VCarousel
+            :height="carouselHeight"
+            show-arrows="hover"
+            hide-delimiter-background
+            class="rounded-lg mb-4"
+          >
+            <VCarouselItem
+              v-for="photo in APARTMENT_CAROUSEL"
+              :key="photo"
+              :src="photo"
+              cover
+            />
+          </VCarousel>
+
+          <VBtn
+            variant="tonal"
+            color="primary"
+            prepend-icon="fluent:image-multiple-24-regular"
+            to="/photos"
+            class="mb-8"
+          >
+            {{ $t('photos.allPhotosBtn') }}
+          </VBtn>
+
           <!-- Photo gallery -->
           <template v-if="hasGallery">
             <h2 class="text-body-2 font-weight-medium text-medium-emphasis mb-3">
@@ -223,18 +268,23 @@
 </template>
 
 <script setup lang="ts">
+import { useDisplay } from 'vuetify';
 import { GUIDE_SECTION_KEYS, GUIDE_SECTION_ICONS } from '~/composables/useGuide';
+import { HOUSE_CAROUSEL, APARTMENT_CAROUSEL } from '~/utils/photos';
 
 definePageMeta({ layout: "default" });
 const { guide, fetchGuide, getSectionText, getCheckoutItems } = useGuide();
 const { apartment, fetchApartment } = useApartment();
 const { t, locale } = useI18n();
+const { mobile } = useDisplay();
 
 const loading = ref(true);
 const checked = ref<boolean[]>([]);
 const photoDialog = ref(false);
 const selectedPhoto = ref<string | null>(null);
 const addressCopied = ref(false);
+
+const carouselHeight = computed(() => mobile.value ? 220 : 400);
 
 const copyAddress = async () => {
   if (!apartment.value?.address) return;
