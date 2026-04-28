@@ -175,7 +175,12 @@ const submit = async () => {
         inviteToken: token,
         createdAt: serverTimestamp(),
       });
-      transaction.update(inviteRef, { used: true, usedAt: serverTimestamp() });
+      transaction.update(inviteRef, {
+        used: true,
+        usedAt: serverTimestamp(),
+        usedBy: credential.user.uid,
+        usedByName: inviteType.value === 'guest' ? name.value : email.value,
+      });
     });
     // Link or create guest record
     if (inviteType.value === "guest") {

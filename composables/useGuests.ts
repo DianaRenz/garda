@@ -34,6 +34,10 @@ export const useGuests = () => {
     return docRef.id;
   };
 
+  const updateGuest = async (id: string, data: Partial<Pick<Guest, 'name' | 'phone' | 'email' | 'notes'>>) => {
+    await updateDoc(doc($db, "guests", id), data);
+  };
+
   const deleteGuest = async (id: string) => {
     await deleteDoc(doc($db, "guests", id));
   };
@@ -70,5 +74,5 @@ export const useGuests = () => {
     await batch.commit();
   };
 
-  return { guests, subscribe, createGuest, deleteGuest, getGuest, linkGuestToUser };
+  return { guests, subscribe, createGuest, updateGuest, deleteGuest, getGuest, linkGuestToUser };
 };

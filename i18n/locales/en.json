@@ -216,6 +216,7 @@
     },
     "form": {
       "title": "New guest",
+      "editTitle": "Edit guest",
       "name": "Name",
       "phone": "Phone",
       "email": "Email",
