@@ -47,7 +47,7 @@
       "title": "Honest notes about the region",
       "items": [
         "July and August are the best months for swimming — but also the busiest. May, June, and September suit those who prefer fewer crowds over beach season.",
-        "Parking in Malcesine, Limone, and the larger lakeside towns is very difficult in summer. Arrive early or use park-and-ride options where available.",
+        "Parking in Malcesine, Castelletto, and the larger lakeside towns is very difficult in summer. Arrive early or use park-and-ride options where available.",
         "The Monte Baldo cable car has long queues on summer weekends. Book online in advance or arrive before 9 am.",
         "The northern end of the lake is windier — perfect for sailing and windsurfing, less ideal for quiet swimming.",
         "Many restaurants close on Mondays. Always check opening days before making plans.",
@@ -303,6 +303,17 @@
       "title": "Checkout checklist",
       "description": "Please make sure everything on the list is done before you leave."
     },
+    "hikes": {
+      "title": "Hiking nearby",
+      "text": "Prada sits on the slopes of Monte Baldo — one of the best hiking areas on Lake Garda. Dozens of trails start <b>right from the doorstep</b>: easy walks through olive groves, ridge climbs with panoramic lake views, forest paths through chestnut woods.<br><br>The Komoot link below has a curated selection of routes within ~5 km of the apartment.<br><br>Best time is <b>spring (April–June)</b> and <b>autumn (September–October)</b>. Summer can be hot, winter brings snow above 1500 m.",
+      "komootBtn": "Routes on Komoot"
+    },
+    "parking": {
+      "title": "Parking",
+      "text": "The house has a <b>large private parking area</b> on the fenced property — park wherever you like, there is always plenty of space.<br><br>For trips to the lake: <b>parking in Malcesine, Castelletto</b>, and other lakeside towns is very difficult in summer. Arrive early in the morning or use park-and-ride options."
+    },
+    "areaTitle": "About the area",
+    "mapBtn": "Apartment on map",
     "empty": "No information added yet"
   },
   "adminGuide": {

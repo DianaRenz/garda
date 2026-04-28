@@ -7,7 +7,12 @@
       </VCardTitle>
 
       <VCardText class="pa-5 pt-0">
-        <template v-if="!success">
+        <template v-if="loading">
+          <div class="text-center py-8">
+            <VProgressCircular indeterminate color="primary" />
+          </div>
+        </template>
+        <template v-else-if="!success">
           <!-- Profile card -->
           <VCard variant="tonal" rounded="lg" class="mb-5 pa-4 d-flex align-center ga-3">
             <VIcon icon="fluent:person-circle-24-regular" color="primary" size="36" />
@@ -89,7 +94,6 @@
               block
               min-height="44"
               class="gradient primary mt-4"
-              :loading="loading"
               :disabled="blockingConflicts.length > 0"
             >
               {{ $t('request.submit') }}

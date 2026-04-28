@@ -50,6 +50,27 @@
                       {{ $t(`guide.sections.${key}`) }}
                     </span>
                   </div>
+                  <!-- Address (directions section only) -->
+                  <div
+                    v-if="key === 'directions' && apartment?.address"
+                    class="d-flex align-center rounded-lg pa-3 mb-3"
+                    style="background: rgba(var(--v-theme-on-surface), 0.05)"
+                  >
+                    <span class="text-body-2 flex-grow-1">{{ apartment.address }}</span>
+                    <VBtn
+                      icon
+                      variant="text"
+                      size="x-small"
+                      density="compact"
+                      @click="copyAddress"
+                    >
+                      <VIcon
+                        :icon="addressCopied ? 'fluent:checkmark-24-regular' : 'fluent:copy-24-regular'"
+                        size="16"
+                        :color="addressCopied ? 'success' : undefined"
+                      />
+                    </VBtn>
+                  </div>
                   <div
                     v-if="getSectionText(key, locale)"
                     class="text-body-2 text-medium-emphasis"
@@ -57,6 +78,17 @@
                   >
                     {{ getSectionText(key, locale) }}
                   </div>
+                  <VBtn
+                    v-if="key === 'directions'"
+                    variant="tonal"
+                    prepend-icon="fluent:location-24-regular"
+                    href="https://maps.app.goo.gl/YpRRWu4uknC9cADu9"
+                    target="_blank"
+                    rel="noopener"
+                    class="mt-3"
+                  >
+                    {{ $t('guide.mapBtn') }}
+                  </VBtn>
                   <VRow
                     v-if="guide.sections[key]?.photos?.length"
                     dense
@@ -80,7 +112,41 @@
                 </VCardText>
               </VCard>
             </template>
+            <!-- Parking (right after directions) -->
+            <VCard v-if="key === 'directions'" variant="outlined" rounded="lg" class="mb-4">
+              <VCardText class="pa-4">
+                <div class="d-flex align-center ga-3 mb-3">
+                  <VIcon icon="fluent:vehicle-car-24-regular" size="22" color="primary" />
+                  <span class="text-body-1 font-weight-bold">{{ $t('guide.parking.title') }}</span>
+                </div>
+                <div class="text-body-2 text-medium-emphasis" v-html="$t('guide.parking.text')" />
+              </VCardText>
+            </VCard>
           </template>
+
+          <!-- Area tips -->
+          <h2 class="text-body-2 font-weight-medium text-medium-emphasis mb-3 mt-8">
+            {{ $t('guide.areaTitle') }}
+          </h2>
+          <VCard variant="outlined" rounded="lg" class="mb-4">
+            <VCardText class="pa-4">
+              <div class="d-flex align-center ga-3 mb-3">
+                <VIcon icon="fluent:compass-northwest-24-regular" size="22" color="primary" />
+                <span class="text-body-1 font-weight-bold">{{ $t('guide.hikes.title') }}</span>
+              </div>
+              <div class="text-body-2 text-medium-emphasis mb-4" v-html="$t('guide.hikes.text')" />
+              <VBtn
+                variant="tonal"
+                color="primary"
+                prepend-icon="fluent:map-24-regular"
+                href="https://www.komoot.com/de-de/discover/Ausgew%C3%A4hlter_Ort_auf_der_Karte/@45.6702538,10.7870385/tours?sport=hike&map=true&max_distance=4820&pageNumber=1"
+                target="_blank"
+                rel="noopener"
+              >
+                {{ $t('guide.hikes.komootBtn') }}
+              </VBtn>
+            </VCardText>
+          </VCard>
 
           <!-- Checkout checklist -->
           <template v-if="currentCheckoutItems.length">
@@ -168,6 +234,14 @@ const loading = ref(true);
 const checked = ref<boolean[]>([]);
 const photoDialog = ref(false);
 const selectedPhoto = ref<string | null>(null);
+const addressCopied = ref(false);
+
+const copyAddress = async () => {
+  if (!apartment.value?.address) return;
+  await navigator.clipboard.writeText(apartment.value.address);
+  addressCopied.value = true;
+  setTimeout(() => { addressCopied.value = false; }, 2000);
+};
 
 const currentCheckoutItems = computed(() => getCheckoutItems(locale.value));
 

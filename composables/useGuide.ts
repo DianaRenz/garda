@@ -1,4 +1,5 @@
 import { doc, getDoc, setDoc, updateDoc, serverTimestamp } from "firebase/firestore";
+import type { Timestamp } from "firebase/firestore";
 import { ref as storageRef, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
 import { arrayUnion, arrayRemove } from "firebase/firestore";
 
@@ -18,7 +19,7 @@ export interface GuideData {
   };
   sections: Record<string, GuideSection>;
   checkoutItems: Record<string, string[]>;
-  updatedAt: any;
+  updatedAt: Timestamp | null;
 }
 
 export const GUIDE_SECTION_KEYS = [

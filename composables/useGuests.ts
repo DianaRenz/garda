@@ -3,6 +3,7 @@ import {
   query, orderBy, where, onSnapshot, getDocs,
   serverTimestamp, writeBatch, updateDoc,
 } from "firebase/firestore";
+import type { Timestamp } from "firebase/firestore";
 
 export interface Guest {
   id: string;
@@ -11,7 +12,7 @@ export interface Guest {
   email: string;
   notes: string;
   userId?: string | null; // Firebase Auth UID — set when guest self-registers
-  createdAt: any;
+  createdAt: Timestamp;
 }
 
 export const useGuests = () => {
@@ -26,10 +27,11 @@ export const useGuests = () => {
   };
 
   const createGuest = async (data: Omit<Guest, "id" | "createdAt">) => {
-    await addDoc(collection($db, "guests"), {
+    const docRef = await addDoc(collection($db, "guests"), {
       ...data,
       createdAt: serverTimestamp(),
     });
+    return docRef.id;
   };
 
   const deleteGuest = async (id: string) => {

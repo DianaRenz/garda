@@ -91,6 +91,8 @@ definePageMeta({ layout: "admin", middleware: "auth" });
 
 const { bookings, subscribe, updateBooking, formatDate, statusColor } = useBookings();
 const { guests, subscribe: subscribeGuests } = useGuests();
+const { notifyGuestStatusUpdate } = useNotifications();
+const { t } = useI18n();
 
 const confirming = ref<string | null>(null);
 const rejectDialog = ref(false);
@@ -99,10 +101,17 @@ const rejectNote = ref('');
 const rejectId = ref<string | null>(null);
 const error = ref('');
 
+const toIso = (ts: any) => ts?.toDate?.().toISOString().slice(0, 10) ?? '';
+
 const confirm = async (id: string) => {
   confirming.value = id;
   try {
+    const booking = bookings.value.find(b => b.id === id);
     await updateBooking(id, { status: "confirmed" });
+    if (booking?.guestEmail) {
+      notifyGuestStatusUpdate({ guestName: booking.guestName, guestEmail: booking.guestEmail,
+        status: 'confirmed', startDate: toIso(booking.startDate), endDate: toIso(booking.endDate) }).catch(() => {});
+    }
   } catch {
     error.value = t('common.error');
   } finally {
@@ -120,7 +129,13 @@ const doReject = async () => {
   if (!rejectId.value) return;
   rejecting.value = true;
   try {
+    const booking = bookings.value.find(b => b.id === rejectId.value);
     await updateBooking(rejectId.value, { status: 'rejected', rejectionNote: rejectNote.value || null });
+    if (booking?.guestEmail) {
+      notifyGuestStatusUpdate({ guestName: booking.guestName, guestEmail: booking.guestEmail,
+        status: 'rejected', startDate: toIso(booking.startDate), endDate: toIso(booking.endDate),
+        rejectionNote: rejectNote.value || undefined }).catch(() => {});
+    }
     rejectDialog.value = false;
   } catch {
     error.value = t('common.error');
@@ -135,7 +150,6 @@ const goToBookings = (bookingId?: string) => {
     query: bookingId ? { booking: bookingId } : undefined,
   });
 };
-const { t } = useI18n();
 
 const now = new Date();
 const yearStart = new Date(now.getFullYear(), 0, 1);

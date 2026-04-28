@@ -47,7 +47,7 @@
       "title": "Ehrliche Hinweise zur Region",
       "items": [
         "Juli und August sind die besten Monate zum Schwimmen — aber auch die belebtesten. Mai, Juni und September eignen sich besser für alle, die Ruhe dem Badespaß vorziehen.",
-        "Parken in Malcesine, Limone und den größeren Seeorten ist im Sommer sehr schwierig. Früh ankommen oder Park-and-Ride-Möglichkeiten nutzen.",
+        "Parken in Malcesine, Castelletto und den größeren Seeorten ist im Sommer sehr schwierig. Früh ankommen oder Park-and-Ride-Möglichkeiten nutzen.",
         "Die Monte-Baldo-Seilbahn hat an Sommerwochenenden lange Warteschlangen. Online im Voraus buchen oder vor 9 Uhr ankommen.",
         "Der nördliche Teil des Sees ist windiger — ideal zum Segeln und Windsurfen, weniger geeignet zum ruhigen Schwimmen.",
         "Viele Restaurants sind montags geschlossen. Öffnungszeiten immer vor dem Besuch prüfen.",
@@ -303,6 +303,17 @@
       "title": "Abreise-Checkliste",
       "description": "Bitte stellen Sie vor der Abreise sicher, dass alles auf der Liste erledigt ist."
     },
+    "hikes": {
+      "title": "Wandern in der Nähe",
+      "text": "Prada liegt an den Hängen des Monte Baldo — einem der besten Wandergebiete am Gardasee. Dutzende Wege beginnen <b>direkt vor der Haustür</b>: leichte Spaziergänge durch Olivenhaine, Gratanstiege mit Seepanorama, Waldwege durch Kastanienwälder.<br><br>Über den Komoot-Link unten finden Sie eine Auswahl an Routen im Umkreis von ~5 km.<br><br>Beste Zeit ist <b>Frühling (April–Juni)</b> und <b>Herbst (September–Oktober)</b>. Im Sommer kann es heiß werden, im Winter liegt oberhalb von 1500 m Schnee.",
+      "komootBtn": "Routen auf Komoot"
+    },
+    "parking": {
+      "title": "Parken",
+      "text": "Das Haus hat einen <b>großen privaten Parkplatz</b> auf dem eingezäunten Grundstück — stellen Sie Ihr Auto ab, wo Sie möchten, es ist immer genug Platz.<br><br>Für Ausflüge an den See: <b>Parken in Malcesine, Castelletto</b> und anderen Seeorten ist im Sommer sehr schwierig. Kommen Sie früh morgens oder nutzen Sie Park-and-Ride-Angebote."
+    },
+    "areaTitle": "Wissenswertes zur Umgebung",
+    "mapBtn": "Wohnung auf der Karte",
     "empty": "Noch keine Informationen hinzugefügt"
   },
   "adminGuide": {

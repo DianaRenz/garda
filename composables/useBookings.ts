@@ -1,6 +1,6 @@
 import {
   collection, doc,
-  query, orderBy, where, onSnapshot, serverTimestamp, Timestamp,
+  query, orderBy, onSnapshot, serverTimestamp, Timestamp,
   addDoc, updateDoc, deleteDoc,
 } from "firebase/firestore";
 import { ref as vueRef } from "vue";
@@ -64,22 +64,6 @@ export const useBookings = () => {
       },
       (err) => {
         if (import.meta.dev) console.error('[useBookings] subscribe error:', err);
-      },
-    );
-  };
-
-  const subscribeByUser = (uid: string) => {
-    const q = query(
-      collection($db, "bookings"),
-      where("userId", "==", uid),
-      orderBy("startDate", "asc")
-    );
-    return onSnapshot(q,
-      (snap) => {
-        bookings.value = snap.docs.map((d) => ({ id: d.id, ...d.data() } as Booking));
-      },
-      (err) => {
-        if (import.meta.dev) console.error('[useBookings] subscribeByUser error:', err);
       },
     );
   };
@@ -174,7 +158,7 @@ export const useBookings = () => {
   };
 
   return {
-    bookings, subscribe, subscribeByUser, subscribeCalendar, getConflicts,
+    bookings, subscribe, subscribeCalendar, getConflicts,
     createBooking, updateBooking, deleteBooking,
     formatDate, statusColor,
   };
