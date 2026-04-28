@@ -322,7 +322,8 @@
     "carouselTitle": "Фотографии",
     "tabs": {
       "house": "Дом и сад",
-      "apartment": "Квартира"
+      "apartment": "Квартира",
+      "lake": "Озеро"
     },
     "allPhotosBtn": "Все фотографии"
   },

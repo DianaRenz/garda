@@ -322,7 +322,8 @@
     "carouselTitle": "Photos",
     "tabs": {
       "house": "House & Garden",
-      "apartment": "Apartment"
+      "apartment": "Apartment",
+      "lake": "Lake"
     },
     "allPhotosBtn": "All photos"
   },

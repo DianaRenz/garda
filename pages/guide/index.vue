@@ -26,7 +26,6 @@
           <VCarousel
             :height="carouselHeight"
             show-arrows="hover"
-            cycle
             hide-delimiter-background
             class="rounded-lg mb-4"
           >
@@ -42,7 +41,6 @@
           <VCarousel
             :height="carouselHeight"
             show-arrows="hover"
-            cycle
             hide-delimiter-background
             class="rounded-lg mb-4"
           >

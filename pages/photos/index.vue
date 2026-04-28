@@ -18,6 +18,7 @@
           <VTabs v-model="activeTab" class="mb-4">
             <VTab value="house">{{ $t('photos.tabs.house') }}</VTab>
             <VTab value="apartment">{{ $t('photos.tabs.apartment') }}</VTab>
+            <VTab value="lake">{{ $t('photos.tabs.lake') }}</VTab>
           </VTabs>
 
           <VWindow v-model="activeTab">
@@ -70,6 +71,31 @@
                 </VCol>
               </VRow>
             </VWindowItem>
+
+            <VWindowItem value="lake">
+              <VRow dense>
+                <VCol
+                  v-for="(photo, i) in LAKE_PHOTOS"
+                  :key="photo"
+                  cols="6"
+                  sm="4"
+                  md="3"
+                >
+                  <div
+                    class="rounded-lg"
+                    style="aspect-ratio:4/3;overflow:hidden;cursor:pointer"
+                    @click="openLightbox(LAKE_PHOTOS, i)"
+                  >
+                    <img
+                      :src="photo"
+                      :alt="$t('photos.tabs.lake')"
+                      loading="lazy"
+                      style="width:100%;height:100%;object-fit:cover"
+                    />
+                  </div>
+                </VCol>
+              </VRow>
+            </VWindowItem>
           </VWindow>
         </template>
       </VCol>
@@ -84,7 +110,7 @@
 </template>
 
 <script setup lang="ts">
-import { HOUSE_PHOTOS, APARTMENT_PHOTOS } from '~/utils/photos';
+import { HOUSE_PHOTOS, APARTMENT_PHOTOS, LAKE_PHOTOS } from '~/utils/photos';
 
 definePageMeta({ layout: 'default' });
 
