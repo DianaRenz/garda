@@ -451,14 +451,11 @@ const bookingDuration = (booking: Booking) => {
 const addGuestAndAssign = async () => {
   if (!newGuestForm.name) return;
   try {
-  await createGuest({ name: newGuestForm.name, phone: newGuestForm.phone, email: newGuestForm.email, notes: "" });
-  const newGuest = guests.value.find(g => g.name === newGuestForm.name);
-  if (newGuest) {
-    form.guestId = newGuest.id;
-    form.guestName = newGuest.name;
-    form.guestPhone = newGuestForm.phone;
-    form.guestEmail = newGuestForm.email;
-  }
+  const newId = await createGuest({ name: newGuestForm.name, phone: newGuestForm.phone, email: newGuestForm.email, notes: "" });
+  form.guestId = newId;
+  form.guestName = newGuestForm.name;
+  form.guestPhone = newGuestForm.phone;
+  form.guestEmail = newGuestForm.email;
   Object.assign(newGuestForm, { name: "", phone: "", email: "" });
   createNewGuestInline.value = false;
   } catch { error.value = t('common.error'); }
