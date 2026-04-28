@@ -25,7 +25,6 @@ export const HOUSE_PHOTOS = [
 
 // Apartment — excluding closet details, towels, thermostat, cabinet internals
 export const APARTMENT_PHOTOS = [
-  '/photos/apartment/IMG_5941.jpg',  // bedroom with bed and TV
   '/photos/apartment/IMG_5942.jpg',  // bedroom with balcony view
   '/photos/apartment/IMG_5943.jpg',  // bedroom from doorway
   '/photos/apartment/IMG_5948.jpg',  // living room, sofa, dining
@@ -60,7 +59,6 @@ export const APARTMENT_CAROUSEL = [
   '/photos/apartment/IMG_5950.jpg',  // dining area, mountain view
   '/photos/apartment/IMG_5942.jpg',  // bedroom with balcony view
   '/photos/apartment/IMG_5943.jpg',  // bedroom from doorway
-  '/photos/apartment/IMG_5941.jpg',  // bedroom with bed and TV
   '/photos/apartment/IMG_5958.jpg',  // kitchen front
   '/photos/apartment/IMG_5963.jpg',  // shelf unit
   '/photos/apartment/IMG_5967.jpg',  // bathroom
