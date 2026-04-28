@@ -303,6 +303,12 @@
       "title": "Abreise-Checkliste",
       "description": "Bitte stellen Sie vor der Abreise sicher, dass alles auf der Liste erledigt ist."
     },
+    "hikes": {
+      "title": "Wandern in der Nähe",
+      "text": "Die Wohnung liegt in Prada, an den Hängen des Monte Baldo — Dutzende Wanderwege beginnen direkt vor der Haustür.\n\nÜber den Komoot-Link unten finden Sie gefilterte Routen im Umkreis von ~5 km.\n\nDie beste Zeit zum Wandern ist Frühling und Herbst. Im Sommer kann es heiß werden, im Winter liegt in der Höhe Schnee.\n\nParken: Auf dem eingezäunten Grundstück gibt es einen großen Parkplatz, stellen Sie Ihr Auto ab, wo es Ihnen passt.",
+      "komootBtn": "Routen auf Komoot",
+      "mapBtn": "Wohnung auf der Karte"
+    },
     "empty": "Noch keine Informationen hinzugefügt"
   },
   "adminGuide": {

@@ -82,6 +82,51 @@
             </template>
           </template>
 
+          <!-- Hikes section -->
+          <div class="mb-4 mt-8">
+            <VCard variant="outlined" rounded="lg">
+              <VCardText class="pa-4">
+                <div class="d-flex align-center ga-3 mb-3">
+                  <VIcon
+                    icon="fluent:compass-northwest-24-regular"
+                    size="22"
+                    color="primary"
+                  />
+                  <span class="text-body-1 font-weight-bold">
+                    {{ $t('guide.hikes.title') }}
+                  </span>
+                </div>
+                <div
+                  class="text-body-2 text-medium-emphasis mb-4"
+                  style="white-space:pre-line"
+                >
+                  {{ $t('guide.hikes.text') }}
+                </div>
+                <div class="d-flex flex-wrap ga-2">
+                  <VBtn
+                    variant="tonal"
+                    color="primary"
+                    prepend-icon="fluent:map-24-regular"
+                    href="https://www.komoot.com/de-de/discover/Ausgew%C3%A4hlter_Ort_auf_der_Karte/@45.6702538,10.7870385/tours?sport=hike&map=true&max_distance=4820&pageNumber=1"
+                    target="_blank"
+                    rel="noopener"
+                  >
+                    {{ $t('guide.hikes.komootBtn') }}
+                  </VBtn>
+                  <VBtn
+                    variant="tonal"
+                    prepend-icon="fluent:location-24-regular"
+                    href="https://maps.app.goo.gl/YpRRWu4uknC9cADu9"
+                    target="_blank"
+                    rel="noopener"
+                  >
+                    {{ $t('guide.hikes.mapBtn') }}
+                  </VBtn>
+                </div>
+              </VCardText>
+            </VCard>
+          </div>
+
           <!-- Checkout checklist -->
           <template v-if="currentCheckoutItems.length">
             <h2 class="text-body-2 font-weight-medium text-medium-emphasis mb-3 mt-8">

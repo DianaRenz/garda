@@ -303,6 +303,12 @@
       "title": "Checkout checklist",
       "description": "Please make sure everything on the list is done before you leave."
     },
+    "hikes": {
+      "title": "Hiking nearby",
+      "text": "The apartment is in Prada, on the slopes of Monte Baldo — dozens of hiking trails start right from the doorstep.\n\nThe Komoot link below shows filtered routes within ~5 km of the apartment.\n\nBest time for hiking is spring and autumn. Summer can be hot, winter brings snow at altitude.\n\nParking: there is a large parking area on the fenced property, park wherever you like.",
+      "komootBtn": "Routes on Komoot",
+      "mapBtn": "Apartment on map"
+    },
     "empty": "No information added yet"
   },
   "adminGuide": {
