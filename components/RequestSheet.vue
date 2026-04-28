@@ -1,5 +1,5 @@
 <template>
-  <VBottomSheet v-model="model" :max-width="600">
+  <VBottomSheet v-model="model" :max-width="600" content-class="rounded-t-xl overflow-hidden">
     <VCard rounded="t-xl">
       <VCardTitle class="pa-5 pb-3 d-flex align-center justify-space-between">
         <span>{{ $t('request.title') }}</span>
@@ -48,15 +48,17 @@
               </div>
             </div>
 
-            <!-- Selected range display -->
-            <div v-if="dateRangeReady" class="text-body-2 font-weight-medium text-center mb-2">
-              {{ formatDateShort(formStartDate) }} — {{ formatDateShort(formEndDate) }}
-              <span class="text-medium-emphasis ml-1">({{ nightsLabel }})</span>
-            </div>
-
-            <!-- Validation error -->
-            <div v-if="showDateError" class="text-caption text-error text-center mb-2">
-              {{ $t('request.datesRequired') }}
+            <!-- Selected range display (fixed height to prevent layout shift) -->
+            <div class="text-center mb-2" style="min-height: 24px;">
+              <template v-if="dateRangeReady">
+                <span class="text-body-2 font-weight-medium">
+                  {{ formatDateShort(formStartDate) }} — {{ formatDateShort(formEndDate) }}
+                  <span class="text-medium-emphasis ml-1">({{ nightsLabel }})</span>
+                </span>
+              </template>
+              <span v-else-if="showDateError" class="text-caption text-error">
+                {{ $t('request.datesRequired') }}
+              </span>
             </div>
 
             <VAlert v-if="blockingConflicts.length" type="error" variant="tonal" density="comfortable" class="mt-2 mb-3">
@@ -293,6 +295,10 @@ const submit = async () => {
 }
 .request-date-picker :deep(.v-picker__body) {
   max-width: 100%;
+}
+/* Fix layout shift when navigating months with different row counts */
+.request-date-picker :deep(.v-date-picker-month__days) {
+  min-height: 288px;
 }
 .event-dot {
   display: inline-block;
