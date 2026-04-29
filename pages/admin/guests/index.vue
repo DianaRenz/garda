@@ -285,7 +285,7 @@ const openInvite = async (g: Guest) => {
   inviteCopied.value = false;
   inviteDialog.value = true;
   try {
-    const token = await generateGuestInvite(g.id);
+    const token = await generateGuestInvite(g.id, { name: g.name, phone: g.phone || "", email: g.email || "" });
     const base = window.location.origin;
     inviteLink.value = `${base}/register/${token}`;
   } catch {

@@ -97,8 +97,6 @@
 <script setup lang="ts">
 import { createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
 import { doc, runTransaction, serverTimestamp } from "firebase/firestore";
-import type { Guest } from '~/composables/useGuests';
-
 definePageMeta({ layout: "default" });
 
 const { $auth, $db } = useNuxtApp();
@@ -106,7 +104,7 @@ const route = useRoute();
 const token = route.params.token as string;
 
 const { validateToken } = useInvite();
-const { createGuest, getGuest, linkGuestToUser } = useGuests();
+const { createGuest, linkGuestToUser } = useGuests();
 const { ruleRequired, ruleEmail, rulePassLen } = useFormRules();
 
 const validating = ref(true);
@@ -135,14 +133,13 @@ onMounted(async () => {
     tokenError.value = result.error ?? "not_found";
   } else {
     inviteType.value = result.type ?? "admin";
-    // Personal guest invite — prefill form with guest data
+    // Personal guest invite — prefill form with guest data from invite
     if (result.guestId) {
-      const guest = await getGuest(result.guestId);
-      if (guest) {
-        linkedGuestId.value = result.guestId;
-        name.value = guest.name || "";
-        phone.value = guest.phone || "";
-        email.value = guest.email || "";
+      linkedGuestId.value = result.guestId;
+      if (result.guestData) {
+        name.value = result.guestData.name || "";
+        phone.value = result.guestData.phone || "";
+        email.value = result.guestData.email || "";
       }
     }
   }

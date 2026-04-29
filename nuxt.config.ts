@@ -86,6 +86,9 @@ export default defineNuxtConfig({
 
   pwa: {
     registerType: "autoUpdate",
+    workbox: {
+      navigateFallback: null,
+    },
     manifest: {
       name: title,
       short_name: title,
