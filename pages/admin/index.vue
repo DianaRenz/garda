@@ -3,6 +3,11 @@
     <h1 class="text-h5 font-weight-bold mb-6">{{ $t('dashboard.title') }}</h1>
     <VAlert v-if="error" type="error" variant="tonal" closable class="mb-4" @click:close="error = ''">{{ error }}</VAlert>
 
+    <div v-if="loading" class="text-center py-16">
+      <VProgressCircular indeterminate color="primary" />
+    </div>
+
+    <template v-else>
     <VRow>
       <VCol v-for="stat in statCards" :key="stat.key" cols="6" md="3">
         <VCard variant="outlined" rounded="lg" class="pa-4" height="100%">
@@ -49,8 +54,8 @@
 
     <div class="d-flex ga-2 mb-3">
       <VChip
-        :variant="filterStatus === 'all' ? 'flat' : 'tonal'"
-        color="default"
+        :variant="filterStatus === 'all' ? 'flat' : 'outlined'"
+        :style="filterStatus === 'all' ? { background: '#333', color: '#fff' } : {}"
         size="small"
         @click="filterStatus = 'all'"
       >
@@ -79,19 +84,23 @@
         <div v-for="(b, i) in upcomingBookings" :key="b.id">
           <VDivider v-if="i > 0" />
           <div
-            class="d-flex align-center justify-space-between px-4 py-3 ga-3 cursor-pointer"
+            class="px-4 py-3 cursor-pointer"
             :style="{ borderLeft: `3px solid rgb(var(--v-theme-${statusColor[b.status]}))` }"
             @click="goToBookings(b.id)"
           >
-            <div class="flex-grow-1 min-width-0">
-              <div class="text-body-2 font-weight-medium">{{ b.guestName || $t('bookings.unassigned') }}</div>
-              <div class="text-caption text-medium-emphasis mt-1">
-                {{ formatDate(b.startDate) }} — {{ formatDate(b.endDate) }}
+            <div class="d-flex align-center justify-space-between ga-2">
+              <div class="flex-grow-1 min-width-0">
+                <div class="text-body-2 font-weight-medium">{{ b.guestName || $t('bookings.unassigned') }}</div>
+                <div class="text-caption text-medium-emphasis mt-1">
+                  {{ formatDate(b.startDate) }} — {{ formatDate(b.endDate) }}
+                </div>
               </div>
+              <VChip :color="statusColor[b.status]" size="small" variant="tonal">
+                {{ $t(`bookings.statuses.${b.status}`) }}
+              </VChip>
             </div>
-            <div class="d-flex align-center ga-2 flex-shrink-0" @click.stop>
+            <div v-if="b.status === 'pending'" class="d-flex ga-2 mt-3" @click.stop>
               <VBtn
-                v-if="b.status === 'pending'"
                 size="x-small"
                 variant="tonal"
                 color="primary"
@@ -101,7 +110,6 @@
                 {{ $t('bookings.actions.confirm') }}
               </VBtn>
               <VBtn
-                v-if="b.status === 'pending'"
                 size="x-small"
                 variant="tonal"
                 color="error"
@@ -109,9 +117,6 @@
               >
                 {{ $t('bookings.actions.reject') }}
               </VBtn>
-              <VChip :color="statusColor[b.status]" size="small" variant="tonal">
-                {{ $t(`bookings.statuses.${b.status}`) }}
-              </VChip>
             </div>
           </div>
         </div>
@@ -124,6 +129,8 @@
     <VBtn v-if="totalUpcoming > 10" variant="text" size="small" to="/admin/bookings" class="mt-2">
       {{ $t('dashboard.viewAll') }}
     </VBtn>
+    </template>
+
     <!-- Reject dialog -->
     <VDialog v-model="rejectDialog" max-width="480">
       <VCard rounded="lg">
@@ -156,6 +163,7 @@ const { guests, subscribe: subscribeGuests } = useGuests();
 const { notifyGuestStatusUpdate } = useNotifications();
 const { t } = useI18n();
 
+const loading = ref(true);
 const filterStatus = ref<'all' | 'pending' | 'confirmed'>('all');
 const confirming = ref<string | null>(null);
 const rejectDialog = ref(false);
@@ -302,5 +310,6 @@ onMounted(() => {
   const u1 = subscribe();
   const u2 = subscribeGuests();
   onUnmounted(() => { u1(); u2(); });
+  watch(bookings, () => { loading.value = false; }, { once: true });
 });
 </script>

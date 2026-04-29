@@ -8,13 +8,19 @@
     </div>
     <VAlert v-if="error" type="error" variant="tonal" closable class="mb-4" @click:close="error = ''">{{ error }}</VAlert>
 
+    <div v-if="loading" class="text-center py-16">
+      <VProgressCircular indeterminate color="primary" />
+    </div>
+
+    <template v-else>
     <!-- Filters -->
     <div class="d-flex ga-3 mb-6 flex-wrap">
       <VChip
         v-for="s in statuses"
         :key="s.value"
         :color="s.value !== 'all' ? statusColor[s.value] : undefined"
-        :variant="filterStatus === s.value ? 'flat' : 'tonal'"
+        :variant="filterStatus === s.value ? 'flat' : (s.value === 'all' ? 'outlined' : 'tonal')"
+        :style="filterStatus === s.value && s.value === 'all' ? { background: '#333', color: '#fff' } : {}"
         class="cursor-pointer"
         @click="filterStatus = s.value"
       >
@@ -113,6 +119,7 @@
         </VCard>
       </div>
     </template>
+    </template>
 
     <!-- Edit/Create booking dialog -->
     <VDialog v-model="editDialog" max-width="540">
@@ -186,11 +193,11 @@
               </div>
               <div class="mt-1">
                 <label class="label text-grey-darken-2 text-body-2">{{ $t('guests.form.phone') }}</label>
-                <VTextField v-model="newGuestForm.phone" density="compact" />
+                <VTextField v-model="newGuestForm.phone" type="tel" density="compact" />
               </div>
               <div class="mt-1">
                 <label class="label text-grey-darken-2 text-body-2">{{ $t('guests.form.email') }}</label>
-                <VTextField v-model="newGuestForm.email" density="compact" />
+                <VTextField v-model="newGuestForm.email" type="email" density="compact" />
               </div>
               <VBtn
                 size="small"
@@ -297,6 +304,7 @@ const registeredUserOptions = computed(() =>
 
 const editDialog = ref(false);
 const deleteDialog = ref(false);
+const loading = ref(true);
 const saving = ref(false);
 const deleting = ref(false);
 const error = ref('');
@@ -529,6 +537,7 @@ onMounted(async () => {
   const u1 = subscribe();
   const u2 = subscribeGuests();
   onUnmounted(() => { u1(); u2(); });
+  watch(bookings, () => { loading.value = false; }, { once: true });
 
   try {
     const snap = await getDocs(query(collection($db, 'users'), where('role', '==', 'guest')));

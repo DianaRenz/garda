@@ -16,18 +16,22 @@
               <VTextField
                 v-model="name"
                 :rules="[ruleRequired]"
+                autocomplete="name"
                 class="mb-2"
               />
 
               <label class="label">{{ $t('profile.phone') }}</label>
               <VTextField
                 v-model="phone"
+                type="tel"
+                autocomplete="tel"
                 class="mb-2"
               />
 
               <label class="label">{{ $t('profile.email') }}</label>
               <VTextField
                 :model-value="email"
+                type="email"
                 disabled
                 :hint="$t('profile.emailHint')"
                 persistent-hint
@@ -70,7 +74,7 @@
 </template>
 
 <script setup lang="ts">
-import { doc, updateDoc, collection, query, where, getDocs } from 'firebase/firestore';
+import { doc, updateDoc, collection, query, where, getDocs, serverTimestamp } from 'firebase/firestore';
 
 definePageMeta({ layout: "default" });
 
@@ -93,11 +97,28 @@ const save = async () => {
   error.value = false;
   try {
     await updateDoc(doc($db, 'users', uid), { name: name.value, phone: phone.value });
+    const bookingUpdate = { guestName: name.value, guestPhone: phone.value, updatedAt: serverTimestamp() };
     // Sync to linked guest record (best-effort)
     getDocs(query(collection($db, 'guests'), where('userId', '==', uid)))
       .then(snap => {
         for (const d of snap.docs) {
           updateDoc(d.ref, { name: name.value, phone: phone.value }).catch(() => {});
+          // Sync to bookings linked by guestId (admin-created bookings)
+          getDocs(query(collection($db, 'bookings'), where('guestId', '==', d.id)))
+            .then(bSnap => {
+              for (const b of bSnap.docs) {
+                updateDoc(b.ref, bookingUpdate).catch(() => {});
+              }
+            })
+            .catch(() => {});
+        }
+      })
+      .catch(() => {});
+    // Sync to bookings linked by userId (guest-submitted requests)
+    getDocs(query(collection($db, 'bookings'), where('userId', '==', uid)))
+      .then(snap => {
+        for (const b of snap.docs) {
+          updateDoc(b.ref, bookingUpdate).catch(() => {});
         }
       })
       .catch(() => {});

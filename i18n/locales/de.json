@@ -7,7 +7,11 @@
     "guests": "Gäste",
     "guide": "Reiseführer",
     "settings": "Einstellungen",
-    "logout": "Abmelden"
+    "logout": "Abmelden",
+    "login": "Anmelden",
+    "menu": "Menü",
+    "expandMenu": "Menü erweitern",
+    "collapseMenu": "Menü einklappen"
   },
   "home": {
     "hero": {
@@ -363,6 +367,7 @@
     "deleteConfirmTitle": "Eintrag löschen?",
     "deleteConfirmText": "Diese Aktion kann nicht rückgängig gemacht werden.",
     "error": "Etwas ist schiefgelaufen. Bitte versuche es erneut.",
-    "close": "Schließen"
+    "close": "Schließen",
+    "copy": "Kopieren"
   }
 }

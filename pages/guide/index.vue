@@ -62,6 +62,7 @@
                       variant="text"
                       size="x-small"
                       density="compact"
+                      :aria-label="$t('common.copy')"
                       @click="copyAddress"
                     >
                       <VIcon

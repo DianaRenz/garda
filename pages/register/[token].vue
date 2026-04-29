@@ -36,6 +36,7 @@
                 v-model="name"
                 prepend-inner-icon="fluent:person-24-regular"
                 id="name"
+                autocomplete="name"
               />
             </div>
             <div class="mt-1">
@@ -44,6 +45,8 @@
                 v-model="phone"
                 prepend-inner-icon="fluent:phone-24-regular"
                 id="phone"
+                type="tel"
+                autocomplete="tel"
               />
             </div>
           </template>
@@ -56,6 +59,7 @@
               prepend-inner-icon="fluent:mail-24-regular"
               id="email"
               type="email"
+              autocomplete="email"
             />
           </div>
           <div class="mt-1">
@@ -66,6 +70,7 @@
               prepend-inner-icon="fluent:password-20-regular"
               id="password"
               type="password"
+              autocomplete="new-password"
             />
           </div>
           <div class="mt-1">
@@ -76,6 +81,7 @@
               prepend-inner-icon="fluent:password-20-regular"
               id="confirm-password"
               type="password"
+              autocomplete="new-password"
             />
           </div>
 

@@ -7,7 +7,11 @@
     "guests": "Guests",
     "guide": "Guide",
     "settings": "Settings",
-    "logout": "Logout"
+    "logout": "Logout",
+    "login": "Log in",
+    "menu": "Menu",
+    "expandMenu": "Expand menu",
+    "collapseMenu": "Collapse menu"
   },
   "home": {
     "hero": {
@@ -363,6 +367,7 @@
     "deleteConfirmTitle": "Delete entry?",
     "deleteConfirmText": "This action cannot be undone.",
     "error": "Something went wrong. Please try again.",
-    "close": "Close"
+    "close": "Close",
+    "copy": "Copy"
   }
 }

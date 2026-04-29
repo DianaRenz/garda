@@ -3,7 +3,7 @@
     <!-- Mobile top bar -->
     <VAppBar v-if="mobile" flat border="b">
       <template #prepend>
-        <VBtn icon variant="text" @click="drawer = !drawer">
+        <VBtn icon variant="text" :aria-label="$t('nav.menu')" @click="drawer = !drawer">
           <VIcon icon="fluent:navigation-24-regular" />
         </VBtn>
       </template>
@@ -21,6 +21,7 @@
             v-if="!mobile"
             :icon="rail ? 'fluent:panel-right-expand-24-regular' : 'fluent:panel-right-contract-24-regular'"
             variant="text"
+            :aria-label="rail ? $t('nav.expandMenu') : $t('nav.collapseMenu')"
             @click="rail = !rail"
           />
         </template>

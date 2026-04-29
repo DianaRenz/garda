@@ -16,6 +16,7 @@
               prepend-inner-icon="fluent:mail-24-regular"
               id="email"
               type="email"
+              autocomplete="email"
             />
           </div>
           <div class="mt-1">
@@ -26,6 +27,7 @@
               prepend-inner-icon="fluent:password-20-regular"
               id="password"
               type="password"
+              autocomplete="current-password"
             />
           </div>
 

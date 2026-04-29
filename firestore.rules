@@ -155,17 +155,24 @@ service cloud.firestore {
           && resource.data.get('userId', null) == null
           && request.resource.data.diff(resource.data).changedKeys().hasOnly(['userId'])
           && request.resource.data.userId == request.auth.uid)
-        // Guest self-cancel: guest can cancel own pending or confirmed booking
+        // Guest self-cancel: guest can cancel own future pending or confirmed booking
         || (signedIn()
           && resource.data.userId == request.auth.uid
           && resource.data.status in ['pending', 'confirmed']
+          && resource.data.endDate >= request.time
           && request.resource.data.diff(resource.data).changedKeys().hasOnly(['status', 'updatedAt'])
           && request.resource.data.status == 'cancelled'
+          && request.resource.data.updatedAt == request.time)
+        // Guest profile sync: guest can update contact info on own bookings
+        || (signedIn()
+          && resource.data.userId == request.auth.uid
+          && request.resource.data.diff(resource.data).changedKeys().hasOnly(['guestName', 'guestPhone', 'guestEmail', 'updatedAt'])
           && request.resource.data.updatedAt == request.time);
       allow delete: if isAdmin() || (
         signedIn()
         && resource.data.userId == request.auth.uid
         && resource.data.status == 'pending'
+        && resource.data.endDate >= request.time
       );
     }
 
@@ -182,6 +189,8 @@ service cloud.firestore {
 
     match /guests/{guestId} {
       allow read, write: if isAdmin();
+      // Guest can read own linked guest doc (needed for profile sync)
+      allow read: if signedIn() && resource.data.userId == request.auth.uid;
       // Guests can create their own record on self-registration
       allow create: if signedIn()
         && request.resource.data.userId == request.auth.uid

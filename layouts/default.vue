@@ -44,7 +44,7 @@
         <!-- Logged in: account + logout dropdown -->
         <VMenu v-if="user">
           <template #activator="{ props }">
-            <VBtn v-bind="props" icon variant="text" size="small" class="mr-1">
+            <VBtn v-bind="props" icon variant="text" size="small" class="mr-1" :aria-label="$t('nav.profile')">
               <VIcon icon="fluent:person-circle-24-regular" />
             </VBtn>
           </template>
@@ -73,6 +73,7 @@
           size="small"
           class="mr-1"
           to="/login"
+          :aria-label="$t('nav.login')"
         >
           <VIcon icon="fluent:person-24-regular" />
         </VBtn>

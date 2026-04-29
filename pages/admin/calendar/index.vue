@@ -3,6 +3,11 @@
     <h1 class="text-h5 font-weight-bold mb-4">{{ $t('calendar.title') }}</h1>
     <VAlert v-if="error" type="error" variant="tonal" closable class="mb-4" @click:close="error = ''">{{ error }}</VAlert>
 
+    <div v-if="loading" class="text-center py-16">
+      <VProgressCircular indeterminate color="primary" />
+    </div>
+
+    <template v-else>
     <div class="d-flex ga-4 flex-wrap mb-6">
       <div v-for="item in legend" :key="item.key" class="d-flex align-center ga-2">
         <div
@@ -20,6 +25,7 @@
     </div>
 
     <AppCalendar :bookings="bookings" :show-names="true" @select="selected = $event" />
+    </template>
 
     <!-- Booking detail dialog -->
     <VDialog v-model="dialog" max-width="420">
@@ -151,6 +157,7 @@ const legend: LegendItem[] = [
 onMounted(() => {
   const unsub = subscribe();
   onUnmounted(unsub);
+  watch(bookings, () => { loading.value = false; }, { once: true });
 });
 
 const selected = ref<Booking | null>(null);
@@ -162,6 +169,7 @@ const dialog = computed({
 const deleteDialog = ref(false);
 const rejectDialog = ref(false);
 const confirming = ref(false);
+const loading = ref(true);
 const deleting = ref(false);
 const rejecting = ref(false);
 const rejectNote = ref('');

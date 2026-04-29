@@ -36,13 +36,37 @@ export const useGuests = () => {
 
   const updateGuest = async (id: string, data: Partial<Pick<Guest, 'name' | 'phone' | 'email' | 'notes'>>) => {
     await updateDoc(doc($db, "guests", id), data);
-    // Sync name/phone to linked user profile if guest has userId
     const guest = guests.value.find(g => g.id === id);
+    // Sync name/phone to linked user profile if guest has userId
     if (guest?.userId && (data.name !== undefined || data.phone !== undefined)) {
       const userUpdate: Record<string, string> = {};
       if (data.name !== undefined) userUpdate.name = data.name;
       if (data.phone !== undefined) userUpdate.phone = data.phone;
       updateDoc(doc($db, "users", guest.userId), userUpdate).catch(() => {});
+    }
+    // Sync name/phone/email to bookings linked by guestId (admin-created)
+    if (data.name !== undefined || data.phone !== undefined || data.email !== undefined) {
+      const bookingUpdate: Record<string, any> = { updatedAt: serverTimestamp() };
+      if (data.name !== undefined) bookingUpdate.guestName = data.name;
+      if (data.phone !== undefined) bookingUpdate.guestPhone = data.phone;
+      if (data.email !== undefined) bookingUpdate.guestEmail = data.email;
+      getDocs(query(collection($db, "bookings"), where("guestId", "==", id)))
+        .then(snap => {
+          for (const d of snap.docs) {
+            updateDoc(d.ref, bookingUpdate).catch(() => {});
+          }
+        })
+        .catch(() => {});
+      // Also sync bookings linked by userId (guest-submitted requests with no guestId)
+      if (guest?.userId) {
+        getDocs(query(collection($db, "bookings"), where("userId", "==", guest.userId)))
+          .then(snap => {
+            for (const d of snap.docs) {
+              updateDoc(d.ref, bookingUpdate).catch(() => {});
+            }
+          })
+          .catch(() => {});
+      }
     }
   };
 

@@ -9,35 +9,6 @@
 
     <template v-else>
 
-      <!-- Gallery -->
-      <h2 class="text-h6 font-weight-bold mb-4">{{ $t('guide.galleryTitle') }}</h2>
-
-      <VTabs v-model="galleryTab" class="mb-4">
-        <VTab
-          v-for="cat in GALLERY_CATEGORIES"
-          :key="cat"
-          :value="cat"
-        >
-          {{ $t(`guide.gallery.${cat}`) }}
-        </VTab>
-      </VTabs>
-
-      <VWindow v-model="galleryTab">
-        <VWindowItem
-          v-for="cat in GALLERY_CATEGORIES"
-          :key="cat"
-          :value="cat"
-        >
-          <PhotoUploader
-            :photos="guide.gallery[cat]"
-            @upload="(file) => handleGalleryUpload(cat, file)"
-            @remove="(url) => handleGalleryRemove(cat, url)"
-          />
-        </VWindowItem>
-      </VWindow>
-
-      <VDivider class="my-8" />
-
       <!-- Language tabs -->
       <label class="label text-grey-darken-2 mb-1">{{ $t('adminGuide.language') }}</label>
       <VTabs v-model="editLocale" class="mb-6">
@@ -112,12 +83,13 @@
           <template #append>
             <VBtn
               icon
-              size="x-small"
+              size="small"
               variant="text"
               color="error"
+              :aria-label="$t('common.delete')"
               @click="removeCheckoutItem(i)"
             >
-              <VIcon icon="fluent:dismiss-16-regular" size="14" />
+              <VIcon icon="fluent:dismiss-16-regular" size="16" />
             </VBtn>
           </template>
         </VListItem>
@@ -161,22 +133,20 @@
 </template>
 
 <script setup lang="ts">
-import type { GalleryCategory, GuideSectionKey, GuideLocale } from '~/composables/useGuide';
+import type { GuideSectionKey, GuideLocale } from '~/composables/useGuide';
 
 definePageMeta({ layout: "admin", middleware: "auth" });
 
 const {
   guide, fetchGuide,
   saveSection, saveCheckoutItems,
-  addGalleryPhoto, removeGalleryPhoto,
   addSectionPhoto, removeSectionPhoto,
 } = useGuide();
 
-const { GUIDE_SECTION_KEYS, GUIDE_SECTION_ICONS, GALLERY_CATEGORIES, GUIDE_LOCALES } = await import('~/composables/useGuide');
+const { GUIDE_SECTION_KEYS, GUIDE_SECTION_ICONS, GUIDE_LOCALES } = await import('~/composables/useGuide');
 const { t } = useI18n();
 
 const loading = ref(true);
-const galleryTab = ref<GalleryCategory>('apartment');
 const editLocale = ref<GuideLocale>('ru');
 
 const LOCALE_LABELS: Record<GuideLocale, string> = { ru: 'RU', en: 'EN', de: 'DE' };
@@ -210,18 +180,7 @@ onMounted(async () => {
   loading.value = false;
 });
 
-// Gallery handlers
 const error = ref('');
-
-const handleGalleryUpload = async (cat: GalleryCategory, file: File) => {
-  try { await addGalleryPhoto(cat, file); }
-  catch { error.value = t('common.error'); }
-};
-
-const handleGalleryRemove = async (cat: GalleryCategory, url: string) => {
-  try { await removeGalleryPhoto(cat, url); }
-  catch { error.value = t('common.error'); }
-};
 
 // Section handlers
 const handleSaveSection = async (key: string) => {
