@@ -62,8 +62,8 @@
     }
   },
   "calendar": {
-    "title": "Календарь",
-    "subtitle": "Проверьте свободные даты",
+    "title": "Обзор занятости",
+    "subtitle": "Нажмите на дату, чтобы запросить бронирование",
     "legend": {
       "available": "Свободно",
       "pending": "Запрошено",
@@ -132,8 +132,11 @@
     "pendingConfirm": "Ожидают подтверждения",
     "visitsThisYear": "Визитов в этом году",
     "totalGuests": "Гостей всего",
+    "currentStays": "Сейчас в квартире",
     "upcomingBookings": "Ближайшие бронирования",
-    "noUpcoming": "Нет предстоящих бронирований"
+    "noUpcoming": "Нет предстоящих бронирований",
+    "filterAll": "Все",
+    "viewAll": "Все бронирования"
   },
   "bookings": {
     "title": "Бронирования",
@@ -147,7 +150,8 @@
       "pending": "Ожидает",
       "confirmed": "Подтверждено",
       "blocked": "Заблокировано",
-      "rejected": "Отклонено"
+      "rejected": "Отклонено",
+      "cancelled": "Отменено"
     },
     "sources": {
       "admin": "Вручную",
@@ -271,8 +275,8 @@
     "nextVisit": "Следующий визит",
     "totalVisits": "Подтверждённых",
     "requestDates": "Запросить даты",
-    "cancelRequest": "Отменить запрос",
-    "cancelConfirm": "Отменить этот запрос?",
+    "cancelRequest": "Отменить",
+    "cancelConfirm": "Отменить это бронирование?",
     "rejectedNote": "Причина:",
     "pendingStatus": "Ожидает подтверждения",
     "confirmedStatus": "Подтверждено"

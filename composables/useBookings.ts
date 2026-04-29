@@ -5,7 +5,7 @@ import {
 } from "firebase/firestore";
 import { ref as vueRef } from "vue";
 
-export type BookingStatus = "pending" | "confirmed" | "blocked" | "rejected";
+export type BookingStatus = "pending" | "confirmed" | "blocked" | "rejected" | "cancelled";
 
 export interface Booking {
   id: string;
@@ -29,7 +29,7 @@ export interface CalendarBooking {
   id: string;
   startDate: Timestamp;
   endDate: Timestamp;
-  status: Exclude<BookingStatus, "rejected">;
+  status: Exclude<BookingStatus, "rejected" | "cancelled">;
   userId: string | null;
 }
 
@@ -84,7 +84,7 @@ export const useBookings = () => {
               userId: data.userId ?? null,
             };
           })
-          .filter((b) => b.status !== "rejected") as CalendarBooking[];
+          .filter((b) => b.status !== "rejected" && b.status !== "cancelled") as CalendarBooking[];
       },
       (err) => {
         if (import.meta.dev) console.error('[useBookings] calendar listener error:', err);
@@ -99,7 +99,7 @@ export const useBookings = () => {
     const aEnd = tsToStr(booking.endDate);
     return bookings.value.filter((b) => {
       if (b.id === booking.id) return false;
-      if (b.status === "rejected" || b.status === "blocked") return false;
+      if (b.status === "rejected" || b.status === "blocked" || b.status === "cancelled") return false;
       if (!b.startDate || !b.endDate) return false;
       return aStart <= tsToStr(b.endDate) && aEnd >= tsToStr(b.startDate);
     });
@@ -155,6 +155,7 @@ export const useBookings = () => {
     confirmed: "primary",
     blocked:   "error",
     rejected:  "secondary",
+    cancelled: "secondary",
   };
 
   return {

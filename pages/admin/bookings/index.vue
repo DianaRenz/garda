@@ -36,7 +36,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="b in filtered" :key="b.id" class="cursor-pointer hover:bg-gray-50" @click="editBooking(b)">
+          <tr v-for="b in filtered" :key="b.id" class="cursor-pointer hover:bg-gray-50" :style="{ borderLeft: `3px solid rgb(var(--v-theme-${statusColor[b.status]}))` }" @click="editBooking(b)">
             <td>
               <div class="font-weight-medium">{{ bookingGuestLabel(b) }}</div>
               <div class="text-body-2 text-medium-emphasis">{{ b.guestPhone || b.guestContact || '—' }}</div>
@@ -82,7 +82,7 @@
         {{ $t('bookings.empty') }}
       </div>
       <div class="d-flex flex-column ga-3">
-        <VCard v-for="b in filtered" :key="b.id" variant="outlined" rounded="lg" class="cursor-pointer" @click="editBooking(b)">
+        <VCard v-for="b in filtered" :key="b.id" variant="outlined" rounded="lg" class="cursor-pointer" :style="{ borderLeft: `3px solid rgb(var(--v-theme-${statusColor[b.status]}))` }" @click="editBooking(b)">
           <VCardText class="pa-4">
             <div class="d-flex align-start justify-space-between mb-1">
               <div class="flex-grow-1">
@@ -306,10 +306,10 @@ const formRef = ref();
 const editingId = ref<string | null>(null);
 const createNewGuestInline = ref(false);
 
-const statuses = ["all", "pending", "confirmed", "blocked", "rejected"].map((v) => ({ value: v }));
+const statuses = ["all", "pending", "confirmed", "blocked", "rejected", "cancelled"].map((v) => ({ value: v }));
 
 const statusOptions = computed(() =>
-  ["pending", "confirmed", "blocked", "rejected"].map((v) => ({
+  ["pending", "confirmed", "blocked", "rejected", "cancelled"].map((v) => ({
     value: v,
     label: t(`bookings.statuses.${v}`),
   }))
@@ -345,7 +345,7 @@ const form = reactive({
   guestEmail: "",
   startDate: "",
   endDate: "",
-  status: "confirmed" as "pending" | "confirmed" | "blocked" | "rejected",
+  status: "confirmed" as "pending" | "confirmed" | "blocked" | "rejected" | "cancelled",
   notes: "",
 });
 
@@ -426,7 +426,7 @@ const toIso = (date: Date) =>
 
 const overlapsFormRange = (booking: Booking) => {
   if (!form.startDate || !form.endDate || form.endDate <= form.startDate) return false;
-  if (booking.id === editingId.value || booking.status === "rejected") return false;
+  if (booking.id === editingId.value || booking.status === "rejected" || booking.status === "cancelled") return false;
   const start = toIso(booking.startDate.toDate());
   const end = toIso(booking.endDate.toDate());
   return form.startDate < end && form.endDate > start;

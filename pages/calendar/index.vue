@@ -24,7 +24,7 @@
         </div>
       </div>
 
-      <AppCalendar :bookings="calendarBookings" :highlight-ids="ownBookingIds" />
+      <AppCalendar :bookings="calendarBookings" :highlight-ids="ownBookingIds" clickable @click-cell="showRequestSheet = true" />
 
       <div class="mt-8 text-center">
         <VBtn class="gradient primary" @click="showRequestSheet = true">

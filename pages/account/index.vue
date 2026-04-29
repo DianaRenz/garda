@@ -28,7 +28,7 @@
               <label class="label">{{ $t('profile.email') }}</label>
               <VTextField
                 :model-value="email"
-                readonly
+                disabled
                 :hint="$t('profile.emailHint')"
                 persistent-hint
                 class="mb-4"

@@ -96,7 +96,7 @@
                     </div>
                     <div class="d-flex align-center ga-2 flex-shrink-0">
                       <VBtn
-                        v-if="b.status === 'pending'"
+                        v-if="b.status === 'pending' || b.status === 'confirmed'"
                         size="x-small"
                         variant="text"
                         color="error"
@@ -238,7 +238,7 @@ definePageMeta({ layout: "default" });
 
 const { $db } = useNuxtApp();
 const { apartment, fetchApartment } = useApartment();
-const { subscribeCalendar, deleteBooking, formatDate, statusColor } = useBookings();
+const { subscribeCalendar, updateBooking, formatDate, statusColor } = useBookings();
 const { userData, fetchProfile } = useUserProfile();
 const { t } = useI18n();
 
@@ -292,6 +292,7 @@ const legend = [
 const bookingStatusLabel = (b: Booking): string => {
   if (b.status === 'pending') return t('account.pendingStatus');
   if (b.status === 'confirmed') return t('account.confirmedStatus');
+  if (b.status === 'cancelled') return t('bookings.statuses.cancelled');
   return t(`bookings.statuses.${b.status}`);
 };
 
@@ -358,7 +359,7 @@ const doCancel = async () => {
   if (!cancelId.value) return;
   cancelling.value = true;
   try {
-    await deleteBooking(cancelId.value);
+    await updateBooking(cancelId.value, { status: 'cancelled' });
     cancelDialog.value = false;
   } catch {
     cancelError.value = t('common.error');
