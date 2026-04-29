@@ -15,20 +15,6 @@
       :rail="!mobile && rail"
       :temporary="mobile"
     >
-      <VListItem title="Garda" nav class="py-4">
-        <template #append>
-          <VBtn
-            v-if="!mobile"
-            :icon="rail ? 'fluent:panel-right-expand-24-regular' : 'fluent:panel-right-contract-24-regular'"
-            variant="text"
-            :aria-label="rail ? $t('nav.expandMenu') : $t('nav.collapseMenu')"
-            @click="rail = !rail"
-          />
-        </template>
-      </VListItem>
-
-      <VDivider />
-
       <VList density="compact" nav class="mt-2">
         <VListItem
           v-for="item in navItems"

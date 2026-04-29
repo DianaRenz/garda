@@ -7,11 +7,11 @@
     <p class="text-body-2 text-medium-emphasis mb-4">{{ $t('invite.expires') }}</p>
 
     <!-- Admin invite -->
-    <div class="d-flex align-center gap-3 mb-2">
+    <div class="d-flex align-center ga-3 mb-2">
       <VBtn
         class="gradient primary"
         :loading="adminInviteLoading"
-        prepend-icon="fluent:shield-person-24-regular"
+        prepend-icon="fluent:shield-24-regular"
         @click="createAdminInvite"
       >
         {{ $t('invite.generateAdmin') }}
@@ -34,7 +34,7 @@
     />
 
     <!-- Guest invite -->
-    <div class="d-flex align-center gap-3 mb-2">
+    <div class="d-flex align-center ga-3 mb-2">
       <VBtn
         variant="tonal"
         :loading="guestInviteLoading"
