@@ -44,7 +44,7 @@ export const useGuests = () => {
       if (data.phone !== undefined) userUpdate.phone = data.phone;
       updateDoc(doc($db, "users", guest.userId), userUpdate).catch(() => {});
     }
-    // Sync name/phone/email to bookings linked by guestId
+    // Sync name/phone/email to bookings linked by guestId (admin-created)
     if (data.name !== undefined || data.phone !== undefined || data.email !== undefined) {
       const bookingUpdate: Record<string, string> = {};
       if (data.name !== undefined) bookingUpdate.guestName = data.name;
@@ -57,6 +57,16 @@ export const useGuests = () => {
           }
         })
         .catch(() => {});
+      // Also sync bookings linked by userId (guest-submitted requests with no guestId)
+      if (guest?.userId) {
+        getDocs(query(collection($db, "bookings"), where("userId", "==", guest.userId)))
+          .then(snap => {
+            for (const d of snap.docs) {
+              updateDoc(d.ref, bookingUpdate).catch(() => {});
+            }
+          })
+          .catch(() => {});
+      }
     }
   };
 
