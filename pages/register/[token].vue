@@ -199,8 +199,8 @@ const submit = async () => {
         }).catch(() => {}); // best-effort, don't block registration
       }
     }
-    // Send verification email and show confirmation screen
-    await sendEmailVerification(credential.user);
+    // Send verification email (best-effort — don't block registration)
+    try { await sendEmailVerification(credential.user); } catch {}
     emailSent.value = true;
   } catch (e: any) {
     if (e?.code === "auth/email-already-in-use") {
