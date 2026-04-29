@@ -155,10 +155,11 @@ service cloud.firestore {
           && resource.data.get('userId', null) == null
           && request.resource.data.diff(resource.data).changedKeys().hasOnly(['userId'])
           && request.resource.data.userId == request.auth.uid)
-        // Guest self-cancel: guest can cancel own pending or confirmed booking
+        // Guest self-cancel: guest can cancel own future pending or confirmed booking
         || (signedIn()
           && resource.data.userId == request.auth.uid
           && resource.data.status in ['pending', 'confirmed']
+          && resource.data.endDate >= request.time
           && request.resource.data.diff(resource.data).changedKeys().hasOnly(['status', 'updatedAt'])
           && request.resource.data.status == 'cancelled'
           && request.resource.data.updatedAt == request.time)
@@ -171,6 +172,7 @@ service cloud.firestore {
         signedIn()
         && resource.data.userId == request.auth.uid
         && resource.data.status == 'pending'
+        && resource.data.endDate >= request.time
       );
     }
 
