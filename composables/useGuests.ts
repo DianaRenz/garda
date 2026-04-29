@@ -36,6 +36,14 @@ export const useGuests = () => {
 
   const updateGuest = async (id: string, data: Partial<Pick<Guest, 'name' | 'phone' | 'email' | 'notes'>>) => {
     await updateDoc(doc($db, "guests", id), data);
+    // Sync name/phone to linked user profile if guest has userId
+    const guest = guests.value.find(g => g.id === id);
+    if (guest?.userId && (data.name !== undefined || data.phone !== undefined)) {
+      const userUpdate: Record<string, string> = {};
+      if (data.name !== undefined) userUpdate.name = data.name;
+      if (data.phone !== undefined) userUpdate.phone = data.phone;
+      updateDoc(doc($db, "users", guest.userId), userUpdate).catch(() => {});
+    }
   };
 
   const deleteGuest = async (id: string) => {

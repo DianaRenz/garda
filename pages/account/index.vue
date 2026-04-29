@@ -70,7 +70,7 @@
 </template>
 
 <script setup lang="ts">
-import { doc, updateDoc } from 'firebase/firestore';
+import { doc, updateDoc, collection, query, where, getDocs } from 'firebase/firestore';
 
 definePageMeta({ layout: "default" });
 
@@ -93,6 +93,14 @@ const save = async () => {
   error.value = false;
   try {
     await updateDoc(doc($db, 'users', uid), { name: name.value, phone: phone.value });
+    // Sync to linked guest record (best-effort)
+    getDocs(query(collection($db, 'guests'), where('userId', '==', uid)))
+      .then(snap => {
+        for (const d of snap.docs) {
+          updateDoc(d.ref, { name: name.value, phone: phone.value }).catch(() => {});
+        }
+      })
+      .catch(() => {});
     success.value = true;
     setTimeout(() => { success.value = false; }, 3000);
   } catch {

@@ -193,6 +193,10 @@ service cloud.firestore {
         && resource.data.get('userId', null) == null
         && request.resource.data.userId == request.auth.uid
         && request.resource.data.diff(resource.data).changedKeys().hasOnly(['userId', 'name', 'phone', 'email']);
+      // Guest self-update: linked guest can update own name/phone/email
+      allow update: if signedIn()
+        && resource.data.userId == request.auth.uid
+        && request.resource.data.diff(resource.data).changedKeys().hasOnly(['name', 'phone', 'email']);
     }
 
     match /apartment/{docId} {
