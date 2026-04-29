@@ -46,7 +46,7 @@ export const useGuests = () => {
     }
     // Sync name/phone/email to bookings linked by guestId (admin-created)
     if (data.name !== undefined || data.phone !== undefined || data.email !== undefined) {
-      const bookingUpdate: Record<string, string> = {};
+      const bookingUpdate: Record<string, any> = { updatedAt: serverTimestamp() };
       if (data.name !== undefined) bookingUpdate.guestName = data.name;
       if (data.phone !== undefined) bookingUpdate.guestPhone = data.phone;
       if (data.email !== undefined) bookingUpdate.guestEmail = data.email;

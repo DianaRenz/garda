@@ -161,6 +161,11 @@ service cloud.firestore {
           && resource.data.status in ['pending', 'confirmed']
           && request.resource.data.diff(resource.data).changedKeys().hasOnly(['status', 'updatedAt'])
           && request.resource.data.status == 'cancelled'
+          && request.resource.data.updatedAt == request.time)
+        // Guest profile sync: guest can update contact info on own bookings
+        || (signedIn()
+          && resource.data.userId == request.auth.uid
+          && request.resource.data.diff(resource.data).changedKeys().hasOnly(['guestName', 'guestPhone', 'guestEmail', 'updatedAt'])
           && request.resource.data.updatedAt == request.time);
       allow delete: if isAdmin() || (
         signedIn()

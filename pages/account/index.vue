@@ -74,7 +74,7 @@
 </template>
 
 <script setup lang="ts">
-import { doc, updateDoc, collection, query, where, getDocs } from 'firebase/firestore';
+import { doc, updateDoc, collection, query, where, getDocs, serverTimestamp } from 'firebase/firestore';
 
 definePageMeta({ layout: "default" });
 
@@ -97,7 +97,7 @@ const save = async () => {
   error.value = false;
   try {
     await updateDoc(doc($db, 'users', uid), { name: name.value, phone: phone.value });
-    const bookingUpdate = { guestName: name.value, guestPhone: phone.value };
+    const bookingUpdate = { guestName: name.value, guestPhone: phone.value, updatedAt: serverTimestamp() };
     // Sync to linked guest record (best-effort)
     getDocs(query(collection($db, 'guests'), where('userId', '==', uid)))
       .then(snap => {
