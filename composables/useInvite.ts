@@ -27,13 +27,19 @@ export const useInvite = () => {
     return token;
   };
 
-  const generateGuestInvite = async (guestId: string): Promise<string> => {
+  const generateGuestInvite = async (
+    guestId: string,
+    guestData: { name: string; phone: string; email: string },
+  ): Promise<string> => {
     const token = crypto.randomUUID();
     const ref = doc(collection($db, "invites"), token);
     await setDoc(ref, {
       token,
       type: "guest" as const,
       guestId,
+      guestName: guestData.name,
+      guestPhone: guestData.phone,
+      guestEmail: guestData.email,
       createdAt: serverTimestamp(),
       expiresAt: Timestamp.fromDate(
         new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
@@ -46,7 +52,13 @@ export const useInvite = () => {
 
   const validateToken = async (
     token: string
-  ): Promise<{ valid: boolean; type?: "admin" | "guest"; guestId?: string | null; error?: "not_found" | "used" | "expired" }> => {
+  ): Promise<{
+    valid: boolean;
+    type?: "admin" | "guest";
+    guestId?: string | null;
+    guestData?: { name: string; phone: string; email: string } | null;
+    error?: "not_found" | "used" | "expired";
+  }> => {
     const ref = doc($db, "invites", token);
     const snap = await getDoc(ref);
     if (!snap.exists()) return { valid: false, error: "not_found" };
@@ -54,7 +66,10 @@ export const useInvite = () => {
     if (data.used) return { valid: false, error: "used" };
     if (data.expiresAt.toDate() < new Date())
       return { valid: false, error: "expired" };
-    return { valid: true, type: data.type ?? "admin", guestId: data.guestId ?? null };
+    const guestData = data.guestId
+      ? { name: data.guestName ?? "", phone: data.guestPhone ?? "", email: data.guestEmail ?? "" }
+      : null;
+    return { valid: true, type: data.type ?? "admin", guestId: data.guestId ?? null, guestData };
   };
 
   const markTokenUsed = async (token: string) => {
