@@ -240,6 +240,9 @@
   - `pages/admin/calendar/index.vue` — Reject в диалоге детали, sub-dialog с причиной + конфликтами
   - `components/AppCalendar.vue` — prop `highlightIds` подсвечивает собственные брони гостя (primary border)
   - i18n — ключи `bookings.rejectDialog.*`, `account.upcoming/past/cancelRequest/...`, `calendar.legend.mine`
+- [x] Страница профиля `/account` — форма редактирования имени и телефона (вместо редиректа на `/apartment`)
+- [x] Дропдаун навбара — гостям показывается «Профиль» → `/account`, а не дубль квартиры
+- [x] `/guide` — убраны фото-карусели (дублировали отдельную страницу `/photos`)
 - [ ] Firestore Security Rules (production-ready)
 - [ ] PWA (уже настроен в стартере)
 - [ ] История посещений / статистика (nice-to-have)

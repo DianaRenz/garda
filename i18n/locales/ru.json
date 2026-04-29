@@ -1,6 +1,7 @@
 {
   "nav": {
     "dashboard": "Дашборд",
+    "profile": "Профиль",
     "calendar": "Календарь",
     "bookings": "Бронирования",
     "guests": "Гости",
@@ -275,6 +276,15 @@
     "rejectedNote": "Причина:",
     "pendingStatus": "Ожидает подтверждения",
     "confirmedStatus": "Подтверждено"
+  },
+  "profile": {
+    "title": "Профиль",
+    "name": "Имя",
+    "phone": "Телефон",
+    "email": "Email",
+    "emailHint": "Для смены email обратитесь к администратору",
+    "save": "Сохранить",
+    "saved": "Изменения сохранены"
   },
   "apartment": {
     "title": "Квартира",

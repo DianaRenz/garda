@@ -115,7 +115,7 @@ Always show a loading spinner (`ref(true)` → `false` after data loads). Use lo
 
 **Navigation:** `layouts/default.vue` `accountLink` computed: guest → `/apartment`, admin → `/admin`, unauthenticated → `/login`. Landing page private CTA also routes guests → `/apartment`, admins → `/admin`.
 
-**Guest cabinet:** `pages/account/index.vue` — just redirects to `/apartment` (all guest dashboard content lives in `apartment.vue`).
+**Profile page:** `pages/account/index.vue` — auth-guarded profile page where guests can edit name and phone. Email is read-only (hint directs to admin). Uses `useUserProfile().fetchProfile()` to load data, `updateDoc(doc($db, 'users', uid), { name, phone })` to save. Auth guard via `useAuthGuard()`. Navbar dropdown links guests here (not to `/apartment` which is already in the nav tabs).
 
 **Request form (`/request`):** Redirects to `/apartment`. All request functionality moved to `RequestSheet` component.
 

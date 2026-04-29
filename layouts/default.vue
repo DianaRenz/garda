@@ -50,9 +50,9 @@
           </template>
           <VList density="compact" min-width="160">
             <VListItem
-              :to="accountLink"
-              prepend-icon="fluent:home-24-regular"
-              :title="userRole === 'admin' ? $t('nav.dashboard') : $t('apartment.title')"
+              :to="userRole === 'admin' ? '/admin' : '/account'"
+              :prepend-icon="userRole === 'admin' ? 'fluent:grid-24-regular' : 'fluent:person-24-regular'"
+              :title="userRole === 'admin' ? $t('nav.dashboard') : $t('nav.profile')"
               rounded="lg"
             />
             <VDivider class="my-1" />

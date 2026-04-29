@@ -1,6 +1,7 @@
 {
   "nav": {
     "dashboard": "Dashboard",
+    "profile": "Profile",
     "calendar": "Calendar",
     "bookings": "Bookings",
     "guests": "Guests",
@@ -275,6 +276,15 @@
     "rejectedNote": "Reason:",
     "pendingStatus": "Awaiting confirmation",
     "confirmedStatus": "Confirmed"
+  },
+  "profile": {
+    "title": "Profile",
+    "name": "Name",
+    "phone": "Phone",
+    "email": "Email",
+    "emailHint": "Contact admin to change email",
+    "save": "Save",
+    "saved": "Changes saved"
   },
   "apartment": {
     "title": "The apartment",
