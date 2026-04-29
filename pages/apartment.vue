@@ -14,7 +14,6 @@
           <!-- Header -->
           <div class="mb-8">
             <h1 class="text-h5 font-weight-bold">{{ userData.name || userData.email }}</h1>
-            <p class="text-body-2 text-medium-emphasis">{{ userData.email }}</p>
           </div>
 
           <!-- Stats -->
@@ -85,7 +84,10 @@
             <template v-if="upcoming.length">
               <div v-for="(b, i) in upcoming" :key="b.id">
                 <VDivider v-if="i > 0" />
-                <div class="px-4 py-3">
+                <div
+                  class="px-4 py-3"
+                  :style="{ borderLeft: `3px solid rgb(var(--v-theme-${statusColor[b.status]}))` }"
+                >
                   <div class="d-flex align-center justify-space-between ga-2 flex-wrap">
                     <div>
                       <div class="text-body-2 font-weight-medium">
@@ -99,11 +101,10 @@
                         v-if="b.status === 'pending' || b.status === 'confirmed'"
                         size="x-small"
                         variant="text"
+                        icon="fluent:delete-24-regular"
                         color="error"
                         @click="askCancel(b.id)"
-                      >
-                        {{ $t('account.cancelRequest') }}
-                      </VBtn>
+                      />
                       <VChip :color="statusColor[b.status]" size="small" variant="tonal">
                         {{ bookingStatusLabel(b) }}
                       </VChip>
@@ -134,7 +135,10 @@
             <template v-if="past.length">
               <div v-for="(b, i) in past" :key="b.id">
                 <VDivider v-if="i > 0" />
-                <div class="px-4 py-3" style="opacity: 0.65">
+                <div
+                  class="px-4 py-3"
+                  :style="{ opacity: 0.65, borderLeft: `3px solid rgb(var(--v-theme-${statusColor[b.status]}))` }"
+                >
                   <div class="d-flex align-center justify-space-between ga-2 flex-wrap">
                     <div>
                       <div class="text-body-2 font-weight-medium">

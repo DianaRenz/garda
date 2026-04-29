@@ -49,8 +49,8 @@
 
     <div class="d-flex ga-2 mb-3">
       <VChip
-        :variant="filterStatus === 'all' ? 'flat' : 'tonal'"
-        color="default"
+        :variant="filterStatus === 'all' ? 'flat' : 'outlined'"
+        :style="filterStatus === 'all' ? { background: '#333', color: '#fff' } : {}"
         size="small"
         @click="filterStatus = 'all'"
       >
@@ -79,19 +79,23 @@
         <div v-for="(b, i) in upcomingBookings" :key="b.id">
           <VDivider v-if="i > 0" />
           <div
-            class="d-flex align-center justify-space-between px-4 py-3 ga-3 cursor-pointer"
+            class="px-4 py-3 cursor-pointer"
             :style="{ borderLeft: `3px solid rgb(var(--v-theme-${statusColor[b.status]}))` }"
             @click="goToBookings(b.id)"
           >
-            <div class="flex-grow-1 min-width-0">
-              <div class="text-body-2 font-weight-medium">{{ b.guestName || $t('bookings.unassigned') }}</div>
-              <div class="text-caption text-medium-emphasis mt-1">
-                {{ formatDate(b.startDate) }} — {{ formatDate(b.endDate) }}
+            <div class="d-flex align-center justify-space-between ga-2">
+              <div class="flex-grow-1 min-width-0">
+                <div class="text-body-2 font-weight-medium">{{ b.guestName || $t('bookings.unassigned') }}</div>
+                <div class="text-caption text-medium-emphasis mt-1">
+                  {{ formatDate(b.startDate) }} — {{ formatDate(b.endDate) }}
+                </div>
               </div>
+              <VChip :color="statusColor[b.status]" size="small" variant="tonal">
+                {{ $t(`bookings.statuses.${b.status}`) }}
+              </VChip>
             </div>
-            <div class="d-flex align-center ga-2 flex-shrink-0" @click.stop>
+            <div v-if="b.status === 'pending'" class="d-flex ga-2 mt-3" @click.stop>
               <VBtn
-                v-if="b.status === 'pending'"
                 size="x-small"
                 variant="tonal"
                 color="primary"
@@ -101,7 +105,6 @@
                 {{ $t('bookings.actions.confirm') }}
               </VBtn>
               <VBtn
-                v-if="b.status === 'pending'"
                 size="x-small"
                 variant="tonal"
                 color="error"
@@ -109,9 +112,6 @@
               >
                 {{ $t('bookings.actions.reject') }}
               </VBtn>
-              <VChip :color="statusColor[b.status]" size="small" variant="tonal">
-                {{ $t(`bookings.statuses.${b.status}`) }}
-              </VChip>
             </div>
           </div>
         </div>
