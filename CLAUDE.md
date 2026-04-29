@@ -11,9 +11,16 @@ npm run build      # Build for production
 npm run generate   # Static site generation
 npm run preview    # Preview production build
 npm run reset      # Full reset: removes .nuxt, node_modules, .output, then reinstalls
+npm test           # Run unit tests once (vitest run)
+npm run test:watch # Run unit tests in watch mode
 ```
 
-No test runner is configured in this project.
+## Testing
+
+Vitest with `@nuxt/test-utils`. Config at `vitest.config.ts`, Firebase mocks at `tests/setup.ts`.
+
+- **Pure tests** (no Nuxt context) live in `tests/*.test.ts` — run in node env, e.g. `tests/photos.test.ts`.
+- **Nuxt-context tests** (auto-imports, composables) live in `tests/nuxt/*.test.ts` — run in Nuxt env. Use `mockNuxtImport("useI18n", ...)` etc. to stub auto-imported composables that require a Vue setup() context. Firebase modules (`firebase/app`, `firebase/auth`, `firebase/firestore`, `firebase/storage`) are globally mocked in `tests/setup.ts`; the `Timestamp` mock supports `fromDate`/`toDate`/`toMillis`.
 
 ## Git Workflow
 
