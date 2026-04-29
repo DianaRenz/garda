@@ -182,6 +182,8 @@ service cloud.firestore {
 
     match /guests/{guestId} {
       allow read, write: if isAdmin();
+      // Guest can read own linked guest doc (needed for profile sync)
+      allow read: if signedIn() && resource.data.userId == request.auth.uid;
       // Guests can create their own record on self-registration
       allow create: if signedIn()
         && request.resource.data.userId == request.auth.uid
