@@ -97,11 +97,19 @@ const save = async () => {
   error.value = false;
   try {
     await updateDoc(doc($db, 'users', uid), { name: name.value, phone: phone.value });
-    // Sync to linked guest record (best-effort)
+    // Sync to linked guest record and bookings (best-effort)
     getDocs(query(collection($db, 'guests'), where('userId', '==', uid)))
       .then(snap => {
         for (const d of snap.docs) {
           updateDoc(d.ref, { name: name.value, phone: phone.value }).catch(() => {});
+          // Sync to bookings linked by guestId
+          getDocs(query(collection($db, 'bookings'), where('guestId', '==', d.id)))
+            .then(bSnap => {
+              for (const b of bSnap.docs) {
+                updateDoc(b.ref, { guestName: name.value, guestPhone: phone.value }).catch(() => {});
+              }
+            })
+            .catch(() => {});
         }
       })
       .catch(() => {});

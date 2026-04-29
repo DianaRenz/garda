@@ -19,7 +19,8 @@
         v-for="s in statuses"
         :key="s.value"
         :color="s.value !== 'all' ? statusColor[s.value] : undefined"
-        :variant="filterStatus === s.value ? 'flat' : 'tonal'"
+        :variant="filterStatus === s.value ? 'flat' : (s.value === 'all' ? 'outlined' : 'tonal')"
+        :style="filterStatus === s.value && s.value === 'all' ? { background: '#333', color: '#fff' } : {}"
         class="cursor-pointer"
         @click="filterStatus = s.value"
       >
