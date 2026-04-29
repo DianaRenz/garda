@@ -179,25 +179,22 @@ const submit = async () => {
         usedByName: inviteType.value === 'guest' ? name.value : email.value,
       });
     });
-    // Link or create guest record
+    // Link or create guest record (best-effort — don't block registration)
     if (inviteType.value === "guest") {
-      if (linkedGuestId.value) {
-        // Personal invite → link existing guest + migrate bookings
-        await linkGuestToUser(linkedGuestId.value, credential.user.uid, {
-          name: name.value,
-          phone: phone.value || "",
-          email: email.value,
-        });
-      } else {
-        // Generic invite → create new guest record
-        createGuest({
-          name: name.value,
-          phone: phone.value || "",
-          email: email.value,
-          notes: "",
-          userId: credential.user.uid,
-        }).catch(() => {}); // best-effort, don't block registration
-      }
+      const guestOp = linkedGuestId.value
+        ? linkGuestToUser(linkedGuestId.value, credential.user.uid, {
+            name: name.value,
+            phone: phone.value || "",
+            email: email.value,
+          })
+        : createGuest({
+            name: name.value,
+            phone: phone.value || "",
+            email: email.value,
+            notes: "",
+            userId: credential.user.uid,
+          });
+      guestOp.catch(() => {});
     }
     // Send verification email (best-effort — don't block registration)
     try { await sendEmailVerification(credential.user); } catch {}

@@ -1,6 +1,7 @@
 {
   "nav": {
     "dashboard": "Dashboard",
+    "profile": "Profil",
     "calendar": "Kalender",
     "bookings": "Buchungen",
     "guests": "Gäste",
@@ -61,8 +62,8 @@
     }
   },
   "calendar": {
-    "title": "Kalender",
-    "subtitle": "Verfügbare Termine prüfen",
+    "title": "Belegungsübersicht",
+    "subtitle": "Tippen Sie auf ein Datum, um eine Buchung anzufragen",
     "legend": {
       "available": "Frei",
       "pending": "Angefragt",
@@ -131,8 +132,11 @@
     "pendingConfirm": "Warten auf Bestätigung",
     "visitsThisYear": "Besuche dieses Jahr",
     "totalGuests": "Gäste gesamt",
+    "currentStays": "Aktuell im Haus",
     "upcomingBookings": "Bevorstehende Buchungen",
-    "noUpcoming": "Keine bevorstehenden Buchungen"
+    "noUpcoming": "Keine bevorstehenden Buchungen",
+    "filterAll": "Alle",
+    "viewAll": "Alle Buchungen"
   },
   "bookings": {
     "title": "Buchungen",
@@ -146,7 +150,8 @@
       "pending": "Ausstehend",
       "confirmed": "Bestätigt",
       "blocked": "Gesperrt",
-      "rejected": "Abgelehnt"
+      "rejected": "Abgelehnt",
+      "cancelled": "Storniert"
     },
     "sources": {
       "admin": "Manuell",
@@ -270,11 +275,20 @@
     "nextVisit": "Nächster Besuch",
     "totalVisits": "Bestätigte Aufenthalte",
     "requestDates": "Termin anfragen",
-    "cancelRequest": "Anfrage stornieren",
-    "cancelConfirm": "Diese Anfrage stornieren?",
+    "cancelRequest": "Stornieren",
+    "cancelConfirm": "Diese Buchung stornieren?",
     "rejectedNote": "Grund:",
     "pendingStatus": "Wartet auf Bestätigung",
     "confirmedStatus": "Bestätigt"
+  },
+  "profile": {
+    "title": "Profil",
+    "name": "Name",
+    "phone": "Telefon",
+    "email": "E-Mail",
+    "emailHint": "Kontaktieren Sie den Admin, um die E-Mail zu ändern",
+    "save": "Speichern",
+    "saved": "Änderungen gespeichert"
   },
   "apartment": {
     "title": "Die Wohnung",

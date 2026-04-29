@@ -1,6 +1,7 @@
 {
   "nav": {
     "dashboard": "Dashboard",
+    "profile": "Profile",
     "calendar": "Calendar",
     "bookings": "Bookings",
     "guests": "Guests",
@@ -61,8 +62,8 @@
     }
   },
   "calendar": {
-    "title": "Calendar",
-    "subtitle": "Check available dates",
+    "title": "Availability",
+    "subtitle": "Tap a date to request a booking",
     "legend": {
       "available": "Available",
       "pending": "Requested",
@@ -131,8 +132,11 @@
     "pendingConfirm": "Pending confirmation",
     "visitsThisYear": "Visits this year",
     "totalGuests": "Total guests",
+    "currentStays": "Currently staying",
     "upcomingBookings": "Upcoming bookings",
-    "noUpcoming": "No upcoming bookings"
+    "noUpcoming": "No upcoming bookings",
+    "filterAll": "All",
+    "viewAll": "All bookings"
   },
   "bookings": {
     "title": "Bookings",
@@ -146,7 +150,8 @@
       "pending": "Pending",
       "confirmed": "Confirmed",
       "blocked": "Blocked",
-      "rejected": "Rejected"
+      "rejected": "Rejected",
+      "cancelled": "Cancelled"
     },
     "sources": {
       "admin": "Manual",
@@ -270,11 +275,20 @@
     "nextVisit": "Next visit",
     "totalVisits": "Confirmed stays",
     "requestDates": "Request dates",
-    "cancelRequest": "Cancel request",
-    "cancelConfirm": "Cancel this request?",
+    "cancelRequest": "Cancel",
+    "cancelConfirm": "Cancel this booking?",
     "rejectedNote": "Reason:",
     "pendingStatus": "Awaiting confirmation",
     "confirmedStatus": "Confirmed"
+  },
+  "profile": {
+    "title": "Profile",
+    "name": "Name",
+    "phone": "Phone",
+    "email": "Email",
+    "emailHint": "Contact admin to change email",
+    "save": "Save",
+    "saved": "Changes saved"
   },
   "apartment": {
     "title": "The apartment",

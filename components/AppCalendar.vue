@@ -22,9 +22,11 @@
         v-for="cell in cells"
         :key="cell.key"
         class="cal-cell"
-        :class="{ 'cal-cell--clickable': showNames && !!cell.booking }"
+        :class="{
+          'cal-cell--clickable': (showNames && !!cell.booking) || (clickable && cell.isCurrentMonth),
+        }"
         :style="cellStyle(cell)"
-        @click="cell.booking && showNames && $emit('select', cell.booking as Booking)"
+        @click="handleCellClick(cell)"
       >
         <span
           class="text-caption"
@@ -45,9 +47,18 @@ const props = withDefaults(defineProps<{
   bookings: (Booking | CalendarBooking)[]
   showNames?: boolean
   highlightIds?: string[]
-}>(), { showNames: false, highlightIds: () => [] })
+  clickable?: boolean
+}>(), { showNames: false, highlightIds: () => [], clickable: false })
 
-defineEmits<{ select: [booking: Booking] }>()
+const emit = defineEmits<{ select: [booking: Booking]; clickCell: [] }>()
+
+const handleCellClick = (cell: { booking: (Booking | CalendarBooking) | null; isCurrentMonth: boolean }) => {
+  if (props.showNames && cell.booking) {
+    emit('select', cell.booking as Booking)
+  } else if (props.clickable && cell.isCurrentMonth) {
+    emit('clickCell')
+  }
+}
 
 const { locale } = useI18n()
 
@@ -91,6 +102,7 @@ const BG: Record<string, string> = {
   pending:   'rgba(255, 193,  7, 0.2)',
   confirmed: 'rgba( 33, 150, 243, 0.16)',
   blocked:   'rgba(244,  67,  54, 0.14)',
+  cancelled: 'rgba(0, 0, 0, 0.06)',
 }
 
 const getBooking = (dateStr: string): (Booking | CalendarBooking) | null => {

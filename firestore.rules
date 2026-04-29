@@ -88,7 +88,7 @@ service cloud.firestore {
     }
 
     function validAdminBookingWrite() {
-      return request.resource.data.status in ['pending', 'confirmed', 'blocked', 'rejected']
+      return request.resource.data.status in ['pending', 'confirmed', 'blocked', 'rejected', 'cancelled']
         && request.resource.data.startDate is timestamp
         && request.resource.data.endDate is timestamp
         && request.resource.data.startDate <= request.resource.data.endDate
@@ -149,7 +149,19 @@ service cloud.firestore {
         && validAdminBookingWrite()
         && request.resource.data.createdAt == request.time
       );
-      allow update: if isAdmin() && validAdminBookingWrite();
+      allow update: if (isAdmin() && validAdminBookingWrite())
+        // Self-claim: newly registered guest claims bookings linked to their guestId
+        || (signedIn()
+          && resource.data.get('userId', null) == null
+          && request.resource.data.diff(resource.data).changedKeys().hasOnly(['userId'])
+          && request.resource.data.userId == request.auth.uid)
+        // Guest self-cancel: guest can cancel own pending or confirmed booking
+        || (signedIn()
+          && resource.data.userId == request.auth.uid
+          && resource.data.status in ['pending', 'confirmed']
+          && request.resource.data.diff(resource.data).changedKeys().hasOnly(['status', 'updatedAt'])
+          && request.resource.data.status == 'cancelled'
+          && request.resource.data.updatedAt == request.time);
       allow delete: if isAdmin() || (
         signedIn()
         && resource.data.userId == request.auth.uid
@@ -176,6 +188,11 @@ service cloud.firestore {
         && request.resource.data.name is string
         && request.resource.data.email is string
         && request.resource.data.createdAt == request.time;
+      // Self-linking: newly registered guest claims their pre-created guest record
+      allow update: if signedIn()
+        && resource.data.get('userId', null) == null
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.diff(resource.data).changedKeys().hasOnly(['userId', 'name', 'phone', 'email']);
     }
 
     match /apartment/{docId} {

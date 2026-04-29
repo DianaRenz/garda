@@ -13,16 +13,6 @@
           </div>
         </template>
         <template v-else-if="!success">
-          <!-- Profile card -->
-          <VCard variant="tonal" rounded="lg" class="mb-5 pa-4 d-flex align-center ga-3">
-            <VIcon icon="fluent:person-circle-24-regular" color="primary" size="36" />
-            <div>
-              <div class="font-weight-medium">{{ userData.name || userData.email }}</div>
-              <div v-if="userData.name && userData.email" class="text-body-2 text-medium-emphasis">{{ userData.email }}</div>
-              <div v-if="userData.phone" class="text-body-2 text-medium-emphasis">{{ userData.phone }}</div>
-            </div>
-          </VCard>
-
           <VForm ref="formRef" @submit.prevent="submit">
             <!-- Date range picker -->
             <label class="label text-grey-darken-2">{{ $t('request.selectDates') }}</label>

@@ -107,7 +107,7 @@
   guestContact: string     // legacy — старые документы, оставлен для совместимости
   startDate: Timestamp
   endDate: Timestamp
-  status: 'pending' | 'confirmed' | 'blocked' | 'rejected'
+  status: 'pending' | 'confirmed' | 'blocked' | 'rejected' | 'cancelled'
   source: 'admin' | 'request'  // добавлено вручную или через форму
   notes: string
   rejectionNote: string | null  // причина отклонения (заполняется при reject)
@@ -240,6 +240,9 @@
   - `pages/admin/calendar/index.vue` — Reject в диалоге детали, sub-dialog с причиной + конфликтами
   - `components/AppCalendar.vue` — prop `highlightIds` подсвечивает собственные брони гостя (primary border)
   - i18n — ключи `bookings.rejectDialog.*`, `account.upcoming/past/cancelRequest/...`, `calendar.legend.mine`
+- [x] Страница профиля `/account` — форма редактирования имени и телефона (вместо редиректа на `/apartment`)
+- [x] Дропдаун навбара — гостям показывается «Профиль» → `/account`, а не дубль квартиры
+- [x] `/guide` — убраны фото-карусели (дублировали отдельную страницу `/photos`)
 - [ ] Firestore Security Rules (production-ready)
 - [ ] PWA (уже настроен в стартере)
 - [ ] История посещений / статистика (nice-to-have)
@@ -361,6 +364,18 @@ Firestore модель обновлена: `sections.{key}.text` = `{ ru, en, de
 - [x] `pages/register/[token].vue` — при персональном инвайте предзаполняет форму данными гостя; при submit вызывает `linkGuestToUser` вместо `createGuest`
 - [x] `pages/admin/guests/index.vue` — статус-чип (зарегистрирован/нет), кнопка инвайта для незарегистрированных, диалог с ссылкой + копирование
 - [x] i18n — `guests.registered`, `guests.notRegistered`, `guests.table.status`, `guests.invite.title/description`
+
+---
+
+### Фаза 10.2 — Отмена бронирований гостем + исправление привязки гостей (завершено)
+- [x] `composables/useBookings.ts` — добавлен статус `cancelled` в `BookingStatus`, исключён из `CalendarBooking`, `subscribeCalendar`, `getConflicts`
+- [x] `pages/apartment.vue` — кнопка отмены для `pending` и `confirmed` бронирований; `updateBooking({ status: 'cancelled' })` вместо `deleteBooking`
+- [x] `pages/admin/index.vue` — `cancelled` исключён из upcoming на дашборде
+- [x] `pages/admin/bookings/index.vue` — `cancelled` в фильтрах, форме, исключён из конфликтов
+- [x] `components/AppCalendar.vue` — серый фон для `cancelled`
+- [x] `firestore.rules` — правило self-cancel для гостей (pending/confirmed → cancelled); исправлен `resource.data.get('userId', null)` для self-claim и self-linking (исправляет баг привязки гостей)
+- [x] `components/RequestSheet.vue` — убрана карточка профиля (избыточна для залогиненного гостя)
+- [x] i18n — `bookings.statuses.cancelled`, обновлены `account.cancelRequest/cancelConfirm`
 
 ---
 
