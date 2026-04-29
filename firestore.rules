@@ -149,7 +149,12 @@ service cloud.firestore {
         && validAdminBookingWrite()
         && request.resource.data.createdAt == request.time
       );
-      allow update: if isAdmin() && validAdminBookingWrite();
+      allow update: if (isAdmin() && validAdminBookingWrite())
+        // Self-claim: newly registered guest claims bookings linked to their guestId
+        || (signedIn()
+          && resource.data.userId == null
+          && request.resource.data.diff(resource.data).changedKeys().hasOnly(['userId'])
+          && request.resource.data.userId == request.auth.uid);
       allow delete: if isAdmin() || (
         signedIn()
         && resource.data.userId == request.auth.uid
@@ -176,6 +181,11 @@ service cloud.firestore {
         && request.resource.data.name is string
         && request.resource.data.email is string
         && request.resource.data.createdAt == request.time;
+      // Self-linking: newly registered guest claims their pre-created guest record
+      allow update: if signedIn()
+        && resource.data.userId == null
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.diff(resource.data).changedKeys().hasOnly(['userId', 'name', 'phone', 'email']);
     }
 
     match /apartment/{docId} {
