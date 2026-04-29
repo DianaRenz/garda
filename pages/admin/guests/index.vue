@@ -8,6 +8,11 @@
     </div>
     <VAlert v-if="error" type="error" variant="tonal" closable class="mb-4" @click:close="error = ''">{{ error }}</VAlert>
 
+    <div v-if="loading" class="text-center py-16">
+      <VProgressCircular indeterminate color="primary" />
+    </div>
+
+    <template v-else>
     <!-- Desktop table -->
     <VCard v-if="!mobile" variant="outlined">
       <VTable v-if="guests.length">
@@ -123,6 +128,7 @@
         </VCard>
       </div>
     </template>
+    </template>
 
     <!-- Create dialog -->
     <VDialog v-model="dialog" max-width="440">
@@ -136,11 +142,11 @@
             </div>
             <div class="mt-1">
               <label class="label text-grey-darken-2">{{ $t('guests.form.phone') }}</label>
-              <VTextField v-model="form.phone" prepend-inner-icon="fluent:phone-24-regular" />
+              <VTextField v-model="form.phone" type="tel" prepend-inner-icon="fluent:phone-24-regular" />
             </div>
             <div class="mt-1">
               <label class="label text-grey-darken-2">{{ $t('guests.form.email') }}</label>
-              <VTextField v-model="form.email" prepend-inner-icon="fluent:mail-24-regular" />
+              <VTextField v-model="form.email" type="email" prepend-inner-icon="fluent:mail-24-regular" />
             </div>
             <div class="mt-1">
               <label class="label text-grey-darken-2">{{ $t('guests.form.notes') }}</label>
@@ -219,6 +225,7 @@ const { generateGuestInvite } = useInvite();
 const dialog = ref(false);
 const deleteDialog = ref(false);
 const inviteDialog = ref(false);
+const loading = ref(true);
 const saving = ref(false);
 const deleting = ref(false);
 const error = ref('');
@@ -305,5 +312,6 @@ const copyInviteLink = async () => {
 onMounted(() => {
   const unsub = subscribe();
   onUnmounted(unsub);
+  watch(guests, () => { loading.value = false; }, { once: true });
 });
 </script>

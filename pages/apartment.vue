@@ -99,10 +99,11 @@
                     <div class="d-flex align-center ga-2 flex-shrink-0">
                       <VBtn
                         v-if="b.status === 'pending' || b.status === 'confirmed'"
-                        size="x-small"
+                        size="small"
                         variant="text"
                         icon="fluent:delete-24-regular"
                         color="error"
+                        :aria-label="$t('account.cancelRequest')"
                         @click="askCancel(b.id)"
                       />
                       <VChip :color="statusColor[b.status]" size="small" variant="tonal">

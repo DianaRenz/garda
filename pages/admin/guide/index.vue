@@ -83,12 +83,13 @@
           <template #append>
             <VBtn
               icon
-              size="x-small"
+              size="small"
               variant="text"
               color="error"
+              :aria-label="$t('common.delete')"
               @click="removeCheckoutItem(i)"
             >
-              <VIcon icon="fluent:dismiss-16-regular" size="14" />
+              <VIcon icon="fluent:dismiss-16-regular" size="16" />
             </VBtn>
           </template>
         </VListItem>

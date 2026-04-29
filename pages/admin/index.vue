@@ -3,6 +3,11 @@
     <h1 class="text-h5 font-weight-bold mb-6">{{ $t('dashboard.title') }}</h1>
     <VAlert v-if="error" type="error" variant="tonal" closable class="mb-4" @click:close="error = ''">{{ error }}</VAlert>
 
+    <div v-if="loading" class="text-center py-16">
+      <VProgressCircular indeterminate color="primary" />
+    </div>
+
+    <template v-else>
     <VRow>
       <VCol v-for="stat in statCards" :key="stat.key" cols="6" md="3">
         <VCard variant="outlined" rounded="lg" class="pa-4" height="100%">
@@ -124,6 +129,8 @@
     <VBtn v-if="totalUpcoming > 10" variant="text" size="small" to="/admin/bookings" class="mt-2">
       {{ $t('dashboard.viewAll') }}
     </VBtn>
+    </template>
+
     <!-- Reject dialog -->
     <VDialog v-model="rejectDialog" max-width="480">
       <VCard rounded="lg">
@@ -156,6 +163,7 @@ const { guests, subscribe: subscribeGuests } = useGuests();
 const { notifyGuestStatusUpdate } = useNotifications();
 const { t } = useI18n();
 
+const loading = ref(true);
 const filterStatus = ref<'all' | 'pending' | 'confirmed'>('all');
 const confirming = ref<string | null>(null);
 const rejectDialog = ref(false);
@@ -302,5 +310,6 @@ onMounted(() => {
   const u1 = subscribe();
   const u2 = subscribeGuests();
   onUnmounted(() => { u1(); u2(); });
+  watch(bookings, () => { loading.value = false; }, { once: true });
 });
 </script>

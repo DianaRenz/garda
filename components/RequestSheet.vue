@@ -85,6 +85,7 @@
               min-height="44"
               class="gradient primary mt-4"
               :disabled="blockingConflicts.length > 0"
+              :loading="loading"
             >
               {{ $t('request.submit') }}
             </VBtn>

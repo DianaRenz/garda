@@ -16,18 +16,22 @@
               <VTextField
                 v-model="name"
                 :rules="[ruleRequired]"
+                autocomplete="name"
                 class="mb-2"
               />
 
               <label class="label">{{ $t('profile.phone') }}</label>
               <VTextField
                 v-model="phone"
+                type="tel"
+                autocomplete="tel"
                 class="mb-2"
               />
 
               <label class="label">{{ $t('profile.email') }}</label>
               <VTextField
                 :model-value="email"
+                type="email"
                 disabled
                 :hint="$t('profile.emailHint')"
                 persistent-hint
