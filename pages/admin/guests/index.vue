@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style="overflow: hidden">
     <div class="d-flex align-center justify-space-between mb-6">
       <h1 class="text-h5 font-weight-bold">{{ $t('guests.title') }}</h1>
       <VBtn class="gradient primary" prepend-icon="fluent:add-24-regular" @click="openCreate">

@@ -30,6 +30,12 @@ a {
   }
 }
 
+// Prevent long unbreakable text (URLs) from overflowing text fields
+.v-text-field .v-messages__message,
+.v-text-field .v-field__input input {
+  overflow-wrap: anywhere;
+}
+
 .v-btn {
   font-weight: 700 !important;
 }
