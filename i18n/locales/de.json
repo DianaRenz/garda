@@ -242,7 +242,13 @@
     "directions": "Anfahrt",
     "rules": "Hausregeln",
     "save": "Speichern",
-    "saved": "Gespeichert"
+    "saved": "Gespeichert",
+    "contributions": {
+      "title": "Kostenausgleich",
+      "paypalLabel": "PayPal-Link",
+      "paypalPlaceholder": "https://paypal.me/your-handle",
+      "paypalHint": "Wenn das Feld leer ist, wird der Abschnitt auf der Wohnungsseite ausgeblendet. Bitte einen paypal.me-Link ohne voreingestellten Betrag verwenden."
+    }
   },
   "register": {
     "title": "Konto erstellen",
@@ -298,7 +304,13 @@
     "title": "Die Wohnung",
     "requestBtn": "Termin anfragen",
     "bookingsBtn": "Meine Buchungen",
-    "guideBtn": "Wohnungsführer"
+    "guideBtn": "Wohnungsführer",
+    "contributions": {
+      "title": "Etwas aus den Vorräten genommen?",
+      "body": "Wenn ihr während eures Aufenthalts etwas verbraucht habt — Kaffee, Öl, Grundnahrungsmittel — und es nicht mehr ersetzen konntet, kein Stress. Schickt einfach den entsprechenden Betrag per PayPal, und wir kaufen es vor der nächsten Anreise nach.",
+      "hint": "Bitte tragt im Verwendungszweck kurz ein, wofür der Betrag ist — so kaufen wir genau das Richtige nach.",
+      "cta": "PayPal öffnen"
+    }
   },
   "guide": {
     "title": "Wohnungsführer",

@@ -242,7 +242,13 @@
     "directions": "How to get there",
     "rules": "House rules",
     "save": "Save",
-    "saved": "Saved"
+    "saved": "Saved",
+    "contributions": {
+      "title": "Cost reimbursement",
+      "paypalLabel": "PayPal link",
+      "paypalPlaceholder": "https://paypal.me/your-handle",
+      "paypalHint": "Leave empty to hide the section on the apartment page. Use a paypal.me link without a preset amount."
+    }
   },
   "register": {
     "title": "Create account",
@@ -298,7 +304,13 @@
     "title": "The apartment",
     "requestBtn": "Request dates",
     "bookingsBtn": "My bookings",
-    "guideBtn": "Apartment guide"
+    "guideBtn": "Apartment guide",
+    "contributions": {
+      "title": "Used something from the pantry?",
+      "body": "If you used something during your stay — coffee, oil, basic groceries — and didn't get a chance to replace it, no worries. You can just send the equivalent amount via PayPal, and we'll restock it before the next trip.",
+      "hint": "Just don't forget to add a note about what it's for — that way we'll buy exactly what's needed.",
+      "cta": "Open PayPal"
+    }
   },
   "guide": {
     "title": "Apartment guide",
