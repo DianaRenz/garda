@@ -91,10 +91,10 @@
         <VCard v-for="b in filtered" :key="b.id" variant="outlined" rounded="lg" class="cursor-pointer" :style="{ borderLeft: `3px solid rgb(var(--v-theme-${statusColor[b.status]}))` }" @click="editBooking(b)">
           <VCardText class="pa-4">
             <div class="d-flex align-start justify-space-between mb-1">
-              <div class="flex-grow-1">
-                <div class="font-weight-medium">{{ bookingGuestLabel(b) }}</div>
+              <div class="flex-grow-1" style="min-width: 0">
+                <div class="font-weight-medium text-truncate">{{ bookingGuestLabel(b) }}</div>
                 <div class="text-body-2 text-medium-emphasis">{{ b.guestPhone || b.guestContact || '—' }}</div>
-                <div v-if="b.guestEmail" class="text-body-2 text-medium-emphasis">{{ b.guestEmail }}</div>
+                <div v-if="b.guestEmail" class="text-body-2 text-medium-emphasis" style="overflow-wrap: anywhere">{{ b.guestEmail }}</div>
               </div>
               <VChip :color="statusColor[b.status]" size="small" variant="tonal">
                 {{ $t(`bookings.statuses.${b.status}`) }}
@@ -104,7 +104,7 @@
               {{ formatDate(b.startDate) }} — {{ formatDate(b.endDate) }}
             </div>
             <div class="text-caption text-medium-emphasis">{{ bookingDuration(b) }}</div>
-            <div v-if="b.notes" class="text-body-2 text-medium-emphasis mt-1">{{ b.notes }}</div>
+            <div v-if="b.notes" class="text-body-2 text-medium-emphasis mt-1" style="overflow-wrap: anywhere">{{ b.notes }}</div>
           </VCardText>
           <VCardActions class="px-4 pb-3 pt-0" @click.stop>
             <VSpacer />
@@ -122,7 +122,7 @@
     </template>
 
     <!-- Edit/Create booking dialog -->
-    <VDialog v-model="editDialog" max-width="540">
+    <VDialog v-model="editDialog" max-width="440">
       <VCard>
         <VCardTitle class="pa-6 pb-2">
           {{ editingId ? $t('bookings.form.editTitle') : $t('bookings.form.title') }}
