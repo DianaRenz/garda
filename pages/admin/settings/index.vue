@@ -59,6 +59,28 @@
       class="mt-2"
       density="compact"
     />
+
+    <!-- Cost reimbursement (PayPal) -->
+    <VDivider class="my-8" />
+    <h2 class="text-h6 font-weight-bold mb-4">{{ $t('settings.contributions.title') }}</h2>
+    <VTextField
+      v-model="paypalLink"
+      :label="$t('settings.contributions.paypalLabel')"
+      :placeholder="$t('settings.contributions.paypalPlaceholder')"
+      :hint="$t('settings.contributions.paypalHint')"
+      persistent-hint
+      density="compact"
+      class="mb-3"
+    />
+    <VBtn
+      class="gradient primary"
+      :loading="paypalSaving"
+      :disabled="!paypalDirty"
+      prepend-icon="fluent:save-24-regular"
+      @click="savePaypal"
+    >
+      {{ paypalSaved ? $t('settings.saved') : $t('settings.save') }}
+    </VBtn>
   </div>
 </template>
 
@@ -69,6 +91,7 @@ const { t } = useI18n();
 const error = ref('');
 
 const { generateInvite } = useInvite();
+const { apartment, fetchApartment, saveApartment } = useApartment();
 
 const adminInviteLoading = ref(false);
 const adminInviteLink = ref("");
@@ -112,6 +135,38 @@ const copyLink = async (link: string, type: "admin" | "guest") => {
   } else {
     copiedGuest.value = true;
     setTimeout(() => (copiedGuest.value = false), 2000);
+  }
+};
+
+// PayPal link
+const paypalLink = ref<string>("");
+const initialPaypalLink = ref<string>("");
+const paypalSaving = ref(false);
+const paypalSaved = ref(false);
+
+const paypalDirty = computed(() => paypalLink.value !== initialPaypalLink.value);
+
+onMounted(async () => {
+  await fetchApartment().catch(() => {});
+  const current = apartment.value?.paypalLink ?? "";
+  paypalLink.value = current;
+  initialPaypalLink.value = current;
+});
+
+const savePaypal = async () => {
+  paypalSaving.value = true;
+  paypalSaved.value = false;
+  try {
+    const trimmed = paypalLink.value.trim();
+    await saveApartment({ paypalLink: trimmed || null });
+    initialPaypalLink.value = trimmed;
+    paypalLink.value = trimmed;
+    paypalSaved.value = true;
+    setTimeout(() => (paypalSaved.value = false), 2000);
+  } catch {
+    error.value = t('common.error');
+  } finally {
+    paypalSaving.value = false;
   }
 };
 </script>

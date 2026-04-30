@@ -6,6 +6,7 @@ export interface ApartmentInfo {
   address: string;
   directions: string;
   rules: string;
+  paypalLink: string | null;
   photos: string[];
 }
 
@@ -20,13 +21,16 @@ export const useApartment = () => {
     }
   };
 
-  const saveApartment = async (data: Omit<ApartmentInfo, "photos">) => {
+  const saveApartment = async (data: Partial<Omit<ApartmentInfo, "photos">>) => {
     await setDoc(
       doc($db, "apartment", "info"),
-      { ...data, photos: apartment.value?.photos ?? [], updatedAt: serverTimestamp() },
+      { ...data, updatedAt: serverTimestamp() },
       { merge: true }
     );
-    apartment.value = { ...apartment.value, ...data, photos: apartment.value?.photos ?? [] };
+    apartment.value = {
+      ...(apartment.value ?? { title: "", description: "", address: "", directions: "", rules: "", paypalLink: null, photos: [] }),
+      ...data,
+    } as ApartmentInfo;
   };
 
   return { apartment, fetchApartment, saveApartment };

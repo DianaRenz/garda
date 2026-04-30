@@ -205,6 +205,9 @@
             </VCard>
           </template>
 
+          <!-- Cost reimbursement (PayPal) -->
+          <ContributionCard v-if="apartment?.paypalLink" :paypal-link="apartment.paypalLink" />
+
         </template>
       </VCol>
     </VRow>
@@ -240,6 +243,10 @@ import { collection, query, where, onSnapshot } from "firebase/firestore";
 import type { Booking, CalendarBooking } from '~/composables/useBookings';
 
 definePageMeta({ layout: "default" });
+
+useHead({
+  meta: [{ name: "robots", content: "noindex,nofollow" }],
+});
 
 const { $db } = useNuxtApp();
 const { apartment, fetchApartment } = useApartment();
