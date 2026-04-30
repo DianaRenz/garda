@@ -11,7 +11,8 @@
     "login": "Войти",
     "menu": "Меню",
     "expandMenu": "Развернуть меню",
-    "collapseMenu": "Свернуть меню"
+    "collapseMenu": "Свернуть меню",
+    "guestView": "Просмотр как гость"
   },
   "home": {
     "hero": {

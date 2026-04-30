@@ -11,7 +11,8 @@
     "login": "Log in",
     "menu": "Menu",
     "expandMenu": "Expand menu",
-    "collapseMenu": "Collapse menu"
+    "collapseMenu": "Collapse menu",
+    "guestView": "Guest view"
   },
   "home": {
     "hero": {

@@ -11,7 +11,8 @@
     "login": "Anmelden",
     "menu": "Menü",
     "expandMenu": "Menü erweitern",
-    "collapseMenu": "Menü einklappen"
+    "collapseMenu": "Menü einklappen",
+    "guestView": "Gastansicht"
   },
   "home": {
     "hero": {
