@@ -9,13 +9,13 @@
 
     <template v-else>
     <VRow>
-      <VCol v-for="stat in statCards" :key="stat.key" cols="6" md="3">
+      <VCol v-for="stat in statCards" :key="stat.key" cols="6" sm="6" md="3">
         <VCard variant="outlined" rounded="lg" class="pa-4" height="100%">
           <div class="d-flex align-center justify-space-between mb-4">
             <span class="text-caption text-medium-emphasis">{{ stat.label }}</span>
             <VIcon :icon="stat.icon" :color="stat.color || undefined" size="16" />
           </div>
-          <div class="text-h4 font-weight-bold">{{ stat.value }}</div>
+          <div class="text-h5 font-weight-bold">{{ stat.value }}</div>
         </VCard>
       </VCol>
     </VRow>
@@ -101,7 +101,7 @@
             </div>
             <div v-if="b.status === 'pending'" class="d-flex ga-2 mt-3" @click.stop>
               <VBtn
-                size="x-small"
+                size="small"
                 variant="tonal"
                 color="primary"
                 :loading="confirming === b.id"
@@ -110,7 +110,7 @@
                 {{ $t('bookings.actions.confirm') }}
               </VBtn>
               <VBtn
-                size="x-small"
+                size="small"
                 variant="tonal"
                 color="error"
                 @click="openReject(b.id)"

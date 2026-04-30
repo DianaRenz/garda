@@ -32,8 +32,8 @@
           class="text-caption"
           :class="cell.isToday ? 'font-weight-bold text-primary' : ''"
         >{{ cell.day }}</span>
-        <span v-if="showNames && cell.booking && cell.isCurrentMonth && 'guestName' in cell.booking" class="cal-name">
-          {{ cell.booking.guestName }}
+        <span v-if="showNames && cell.booking && cell.isCurrentMonth && 'guestName' in cell.booking" class="cal-name" :title="cell.booking.guestName">
+          {{ cell.booking.guestName?.split(' ')[0] }}
         </span>
       </div>
     </div>
@@ -210,6 +210,7 @@ const cellStyle = (cell: typeof cells.value[0]) => {
   }
   .cal-name {
     font-size: 9px;
+    max-width: 100%;
   }
 }
 </style>
