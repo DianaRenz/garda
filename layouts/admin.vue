@@ -25,6 +25,19 @@
           rounded="lg"
           @click="mobile && (drawer = false)"
         />
+
+        <VDivider class="my-2" />
+        <VListSubheader v-if="!rail || mobile">{{ $t('nav.guestView') }}</VListSubheader>
+
+        <VListItem
+          v-for="item in guestViewItems"
+          :key="item.to"
+          :to="item.to"
+          :prepend-icon="item.icon"
+          :title="$t(item.titleKey)"
+          rounded="lg"
+          @click="mobile && (drawer = false)"
+        />
       </VList>
 
       <template #append>
@@ -91,5 +104,12 @@ const navItems = [
   { to: "/admin/guests",    icon: "fluent:people-24-regular",             titleKey: "nav.guests" },
   { to: "/admin/guide",     icon: "fluent:book-24-regular",               titleKey: "nav.guide" },
   { to: "/admin/settings",  icon: "fluent:settings-24-regular",           titleKey: "nav.settings" },
+]
+
+const guestViewItems = [
+  { to: "/apartment", icon: "fluent:home-24-regular",            titleKey: "apartment.title" },
+  { to: "/calendar",  icon: "fluent:calendar-24-regular",        titleKey: "nav.calendar" },
+  { to: "/guide",     icon: "fluent:book-24-regular",            titleKey: "nav.guide" },
+  { to: "/photos",    icon: "fluent:image-multiple-24-regular",  titleKey: "photos.title" },
 ]
 </script>

@@ -4,8 +4,8 @@
       <VAppBarTitle>
         <NuxtLink to="/" class="text-decoration-none text-high-emphasis font-weight-bold">Garda</NuxtLink>
       </VAppBarTitle>
-      <!-- Guest nav tabs -->
-      <template v-if="user && userRole !== 'admin'">
+      <!-- Guest nav tabs (also shown to admin so they can preview guest pages) -->
+      <template v-if="user">
         <VBtn
           v-for="item in guestNav"
           :key="item.to"
