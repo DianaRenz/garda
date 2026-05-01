@@ -351,10 +351,11 @@ Firestore модель обновлена: `sections.{key}.text` = `{ ru, en, de
 
 ---
 
-### Фаза 10 — Верификация email при регистрации (завершено)
+### Фаза 10 — Верификация email при регистрации (откачено, см. Фазу 12 в ToDo)
 - [x] `pages/register/[token].vue` — после `createUserWithEmailAndPassword` вызывается `sendEmailVerification()`, показывается экран «проверьте почту» вместо редиректа
 - [x] `pages/login/index.vue` — при логине проверяется `emailVerified`; если не подтверждён — предупреждение + кнопка «отправить ещё раз»
 - [x] i18n — ключи `register.verifyTitle/verifyText/goToLogin`, `login.notVerified/resendVerification/verificationResent`
+- [x] **Откачено**: гейт верификации удалён, потому что (a) `createUserWithEmailAndPassword` автоматически логинит пользователя, поэтому проверка `emailVerified` срабатывала только при повторном логине и большинство пользователей её не видели; (b) `sendEmailVerification` молча проглатывала ошибки, и UI всё равно показывал «письмо отправлено», даже когда оно не уходило; (c) часть гостей жаловалась на отсутствие письма — Firebase шлёт от `noreply@<project-id>.firebaseapp.com`, что массово фильтруется как спам. По сути функция была декоративной и сбивала с толку
 
 ---
 
@@ -380,6 +381,27 @@ Firestore модель обновлена: `sections.{key}.text` = `{ ru, en, de
 ---
 
 ## ToDo
+
+### Фаза 12 — Корректная email-верификация (откладывается)
+
+**Контекст.** Первая попытка (Фаза 10) была откачена — см. примечание там. Если/когда вернёмся к этой функции, нужно сделать её *по-настоящему*, иначе она опять будет декоративной.
+
+**Что сделать обязательно:**
+- [ ] **Сменить отправителя** — Firebase Authentication → Templates → Email address verification → Customize domain. Настроить кастомный домен (`mail.<твой-домен>` или подобный) с правильными DNS-записями (SPF, DKIM, DMARC). Это снимет основную причину «письмо не приходит» — Firebase по умолчанию шлёт с `noreply@<project>.firebaseapp.com`, и многие почтовики (Gmail Promotions, Outlook Junk, Mail.ru, Yandex, корпоративные фильтры) режут как спам. Без этого шага любая верификация будет ломаться у части пользователей.
+- [ ] **Перестать молча проглатывать ошибки `sendEmailVerification`** в `pages/register/[token].vue`. Логировать в `console.warn`, показывать пользователю «не удалось отправить, попробуйте ещё раз» с кнопкой ретрая.
+- [ ] **Принудительный logout сразу после `createUserWithEmailAndPassword`** — Firebase автоматически логинит при создании юзера, поэтому проверка `emailVerified` на странице логина срабатывает только при повторном входе. Чтобы реально требовать верификацию, надо вызвать `signOut($auth)` сразу после регистрации и редиректить на `/login` с инструкцией.
+- [ ] **Проверять `emailVerified` в guards и middleware**, не только на странице логина: `middleware/auth.ts` (защищает `/admin/*`) и `useAuthGuard` (защищает `/apartment`, `/calendar`) сейчас флаг игнорируют. Если не проверять — пользователь спокойно ходит по приложению через прямые URL.
+- [ ] **На post-registration экране** показать ожидаемого отправителя и подсказку «проверьте папку Спам», плюс кнопку «отправить ещё раз».
+- [ ] **Админский обход** — на случай, если у гостя реально не доходит почта: ты как админ должна иметь возможность вручную пометить аккаунт verified (через Firebase Console это уже доступно, но удобнее — кнопка в `/admin/guests`).
+
+**Что вернуть в код:**
+- Экран «проверьте почту» в `pages/register/[token].vue` (раньше был `emailSent` ref + блок template)
+- Блок `notVerified` + `resendVerification` в `pages/login/index.vue`
+- i18n-ключи `register.verifyTitle/verifyText/goToLogin` и `login.notVerified/resendVerification/verificationResent` (удалены при откате)
+
+История ветки: `fix/remove-email-verification-gate`. Если будем восстанавливать — можно посмотреть в diff что именно убирали.
+
+---
 
 ### Фаза 11 — Cookie-баннер и Datenschutz / Impressum
 - [ ] **Cookie-баннер** — компонент `CookieBanner.vue`, показывается один раз (согласие хранится в `localStorage`). Два варианта: «Принять» / «Только необходимые». Если отклонено — не инициализировать аналитику (если появится). Firebase Auth + Firestore — necessary cookies, не требуют согласия.
