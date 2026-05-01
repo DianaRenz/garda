@@ -117,10 +117,7 @@
     "password": "Password",
     "submit": "Sign in",
     "forgotPassword": "Forgot password?",
-    "error": "Invalid email or password",
-    "notVerified": "Email not verified. Check your inbox and click the verification link.",
-    "resendVerification": "Resend",
-    "verificationResent": "Sent!"
+    "error": "Invalid email or password"
   },
   "resetPassword": {
     "title": "Reset password",
@@ -264,10 +261,7 @@
     "expiredToken": "This invite link has expired.",
     "error": "Something went wrong. Please try again.",
     "emailInUse": "This email is already registered. Try signing in instead.",
-    "passwordMismatch": "Passwords do not match",
-    "verifyTitle": "Verify your email",
-    "verifyText": "We sent a verification email to your address. Click the link in the email to activate your account.",
-    "goToLogin": "Go to login"
+    "passwordMismatch": "Passwords do not match"
   },
   "invite": {
     "title": "Invite links",
