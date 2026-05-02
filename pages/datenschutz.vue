@@ -3,17 +3,17 @@
     <VRow justify="center">
       <VCol cols="12" sm="10" md="8">
         <h1 class="text-h5 font-weight-bold mb-2">Datenschutzerklärung</h1>
-        <p class="text-caption text-medium-emphasis mb-6">Stand: [DATUM EINSETZEN]</p>
+        <p class="text-caption text-medium-emphasis mb-6">Stand: Mai 2026</p>
 
         <h2 class="text-h6 font-weight-bold mt-6 mb-3">1. Verantwortlicher</h2>
         <p class="text-body-2 mb-3">
           Verantwortlich für die Datenverarbeitung auf dieser Website im Sinne
           der Datenschutz-Grundverordnung (DSGVO) ist:
         </p>
-        <p class="text-body-2 mb-1">[VOLLSTÄNDIGER NAME]</p>
-        <p class="text-body-2 mb-1">[STRASSE UND HAUSNUMMER]</p>
-        <p class="text-body-2 mb-1">[PLZ UND ORT, LAND]</p>
-        <p class="text-body-2 mb-3">E-Mail: [KONTAKT-E-MAIL]</p>
+        <p class="text-body-2 mb-1">Diana Renz</p>
+        <p class="text-body-2 mb-1">Hardenbergstr. 24</p>
+        <p class="text-body-2 mb-1">80992 München, Deutschland</p>
+        <p class="text-body-2 mb-3">E-Mail: d.renz@huntrees.com</p>
 
         <h2 class="text-h6 font-weight-bold mt-6 mb-3">2. Allgemeine Hinweise</h2>
         <p class="text-body-2 mb-3">

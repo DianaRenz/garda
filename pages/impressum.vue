@@ -5,19 +5,18 @@
         <h1 class="text-h5 font-weight-bold mb-6">Impressum</h1>
 
         <h2 class="text-h6 font-weight-bold mt-6 mb-3">Angaben gemäß § 5 TMG</h2>
-        <p class="text-body-2 mb-1">[VOLLSTÄNDIGER NAME]</p>
-        <p class="text-body-2 mb-1">[STRASSE UND HAUSNUMMER]</p>
-        <p class="text-body-2 mb-1">[PLZ UND ORT]</p>
-        <p class="text-body-2 mb-1">[LAND]</p>
+        <p class="text-body-2 mb-1">Diana Renz</p>
+        <p class="text-body-2 mb-1">Hardenbergstr. 24</p>
+        <p class="text-body-2 mb-1">80992 München</p>
+        <p class="text-body-2 mb-1">Deutschland</p>
 
         <h2 class="text-h6 font-weight-bold mt-6 mb-3">Kontakt</h2>
-        <p class="text-body-2 mb-1">E-Mail: [KONTAKT-E-MAIL]</p>
-        <p class="text-body-2 mb-1">Telefon: [TELEFONNUMMER, OPTIONAL]</p>
+        <p class="text-body-2 mb-1">E-Mail: d.renz@huntrees.com</p>
 
         <h2 class="text-h6 font-weight-bold mt-6 mb-3">
           Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV
         </h2>
-        <p class="text-body-2 mb-1">[VOLLSTÄNDIGER NAME]</p>
+        <p class="text-body-2 mb-1">Diana Renz</p>
         <p class="text-body-2 mb-1">Anschrift wie oben</p>
 
         <h2 class="text-h6 font-weight-bold mt-6 mb-3">Hinweis zur Nutzung</h2>
