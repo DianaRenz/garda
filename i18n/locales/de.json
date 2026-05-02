@@ -376,5 +376,14 @@
     "error": "Etwas ist schiefgelaufen. Bitte versuche es erneut.",
     "close": "Schließen",
     "copy": "Kopieren"
+  },
+  "footer": {
+    "impressum": "Impressum",
+    "datenschutz": "Datenschutz"
+  },
+  "cookies": {
+    "notice": "Wir verwenden ausschließlich technisch notwendige Speichertechniken (für Anmeldung und Sprachauswahl). Es findet keine Analyse oder Verfolgung statt.",
+    "learnMore": "Mehr erfahren",
+    "ack": "OK, verstanden"
   }
 }

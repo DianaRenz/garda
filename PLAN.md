@@ -403,23 +403,13 @@ Firestore модель обновлена: `sections.{key}.text` = `{ ru, en, de
 
 ---
 
-### Фаза 11 — Cookie-баннер и Datenschutz / Impressum
-- [ ] **Cookie-баннер** — компонент `CookieBanner.vue`, показывается один раз (согласие хранится в `localStorage`). Два варианта: «Принять» / «Только необходимые». Если отклонено — не инициализировать аналитику (если появится). Firebase Auth + Firestore — necessary cookies, не требуют согласия.
-- [ ] **Страница Datenschutz** (`/datenschutz`) — политика конфиденциальности на немецком (основной юрисдикция — Германия/Австрия). Содержание:
-  - Ответственный (имя, контакт)
-  - Какие данные собираются: email, имя, телефон (при регистрации по инвайту), данные бронирований
-  - Хостинг: Firebase Hosting (Google LLC, US) — ссылка на DPA Google
-  - Аутентификация: Firebase Auth (Google LLC, US) — email + пароль
-  - База данных: Cloud Firestore (Google LLC, US) — данные бронирований, профили
-  - Хранилище файлов: Firebase Storage (Google LLC, US, `us-central1`) — фотографии загружаются только админом, персональные данные пользователей НЕ хранятся в Storage
-  - Email-уведомления: EmailJS (сервис отправки email) — передаются email, имя, даты бронирования
-  - Cookies: только технически необходимые (Firebase Auth session), аналитические — нет
-  - Передача данных в третьи страны (US): на основании Standard Contractual Clauses (SCC) Google
-  - Права пользователя: доступ, исправление, удаление, ограничение обработки, переносимость, жалоба в надзорный орган
-  - Срок хранения: данные хранятся до удаления аккаунта или по запросу
-- [ ] **Страница Impressum** (`/impressum`) — обязательно для DE/AT. Имя, адрес, контакт, ответственный за контент (§ 5 TMG / § 25 MedienG)
-- [ ] **Ссылки в footer** — Datenschutz + Impressum в `layouts/default.vue`
-- [ ] **i18n** — ключи для cookie-баннера во всех 3 локалях; страницы Datenschutz/Impressum — только на немецком (юридически достаточно)
+### Фаза 11 — Cookie-баннер и Datenschutz / Impressum (готово, требуется заполнение плейсхолдеров)
+- [x] **Cookie-баннер** — компонент `components/CookieNotice.vue` смонтирован в `app.vue`. Показывается один раз, согласие в `localStorage` под ключом `garda.cookieNoticeAcked`. Без выбора «принять/отклонить», т.к. используется только необходимое хранение (Firebase Auth + i18n). Если в будущем добавится аналитика — заменить на consent-баннер с двумя кнопками.
+- [x] **Страница Datenschutz** (`/datenschutz`) — на немецком, охватывает: ответственного, хостинг (Firebase), регистрацию, бронирования, EmailJS, фото в Storage, cookies, передачу в US (SCC), сроки хранения, права пользователя, право на жалобу. **Требуются**: личные данные владельца + дата актуальности (плейсхолдеры в коде).
+- [x] **Страница Impressum** (`/impressum`) — § 5 TMG / § 18 MStV. **Требуются**: имя, адрес, e-mail, телефон (опц.) — плейсхолдеры в коде.
+- [x] **Ссылки в footer** — Impressum + Datenschutz в `layouts/default.vue` и `layouts/admin.vue`.
+- [x] **i18n** — ключи `footer.{impressum,datenschutz}` и `cookies.{notice,learnMore,ack}` во всех трёх локалях. Сами страницы Datenschutz/Impressum — только на немецком (юридически достаточно).
+- [ ] **TODO перед публикацией:** заменить плейсхолдеры `[VOLLSTÄNDIGER NAME]`, `[STRASSE UND HAUSNUMMER]`, `[PLZ UND ORT]`, `[KONTAKT-E-MAIL]`, `[TELEFONNUMMER, OPTIONAL]`, `[DATUM EINSETZEN]` на реальные данные. Прогнать через [eRecht24](https://www.e-recht24.de/impressum-generator.html) или показать юристу.
 
 Примечание по Firebase US (бесплатный тариф — только `us-central1`): передача данных в US легальна на основании Google DPA + Standard Contractual Clauses (SCC). Когда появятся пользовательские фото/комментарии — достаточно: (1) чекбокс согласия с Datenschutz при регистрации, (2) упоминание в Datenschutz, что пользовательский контент хранится в US (Firebase Storage/Firestore, Google SCC), (3) возможность удалить свои данные. Миграция в EU-регион не требуется.
 

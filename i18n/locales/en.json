@@ -376,5 +376,14 @@
     "error": "Something went wrong. Please try again.",
     "close": "Close",
     "copy": "Copy"
+  },
+  "footer": {
+    "impressum": "Impressum",
+    "datenschutz": "Privacy"
+  },
+  "cookies": {
+    "notice": "We only use technically necessary storage (for sign-in and language preference). No analytics or tracking.",
+    "learnMore": "Learn more",
+    "ack": "OK, got it"
   }
 }
