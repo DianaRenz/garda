@@ -406,11 +406,11 @@ Firestore модель обновлена: `sections.{key}.text` = `{ ru, en, de
 ### Фаза 11 — Cookie-баннер и Datenschutz / Impressum (завершено)
 - [x] **Cookie-баннер** — компонент `components/CookieNotice.vue` смонтирован в `app.vue`. Показывается один раз, согласие в `localStorage` под ключом `garda.cookieNoticeAcked`. Без выбора «принять/отклонить», т.к. используется только необходимое хранение (Firebase Auth + i18n). Если в будущем добавится аналитика — заменить на consent-баннер с двумя кнопками.
 - [x] **Страница Datenschutz** (`/datenschutz`) — на немецком, охватывает: ответственного, хостинг (Firebase), регистрацию, бронирования, EmailJS, фото в Storage, cookies, передачу в US (SCC), сроки хранения, права пользователя, право на жалобу. Заполнено: Diana Renz, Hardenbergstr. 24, 80992 München.
-- [x] **Страница Impressum** (`/impressum`) — § 5 TMG / § 18 MStV. Заполнено теми же данными.
+- [x] **Страница Impressum** (`/impressum`) — § 5 DDG / § 18 MStV. Заполнено теми же данными.
 - [x] **Ссылки в footer** — Impressum + Datenschutz в `layouts/default.vue` и `layouts/admin.vue`.
 - [x] **i18n** — ключи `footer.{impressum,datenschutz}` и `cookies.{notice,learnMore,ack}` во всех трёх локалях. Сами страницы Datenschutz/Impressum — только на немецком (юридически достаточно).
 
-Примечание по Firebase US (бесплатный тариф — только `us-central1`): передача данных в US легальна на основании Google DPA + Standard Contractual Clauses (SCC). Когда появятся пользовательские фото/комментарии — достаточно: (1) чекбокс согласия с Datenschutz при регистрации, (2) упоминание в Datenschutz, что пользовательский контент хранится в US (Firebase Storage/Firestore, Google SCC), (3) возможность удалить свои данные. Миграция в EU-регион не требуется.
+Примечание по Firebase: Firestore и Authentication в `europe-west1` (Belgien), Hosting — глобальный CDN. Передача данных в US (Hosting CDN, EmailJS) легальна на основании Google DPA + EU-US Data Privacy Framework / SCC.
 
 ---
 

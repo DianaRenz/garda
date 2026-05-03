@@ -1,12 +1,29 @@
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { mountSuspended } from "@nuxt/test-utils/runtime";
 import CookieNotice from "~/components/CookieNotice.vue";
 
 const STORAGE_KEY = "garda.cookieNoticeAcked";
 
+// happy-dom's localStorage does not support .clear() in Nuxt test env,
+// so we provide a minimal mock via vi.stubGlobal.
+const store = new Map<string, string>();
+const storageMock = {
+  getItem: (key: string) => store.get(key) ?? null,
+  setItem: (key: string, value: string) => store.set(key, value),
+  removeItem: (key: string) => store.delete(key),
+  clear: () => store.clear(),
+  get length() { return store.size; },
+  key: (_i: number) => null as string | null,
+};
+
 describe("CookieNotice", () => {
   beforeEach(() => {
-    localStorage.clear();
+    store.clear();
+    vi.stubGlobal("localStorage", storageMock);
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
   });
 
   it("is visible on first mount when no acknowledgement is stored", async () => {
@@ -18,7 +35,7 @@ describe("CookieNotice", () => {
   });
 
   it("is hidden when localStorage already marks it acknowledged", async () => {
-    localStorage.setItem(STORAGE_KEY, "1");
+    store.set(STORAGE_KEY, "1");
     const wrapper = await mountSuspended(CookieNotice);
     await wrapper.vm.$nextTick();
     expect(wrapper.text()).toBe("");
@@ -37,23 +54,21 @@ describe("CookieNotice", () => {
     const button = wrapper.find("button");
     expect(button.exists()).toBe(true);
     await button.trigger("click");
-    expect(localStorage.getItem(STORAGE_KEY)).toBe("1");
+    expect(store.get(STORAGE_KEY)).toBe("1");
     // Banner contents removed after acknowledgement
     expect(wrapper.text()).toBe("");
   });
 
   it("does not crash when localStorage is unavailable", async () => {
-    const setItem = vi
-      .spyOn(Storage.prototype, "setItem")
-      .mockImplementation(() => {
-        throw new Error("quota exceeded");
-      });
+    vi.stubGlobal("localStorage", {
+      ...storageMock,
+      setItem: () => { throw new Error("quota exceeded"); },
+    });
     const wrapper = await mountSuspended(CookieNotice);
     await wrapper.vm.$nextTick();
     const button = wrapper.find("button");
     await button.trigger("click");
     // Banner still hides (visible flag flipped) even though persist failed
     expect(wrapper.text()).toBe("");
-    setItem.mockRestore();
   });
 });
