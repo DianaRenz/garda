@@ -23,6 +23,12 @@
           zur Region bereit. Es findet keine kommerzielle Vermietung und keine
           Erzielung von Einkünften statt.
         </p>
+        <p class="text-body-2 mb-3">
+          Die Übertragung zwischen Ihrem Browser und unserer Website erfolgt
+          verschlüsselt über TLS (Transport Layer Security). Sie erkennen eine
+          verschlüsselte Verbindung am Schloss-Symbol in der Adressleiste Ihres
+          Browsers.
+        </p>
 
         <h2 class="text-h6 font-weight-bold mt-6 mb-3">3. Hosting</h2>
         <p class="text-body-2 mb-3">
@@ -34,9 +40,11 @@
           DSGVO (berechtigtes Interesse am sicheren Betrieb der Website).
         </p>
         <p class="text-body-2 mb-3">
-          Mit Google ist ein Vertrag zur Auftragsverarbeitung gemäß Art. 28
-          DSGVO geschlossen. Eine Übermittlung in die USA findet auf Grundlage
-          der EU-Standardvertragsklauseln (Art. 46 Abs. 2 lit. c DSGVO) statt.
+          Firebase Hosting wird aus global verteilten Rechenzentren ausgeliefert.
+          Firestore und Authentication werden in <code>europe-west1</code>
+          (Belgien) betrieben. Weitere Informationen zum Datenschutz bei Google
+          finden Sie in den
+          <a href="https://firebase.google.com/support/privacy" target="_blank" rel="noopener noreferrer">Firebase-Datenschutzhinweisen</a>.
         </p>
 
         <h2 class="text-h6 font-weight-bold mt-6 mb-3">4. Registrierung und Konto</h2>
@@ -51,9 +59,10 @@
           <li>Verschlüsselter Passwort-Hash (durch Firebase Authentication)</li>
         </ul>
         <p class="text-body-2 mb-3">
-          Die Verarbeitung erfolgt zur Erfüllung des Nutzungsverhältnisses
-          (Art. 6 Abs. 1 lit. b DSGVO). Die Authentifizierung wird durch
-          <strong>Firebase Authentication</strong> der Google LLC bereitgestellt.
+          Die Verarbeitung erfolgt auf Grundlage unseres berechtigten Interesses
+          an der Verwaltung des Nutzerkreises (Art. 6 Abs. 1 lit. f DSGVO).
+          Die Authentifizierung wird durch <strong>Firebase Authentication</strong>
+          der Google LLC bereitgestellt.
         </p>
 
         <h2 class="text-h6 font-weight-bold mt-6 mb-3">5. Buchungsanfragen und Kalender</h2>
@@ -68,8 +77,8 @@
           <li>Status der Anfrage (offen, bestätigt, abgelehnt, storniert)</li>
         </ul>
         <p class="text-body-2 mb-3">
-          Rechtsgrundlage: Art. 6 Abs. 1 lit. b DSGVO (Erfüllung
-          (vor-)vertraglicher Pflichten im Rahmen der privaten Nutzung).
+          Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse
+          an der Koordination der privaten Belegung).
         </p>
 
         <h2 class="text-h6 font-weight-bold mt-6 mb-3">6. E-Mail-Benachrichtigungen</h2>
@@ -79,7 +88,8 @@
           (USA — siehe
           <a href="https://www.emailjs.com/legal/privacy-policy/" target="_blank" rel="noopener noreferrer">Datenschutzerklärung von EmailJS</a>).
           Übermittelt werden Name, E-Mail-Adresse, gewählte Daten und ggf.
-          Anmerkungen. Rechtsgrundlage ist Art. 6 Abs. 1 lit. b DSGVO.
+          Anmerkungen. Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO
+          (berechtigtes Interesse an der zeitnahen Benachrichtigung der Beteiligten).
         </p>
 
         <h2 class="text-h6 font-weight-bold mt-6 mb-3">7. Bilder und Inhalte des Reiseführers</h2>
@@ -122,12 +132,17 @@
         <ul class="text-body-2 mb-3 pl-6">
           <li>
             <strong>Google LLC</strong> (USA) — Firebase Hosting, Firebase
-            Authentication, Cloud Firestore, Firebase Storage. Datenverarbeitung
-            in der Region <code>us-central1</code>.
+            Authentication, Cloud Firestore, Firebase Storage. Firestore und
+            Authentication werden in der Region <code>europe-west1</code>
+            (Belgien) betrieben. Mit Google besteht ein Vertrag zur
+            Auftragsverarbeitung gemäß Art. 28 DSGVO (Firebase Data Processing
+            Terms).
           </li>
           <li>
             <strong>EmailJS Inc.</strong> (USA) — Versand von
-            E-Mail-Benachrichtigungen.
+            E-Mail-Benachrichtigungen. EmailJS verarbeitet die übermittelten
+            Daten (Name, E-Mail, Datumsangaben) ausschließlich zum Zweck der
+            E-Mail-Zustellung.
           </li>
         </ul>
 

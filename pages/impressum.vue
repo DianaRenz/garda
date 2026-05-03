@@ -4,7 +4,7 @@
       <VCol cols="12" sm="10" md="8">
         <h1 class="text-h5 font-weight-bold mb-6">Impressum</h1>
 
-        <h2 class="text-h6 font-weight-bold mt-6 mb-3">Angaben gemäß § 5 TMG</h2>
+        <h2 class="text-h6 font-weight-bold mt-6 mb-3">Angaben gemäß § 5 DDG</h2>
         <p class="text-body-2 mb-1">Diana Renz</p>
         <p class="text-body-2 mb-1">Hardenbergstr. 24</p>
         <p class="text-body-2 mb-1">80992 München</p>
@@ -27,22 +27,11 @@
           aus der Nutzung der Wohnung erzielt.
         </p>
 
-        <h2 class="text-h6 font-weight-bold mt-6 mb-3">Streitschlichtung</h2>
-        <p class="text-body-2 mb-3">
-          Die Europäische Kommission stellt eine Plattform zur Online-Streitbeilegung
-          (OS) bereit:
-          <a href="https://ec.europa.eu/consumers/odr" target="_blank" rel="noopener noreferrer">
-            https://ec.europa.eu/consumers/odr</a>.
-          Unsere E-Mail-Adresse finden Sie oben im Impressum. Wir sind nicht
-          bereit oder verpflichtet, an Streitbeilegungsverfahren vor einer
-          Verbraucherschlichtungsstelle teilzunehmen.
-        </p>
-
         <h2 class="text-h6 font-weight-bold mt-6 mb-3">Haftung für Inhalte</h2>
         <p class="text-body-2 mb-3">
-          Als Diensteanbieter sind wir gemäß § 7 Abs. 1 TMG für eigene Inhalte
+          Als Diensteanbieter sind wir gemäß § 7 Abs. 1 DDG für eigene Inhalte
           auf diesen Seiten nach den allgemeinen Gesetzen verantwortlich. Nach
-          §§ 8 bis 10 TMG sind wir als Diensteanbieter jedoch nicht verpflichtet,
+          §§ 8 bis 10 DDG sind wir als Diensteanbieter jedoch nicht verpflichtet,
           übermittelte oder gespeicherte fremde Informationen zu überwachen oder
           nach Umständen zu forschen, die auf eine rechtswidrige Tätigkeit
           hinweisen. Verpflichtungen zur Entfernung oder Sperrung der Nutzung
