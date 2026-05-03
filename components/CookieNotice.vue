@@ -53,7 +53,9 @@ const acknowledge = () => {
 <style scoped>
 .cookie-notice {
   position: fixed;
-  bottom: 16px;
+  /* Sit above the VFooter (~60px tall with py-3) so the OK button
+     doesn't overlap the Impressum / Datenschutz footer links. */
+  bottom: 76px;
   left: 16px;
   right: 16px;
   z-index: 2000;

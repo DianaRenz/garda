@@ -79,6 +79,6 @@ definePageMeta({ layout: "default" });
 
 useHead({
   title: "Impressum",
-  meta: [{ name: "robots", content: "noindex,nofollow" }],
+  htmlAttrs: { lang: "de" },
 });
 </script>

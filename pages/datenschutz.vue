@@ -76,7 +76,8 @@
         <p class="text-body-2 mb-3">
           Bei neuen Anfragen sowie bei Bestätigung oder Ablehnung versenden wir
           E-Mail-Benachrichtigungen über den Dienst <strong>EmailJS</strong>
-          (EmailJS Inc., 600 California Street, San Francisco, CA 94108, USA).
+          (EmailJS, USA — siehe
+          <a href="https://www.emailjs.com/legal/privacy-policy/" target="_blank" rel="noopener noreferrer">Datenschutzerklärung von EmailJS</a>).
           Übermittelt werden Name, E-Mail-Adresse, gewählte Daten und ggf.
           Anmerkungen. Rechtsgrundlage ist Art. 6 Abs. 1 lit. b DSGVO.
         </p>
@@ -92,18 +93,25 @@
         <h2 class="text-h6 font-weight-bold mt-6 mb-3">8. Cookies und lokaler Speicher</h2>
         <p class="text-body-2 mb-3">
           Diese Website verwendet ausschließlich technisch notwendige
-          Speichertechniken (LocalStorage / IndexedDB), die für den Betrieb
-          erforderlich sind:
+          Speichertechniken, die für den Betrieb erforderlich sind. Eine
+          Einwilligung gemäß § 25 Abs. 1 TTDSG ist daher nicht erforderlich
+          (§ 25 Abs. 2 TTDSG).
         </p>
+        <p class="text-body-2 mb-1"><strong>Cookies:</strong></p>
+        <ul class="text-body-2 mb-3 pl-6">
+          <li>
+            <code>i18n_redirected</code> — speichert die ausgewählte
+            Sprache (gesetzt durch das Modul <code>@nuxtjs/i18n</code>).
+            Lebensdauer: 1 Jahr.
+          </li>
+        </ul>
+        <p class="text-body-2 mb-1"><strong>LocalStorage / IndexedDB:</strong></p>
         <ul class="text-body-2 mb-3 pl-6">
           <li>Anmelde-Sitzung (Firebase Authentication)</li>
-          <li>Sprachauswahl (i18n)</li>
-          <li>Bestätigung des Cookie-Hinweises</li>
+          <li>Bestätigung des Cookie-Hinweises (<code>garda.cookieNoticeAcked</code>)</li>
         </ul>
         <p class="text-body-2 mb-3">
           Es werden keine Analyse-, Tracking- oder Marketing-Cookies eingesetzt.
-          Eine Einwilligung gemäß § 25 Abs. 1 TTDSG ist daher nicht erforderlich
-          (§ 25 Abs. 2 TTDSG).
         </p>
 
         <h2 class="text-h6 font-weight-bold mt-6 mb-3">9. Auftragsverarbeiter</h2>
@@ -183,6 +191,6 @@ definePageMeta({ layout: "default" });
 
 useHead({
   title: "Datenschutz",
-  meta: [{ name: "robots", content: "noindex,nofollow" }],
+  htmlAttrs: { lang: "de" },
 });
 </script>

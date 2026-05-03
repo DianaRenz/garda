@@ -86,7 +86,7 @@
       <NuxtLink to="/impressum" class="text-medium-emphasis text-decoration-none mx-2">
         {{ $t('footer.impressum') }}
       </NuxtLink>
-      <span class="text-medium-emphasis">·</span>
+      <span class="text-medium-emphasis" aria-hidden="true">·</span>
       <NuxtLink to="/datenschutz" class="text-medium-emphasis text-decoration-none mx-2">
         {{ $t('footer.datenschutz') }}
       </NuxtLink>
