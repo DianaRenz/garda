@@ -75,8 +75,8 @@
         <h2 class="text-h6 font-weight-bold mt-6 mb-3">6. E-Mail-Benachrichtigungen</h2>
         <p class="text-body-2 mb-3">
           Bei neuen Anfragen sowie bei Bestätigung oder Ablehnung versenden wir
-          E-Mail-Benachrichtigungen über den Dienst <strong>EmailJS</strong>
-          (EmailJS, USA — siehe
+          E-Mail-Benachrichtigungen über den Dienst <strong>EmailJS Inc.</strong>
+          (USA — siehe
           <a href="https://www.emailjs.com/legal/privacy-policy/" target="_blank" rel="noopener noreferrer">Datenschutzerklärung von EmailJS</a>).
           Übermittelt werden Name, E-Mail-Adresse, gewählte Daten und ggf.
           Anmerkungen. Rechtsgrundlage ist Art. 6 Abs. 1 lit. b DSGVO.

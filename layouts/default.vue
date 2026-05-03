@@ -108,10 +108,4 @@ const guestNav = [
   { to: "/guide", icon: "fluent:book-24-regular", label: "nav.guide" },
   { to: "/photos", icon: "fluent:image-multiple-24-regular", label: "photos.title" },
 ];
-
-const accountLink = computed(() => {
-  if (!user.value) return "/login";
-  if (userRole.value === "admin") return "/admin";
-  return "/apartment";
-});
 </script>
