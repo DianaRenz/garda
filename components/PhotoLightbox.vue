@@ -108,11 +108,14 @@ onUnmounted(() => {
 let touchStartX = 0;
 
 const onTouchStart = (e: TouchEvent) => {
-  touchStartX = e.changedTouches[0].clientX;
+  const touch = e.changedTouches[0];
+  if (touch) touchStartX = touch.clientX;
 };
 
 const onTouchEnd = (e: TouchEvent) => {
-  const diff = e.changedTouches[0].clientX - touchStartX;
+  const touch = e.changedTouches[0];
+  if (!touch) return;
+  const diff = touch.clientX - touchStartX;
   if (Math.abs(diff) > 50) {
     if (diff > 0) prev();
     else next();

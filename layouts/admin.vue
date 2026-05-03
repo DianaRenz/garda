@@ -79,6 +79,15 @@
         <slot />
       </VContainer>
     </VMain>
+    <VFooter app class="d-flex justify-center text-caption py-3" border="t">
+      <NuxtLink to="/impressum" class="text-medium-emphasis text-decoration-none mx-2">
+        {{ $t('footer.impressum') }}
+      </NuxtLink>
+      <span class="text-medium-emphasis" aria-hidden="true">·</span>
+      <NuxtLink to="/datenschutz" class="text-medium-emphasis text-decoration-none mx-2">
+        {{ $t('footer.datenschutz') }}
+      </NuxtLink>
+    </VFooter>
   </VApp>
 </template>
 
