@@ -18,7 +18,7 @@ const resolveInitialTheme = (): "light" | "dark" => {
 
 export default defineNuxtPlugin((app) => {
   const vuetify = createVuetify({
-    ssr: true,
+    // Nuxt is configured with ssr: false (SPA), so Vuetify SSR is unused.
     defaults,
     // add theme
     theme: {

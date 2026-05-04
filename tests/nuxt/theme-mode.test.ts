@@ -1,26 +1,49 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
+import { ref, computed } from "vue";
 
+// Mock Vuetify's useTheme with a reactive theme that tracks .name and
+// derives .current.value.dark from it — same shape as real Vuetify so
+// the `effective` computed in useThemeMode actually reacts to changes.
+const themeName = ref<"light" | "dark">("light");
 vi.mock("vuetify", () => ({
   useTheme: () => ({
-    global: { name: { value: "light" } },
+    global: {
+      name: themeName,
+      current: computed(() => ({ dark: themeName.value === "dark" })),
+    },
   }),
 }));
 
-import { resolveTheme } from "~/composables/useThemeMode";
+import { resolveTheme, __resetForTests } from "~/composables/useThemeMode";
 
 const STORAGE_KEY = "garda.theme";
 
-const mockMatchMedia = (matchesDark: boolean) => {
+type MqListener = (e: { matches: boolean }) => void;
+
+const mockMatchMedia = (initialDark: boolean) => {
+  let currentDark = initialDark;
+  const listeners: MqListener[] = [];
   vi.stubGlobal("matchMedia", (query: string) => ({
-    matches: query.includes("dark") ? matchesDark : false,
+    // Use a getter so subsequent calls to matchMedia(...).matches reflect
+    // the latest state — important because resolveTheme() reads matchMedia
+    // freshly each time it's called.
+    get matches() {
+      return query.includes("dark") ? currentDark : false;
+    },
     media: query,
     onchange: null,
-    addEventListener: vi.fn(),
+    addEventListener: (_: string, cb: MqListener) => listeners.push(cb),
     removeEventListener: vi.fn(),
     addListener: vi.fn(),
     removeListener: vi.fn(),
     dispatchEvent: vi.fn(),
   }));
+  return {
+    fireChange: (matches: boolean) => {
+      currentDark = matches;
+      listeners.forEach((cb) => cb({ matches }));
+    },
+  };
 };
 
 describe("resolveTheme", () => {
@@ -50,6 +73,8 @@ describe("useThemeMode", () => {
   beforeEach(async () => {
     vi.unstubAllGlobals();
     localStorage.clear();
+    __resetForTests();
+    themeName.value = "light";
     // useState('theme-mode') is shared across tests in the Nuxt test runtime,
     // so we must explicitly reset its value or earlier tests will leak through.
     mockMatchMedia(false);
@@ -85,7 +110,6 @@ describe("useThemeMode", () => {
 
   it("setMode('dark') persists to localStorage and updates state", async () => {
     mockMatchMedia(false);
-    vi.resetModules();
     const { useThemeMode } = await import("~/composables/useThemeMode");
     const { mode, setMode } = useThemeMode();
     setMode("dark");
@@ -96,7 +120,6 @@ describe("useThemeMode", () => {
   it("setMode('auto') removes the stored key (so future installs default to system)", async () => {
     localStorage.setItem(STORAGE_KEY, "dark");
     mockMatchMedia(false);
-    vi.resetModules();
     const { useThemeMode } = await import("~/composables/useThemeMode");
     const { setMode } = useThemeMode();
     setMode("auto");
@@ -110,7 +133,6 @@ describe("useThemeMode", () => {
       .mockImplementation(() => {
         throw new Error("quota exceeded");
       });
-    vi.resetModules();
     const { useThemeMode } = await import("~/composables/useThemeMode");
     const { mode, setMode } = useThemeMode();
     setMode("dark");
@@ -120,15 +142,16 @@ describe("useThemeMode", () => {
 
   it("effective.value reflects auto mode + system dark preference", async () => {
     mockMatchMedia(true); // system prefers dark
+    themeName.value = "dark"; // simulate plugin having booted with dark
     const { useThemeMode } = await import("~/composables/useThemeMode");
     const { effective, mode } = useThemeMode();
-    // beforeEach already set mode to 'auto'
     expect(mode.value).toBe("auto");
     expect(effective.value).toBe("dark");
   });
 
   it("effective.value follows system light preference in auto mode", async () => {
-    mockMatchMedia(false); // system prefers light
+    mockMatchMedia(false);
+    themeName.value = "light";
     const { useThemeMode } = await import("~/composables/useThemeMode");
     const { effective } = useThemeMode();
     expect(effective.value).toBe("light");
@@ -139,6 +162,38 @@ describe("useThemeMode", () => {
     const { useThemeMode } = await import("~/composables/useThemeMode");
     const { effective, setMode } = useThemeMode();
     setMode("light");
+    expect(effective.value).toBe("light");
+  });
+
+  // Regression test for the bug where `effective` was a stale computed
+  // because it called systemPrefersDark() (non-reactive) inside the
+  // computed body. The matchMedia listener would update Vuetify's theme
+  // directly but `effective` would lag behind, leaving ThemeMenu's icon
+  // wrong until something else triggered a re-render.
+  it("effective.value updates when system preference flips while in auto mode", async () => {
+    const mq = mockMatchMedia(false);
+    const { useThemeMode } = await import("~/composables/useThemeMode");
+    const { effective, init } = useThemeMode();
+    init();
+    expect(effective.value).toBe("light");
+
+    // Simulate OS theme flip to dark
+    mq.fireChange(true);
+
+    expect(effective.value).toBe("dark");
+  });
+
+  it("does not re-apply theme on system change when user picked an explicit mode", async () => {
+    const mq = mockMatchMedia(false);
+    const { useThemeMode } = await import("~/composables/useThemeMode");
+    const { effective, init, setMode } = useThemeMode();
+    init();
+    setMode("light");
+    expect(effective.value).toBe("light");
+
+    // System flips to dark — but user chose light explicitly, so we stay light
+    mq.fireChange(true);
+
     expect(effective.value).toBe("light");
   });
 });
