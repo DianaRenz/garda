@@ -55,7 +55,7 @@
     <div class="d-flex ga-2 mb-3">
       <VChip
         :variant="filterStatus === 'all' ? 'flat' : 'outlined'"
-        :color="filterStatus === 'all' ? 'on-surface' : undefined"
+        :color="filterStatus === 'all' ? 'primary' : undefined"
         size="small"
         @click="filterStatus = 'all'"
       >

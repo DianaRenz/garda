@@ -29,6 +29,10 @@ export const resolveTheme = (mode: ThemeMode): "light" | "dark" => {
   return mode;
 };
 
+// Module-level — the matchMedia listener should attach exactly once
+// per browser session, regardless of how many components call init().
+let mqListenerAttached = false;
+
 export const useThemeMode = () => {
   const theme = useTheme();
   const mode = useState<ThemeMode>("theme-mode", readSavedMode);
@@ -37,8 +41,14 @@ export const useThemeMode = () => {
     theme.global.name.value = resolveTheme(mode.value);
   };
 
+  // Single source of truth: any time `mode` changes, theme reflects it.
+  // Guards against direct mutations (devtools, cross-tab, etc.) bypassing setMode.
+  watch(mode, applyCurrent);
+
   /**
-   * Hook up listeners. Idempotent — safe to call multiple times across layouts.
+   * Sync state with storage, apply the theme, and start listening for
+   * system preference changes. Idempotent: safe to call from multiple
+   * mount points (the matchMedia listener attaches only once per session).
    */
   const init = () => {
     if (import.meta.server) return;
@@ -47,13 +57,12 @@ export const useThemeMode = () => {
     mode.value = readSavedMode();
     applyCurrent();
 
-    // Re-apply when system preference flips, but only if user is in 'auto'
-    const mq = window.matchMedia?.("(prefers-color-scheme: dark)");
-    if (mq && !(mq as any).__gardaListenerAttached) {
-      mq.addEventListener?.("change", () => {
+    if (!mqListenerAttached) {
+      const mq = window.matchMedia?.("(prefers-color-scheme: dark)");
+      mq?.addEventListener?.("change", () => {
         if (mode.value === "auto") applyCurrent();
       });
-      (mq as any).__gardaListenerAttached = true;
+      mqListenerAttached = true;
     }
   };
 
@@ -68,7 +77,6 @@ export const useThemeMode = () => {
     } catch {
       /* localStorage unavailable — choice persists in memory only */
     }
-    applyCurrent();
   };
 
   /** The actual theme being rendered right now (resolves 'auto'). */

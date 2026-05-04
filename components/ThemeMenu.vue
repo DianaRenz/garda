@@ -7,6 +7,7 @@
         variant="text"
         size="small"
         :aria-label="$t('theme.toggle')"
+        :title="$t('theme.toggle')"
       >
         <VIcon :icon="activeIcon" />
       </VBtn>
@@ -32,17 +33,18 @@ import type { ThemeMode } from "~/composables/useThemeMode";
 const { mode, effective, setMode } = useThemeMode();
 
 const options: { value: ThemeMode; icon: string; labelKey: string }[] = [
-  { value: "light", icon: "fluent:weather-sunny-24-regular",         labelKey: "theme.light" },
-  { value: "dark",  icon: "fluent:weather-moon-24-regular",          labelKey: "theme.dark"  },
-  { value: "auto",  icon: "fluent:dark-theme-24-regular",            labelKey: "theme.auto"  },
+  { value: "light", icon: "fluent:weather-sunny-24-regular", labelKey: "theme.light" },
+  { value: "dark",  icon: "fluent:weather-moon-24-regular",  labelKey: "theme.dark"  },
+  { value: "auto",  icon: "fluent:dark-theme-24-regular",    labelKey: "theme.auto"  },
 ];
 
-// Reflect the *effective* theme on the trigger button so it's clear
-// what's currently active even when the user is in 'auto' mode.
-const activeIcon = computed(() => {
-  if (mode.value === "auto") return "fluent:dark-theme-24-regular";
-  return effective.value === "dark"
+// The trigger always reflects what's CURRENTLY rendered, not what the
+// user picked — sun if it's light right now, moon if it's dark right now.
+// More useful for low-vision users (the original feedback) since they
+// see exactly what's on screen.
+const activeIcon = computed(() =>
+  effective.value === "dark"
     ? "fluent:weather-moon-24-regular"
-    : "fluent:weather-sunny-24-regular";
-});
+    : "fluent:weather-sunny-24-regular"
+);
 </script>

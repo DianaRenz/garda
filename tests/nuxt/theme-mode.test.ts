@@ -47,9 +47,15 @@ describe("resolveTheme", () => {
 });
 
 describe("useThemeMode", () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     vi.unstubAllGlobals();
     localStorage.clear();
+    // useState('theme-mode') is shared across tests in the Nuxt test runtime,
+    // so we must explicitly reset its value or earlier tests will leak through.
+    mockMatchMedia(false);
+    const { useThemeMode } = await import("~/composables/useThemeMode");
+    useThemeMode().setMode("auto");
+    localStorage.clear(); // setMode('auto') doesn't write, but be safe if internal logic changes
   });
 
   it("defaults to 'auto' when nothing is stored", async () => {
@@ -112,11 +118,27 @@ describe("useThemeMode", () => {
     setItem.mockRestore();
   });
 
-  it("effective.value reflects auto mode + system preference", async () => {
+  it("effective.value reflects auto mode + system dark preference", async () => {
     mockMatchMedia(true); // system prefers dark
-    vi.resetModules();
+    const { useThemeMode } = await import("~/composables/useThemeMode");
+    const { effective, mode } = useThemeMode();
+    // beforeEach already set mode to 'auto'
+    expect(mode.value).toBe("auto");
+    expect(effective.value).toBe("dark");
+  });
+
+  it("effective.value follows system light preference in auto mode", async () => {
+    mockMatchMedia(false); // system prefers light
     const { useThemeMode } = await import("~/composables/useThemeMode");
     const { effective } = useThemeMode();
-    expect(effective.value).toBe("dark");
+    expect(effective.value).toBe("light");
+  });
+
+  it("effective.value ignores system preference once user picks light explicitly", async () => {
+    mockMatchMedia(true); // system prefers dark — but user explicitly chose light
+    const { useThemeMode } = await import("~/composables/useThemeMode");
+    const { effective, setMode } = useThemeMode();
+    setMode("light");
+    expect(effective.value).toBe("light");
   });
 });

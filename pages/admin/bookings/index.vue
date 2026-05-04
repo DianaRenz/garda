@@ -19,7 +19,7 @@
         v-for="s in statuses"
         :key="s.value"
         :color="filterStatus === s.value && s.value === 'all'
-          ? 'on-surface'
+          ? 'primary'
           : (s.value !== 'all' ? statusColor[s.value] : undefined)"
         :variant="filterStatus === s.value ? 'flat' : (s.value === 'all' ? 'outlined' : 'tonal')"
         class="cursor-pointer"
