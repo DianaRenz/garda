@@ -102,7 +102,7 @@ const BG: Record<string, string> = {
   pending:   'rgba(255, 193,  7, 0.2)',
   confirmed: 'rgba( 33, 150, 243, 0.16)',
   blocked:   'rgba(244,  67,  54, 0.14)',
-  cancelled: 'rgba(0, 0, 0, 0.06)',
+  cancelled: 'rgba(var(--v-theme-on-surface), 0.06)',
 }
 
 const getBooking = (dateStr: string): (Booking | CalendarBooking) | null => {
@@ -150,7 +150,7 @@ const cellStyle = (cell: typeof cells.value[0]) => {
     background: (cell.booking && cell.isCurrentMonth) ? BG[cell.booking.status] : undefined,
     border: isOwn
       ? '2px solid rgb(var(--v-theme-primary))'
-      : '1px solid rgba(0,0,0,0.06)',
+      : '1px solid rgba(var(--v-theme-on-surface), 0.06)',
     boxShadow: isOwn ? '0 0 0 1px rgb(var(--v-theme-primary))' : undefined,
   }
 }
@@ -174,7 +174,7 @@ const cellStyle = (cell: typeof cells.value[0]) => {
   min-height: 60px;
   padding: 6px 7px;
   border-radius: 8px;
-  border: 1px solid rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(var(--v-theme-on-surface), 0.06);
   display: flex;
   flex-direction: column;
   gap: 3px;

@@ -18,9 +18,10 @@
       <VChip
         v-for="s in statuses"
         :key="s.value"
-        :color="s.value !== 'all' ? statusColor[s.value] : undefined"
+        :color="filterStatus === s.value && s.value === 'all'
+          ? 'on-surface'
+          : (s.value !== 'all' ? statusColor[s.value] : undefined)"
         :variant="filterStatus === s.value ? 'flat' : (s.value === 'all' ? 'outlined' : 'tonal')"
-        :style="filterStatus === s.value && s.value === 'all' ? { background: '#333', color: '#fff' } : {}"
         class="cursor-pointer"
         @click="filterStatus = s.value"
       >
@@ -154,7 +155,7 @@
             </div>
 
             <!-- Guest selector -->
-            <div v-if="form.status !== 'blocked'" class="mb-4 pa-4 rounded-lg" style="background: rgba(0,0,0,0.04);">
+            <div v-if="form.status !== 'blocked'" class="mb-4 pa-4 rounded-lg" style="background: rgba(var(--v-theme-on-surface), 0.04);">
               <label class="label text-grey-darken-2 mb-3 d-block">{{ $t('bookings.form.guest') }}</label>
               <VSelect
                 v-model="form.guestId"

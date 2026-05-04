@@ -7,5 +7,9 @@
 
 <script setup lang="ts">
 const { init } = useAuth();
-onMounted(init);
+const { init: initTheme } = useThemeMode();
+onMounted(() => {
+  init();
+  initTheme();
+});
 </script>

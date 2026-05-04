@@ -385,5 +385,11 @@
     "notice": "Wir verwenden ausschließlich technisch notwendige Speichertechniken (für Anmeldung und Sprachauswahl). Es findet keine Analyse oder Verfolgung statt.",
     "learnMore": "Mehr erfahren",
     "ack": "OK, verstanden"
+  },
+  "theme": {
+    "toggle": "Erscheinungsbild",
+    "light": "Hell",
+    "dark": "Dunkel",
+    "auto": "Systemvorgabe"
   }
 }

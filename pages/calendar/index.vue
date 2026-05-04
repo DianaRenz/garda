@@ -16,7 +16,7 @@
               background: item.color,
               width: '14px',
               height: '14px',
-              border: item.border ?? '1px solid rgba(0,0,0,0.08)',
+              border: item.border ?? '1px solid rgba(var(--v-theme-on-surface), 0.08)',
               boxSizing: 'border-box',
             }"
           />
@@ -55,7 +55,7 @@ const currentUserId = ref<string | null>(null);
 const showRequestSheet = ref(false);
 
 const legend = [
-  { key: "available", color: "rgba(0,0,0,0.04)" },
+  { key: "available", color: "rgba(var(--v-theme-on-surface), 0.04)" },
   { key: "pending",   color: "rgba(255,193,7,0.45)" },
   { key: "confirmed", color: "rgba(33,150,243,0.35)" },
   { key: "blocked",   color: "rgba(244,67,54,0.35)" },

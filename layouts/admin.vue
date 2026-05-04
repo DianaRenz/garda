@@ -42,7 +42,7 @@
 
       <template #append>
         <VDivider />
-        <div v-if="!rail || mobile" class="d-flex justify-center py-2">
+        <div v-if="!rail || mobile" class="d-flex justify-center align-center ga-1 py-2">
           <VMenu>
             <template #activator="{ props }">
               <VBtn v-bind="props" variant="text" size="small" append-icon="fluent:chevron-down-20-regular">
@@ -61,6 +61,7 @@
               />
             </VList>
           </VMenu>
+          <ThemeMenu />
         </div>
         <VDivider />
         <VList density="compact" nav class="my-2">

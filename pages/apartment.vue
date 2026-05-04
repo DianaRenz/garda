@@ -52,7 +52,7 @@
                   background: item.color,
                   width: '12px',
                   height: '12px',
-                  border: item.border ?? '1px solid rgba(0,0,0,0.1)',
+                  border: item.border ?? '1px solid rgba(var(--v-theme-on-surface), 0.1)',
                   boxSizing: 'border-box',
                 }"
               />
@@ -114,7 +114,7 @@
                   <div
                     v-if="b.status === 'rejected' && b.rejectionNote"
                     class="text-caption text-medium-emphasis mt-2 pa-2 rounded"
-                    style="background: rgba(0,0,0,0.04)"
+                    style="background: rgba(var(--v-theme-on-surface), 0.04)"
                   >
                     {{ $t('account.rejectedNote') }} {{ b.rejectionNote }}
                   </div>
@@ -294,7 +294,7 @@ const ownBookingIds = computed(() =>
 );
 
 const legend = [
-  { key: "available", color: "rgba(0,0,0,0.04)" },
+  { key: "available", color: "rgba(var(--v-theme-on-surface), 0.04)" },
   { key: "pending",   color: "rgba(255,193,7,0.45)" },
   { key: "confirmed", color: "rgba(33,150,243,0.35)" },
   { key: "blocked",   color: "rgba(244,67,54,0.35)" },
