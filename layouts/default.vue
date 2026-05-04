@@ -21,6 +21,9 @@
       </template>
 
       <template #append>
+        <!-- Theme toggle -->
+        <ThemeMenu />
+
         <!-- Language dropdown -->
         <VMenu>
           <template #activator="{ props }">

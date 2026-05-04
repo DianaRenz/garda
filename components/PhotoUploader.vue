@@ -31,7 +31,7 @@
     >
       <div
         class="photo-thumb rounded-lg d-flex align-center justify-center"
-        style="aspect-ratio:1;border:2px dashed rgba(0,0,0,0.15);cursor:pointer"
+        style="aspect-ratio:1;border:2px dashed rgba(var(--v-theme-on-surface), 0.15);cursor:pointer"
         @click="fileInput?.click()"
       >
         <VProgressCircular v-if="uploading" indeterminate size="24" />

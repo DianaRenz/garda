@@ -385,5 +385,11 @@
     "notice": "We only use technically necessary storage (for sign-in and language preference). No analytics or tracking.",
     "learnMore": "Learn more",
     "ack": "OK, got it"
+  },
+  "theme": {
+    "toggle": "Appearance",
+    "light": "Light",
+    "dark": "Dark",
+    "auto": "Match system"
   }
 }

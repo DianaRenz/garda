@@ -117,8 +117,9 @@
         </ul>
         <p class="text-body-2 mb-1"><strong>LocalStorage / IndexedDB:</strong></p>
         <ul class="text-body-2 mb-3 pl-6">
-          <li>Anmelde-Sitzung (Firebase Authentication)</li>
+          <li>Anmelde-Sitzung (Firebase Authentication, Firebase-interne Schlüssel)</li>
           <li>Bestätigung des Cookie-Hinweises (<code>garda.cookieNoticeAcked</code>)</li>
+          <li>Bevorzugtes Erscheinungsbild — hell oder dunkel (<code>garda.theme</code>)</li>
         </ul>
         <p class="text-body-2 mb-3">
           Es werden keine Analyse-, Tracking- oder Marketing-Cookies eingesetzt.

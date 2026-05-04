@@ -16,7 +16,7 @@
             background: item.color,
             width: '14px',
             height: '14px',
-            border: item.border ?? '1px solid rgba(0,0,0,0.08)',
+            border: item.border ?? '1px solid rgba(var(--v-theme-on-surface), 0.08)',
             boxSizing: 'border-box',
           }"
         />
@@ -52,11 +52,11 @@
             {{ selected.guestEmail }}
           </div>
 
-          <div v-if="selected.notes" class="text-body-2 text-medium-emphasis mt-3 pa-3 rounded-lg" style="background: rgba(0,0,0,0.04)">
+          <div v-if="selected.notes" class="text-body-2 text-medium-emphasis mt-3 pa-3 rounded-lg" style="background: rgba(var(--v-theme-on-surface), 0.04)">
             {{ selected.notes }}
           </div>
 
-          <div v-if="selected.rejectionNote" class="text-body-2 text-medium-emphasis mt-3 pa-3 rounded-lg" style="background: rgba(0,0,0,0.04)">
+          <div v-if="selected.rejectionNote" class="text-body-2 text-medium-emphasis mt-3 pa-3 rounded-lg" style="background: rgba(var(--v-theme-on-surface), 0.04)">
             <span class="font-weight-medium">{{ $t('account.rejectedNote') }}</span> {{ selected.rejectionNote }}
           </div>
         </VCardText>
@@ -148,7 +148,7 @@ const { t } = useI18n();
 type LegendItem = { key: string; color: string; border?: string };
 
 const legend: LegendItem[] = [
-  { key: "available", color: "rgba(0,0,0,0.04)" },
+  { key: "available", color: "rgba(var(--v-theme-on-surface), 0.04)" },
   { key: "pending",   color: "rgba(255,193,7,0.45)" },
   { key: "confirmed", color: "rgba(33,150,243,0.35)" },
   { key: "blocked",   color: "rgba(244,67,54,0.35)" },
