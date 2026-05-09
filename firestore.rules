@@ -213,36 +213,43 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    function validInventoryFields() {
+      return hasOnly(request.resource.data, [
+          'name', 'category', 'status', 'note',
+          'createdAt', 'createdBy', 'createdByName',
+          'updatedAt', 'updatedBy', 'updatedByName'
+        ])
+        && request.resource.data.name is string
+        && request.resource.data.name.size() > 0
+        && request.resource.data.name.size() <= 100
+        && request.resource.data.category in ['hygiene', 'food', 'household', 'other']
+        && request.resource.data.status in ['stocked', 'low', 'out']
+        && request.resource.data.note is string
+        && request.resource.data.note.size() <= 200
+        && request.resource.data.updatedBy == request.auth.uid
+        && request.resource.data.updatedByName is string
+        && request.resource.data.updatedByName.size() <= 100
+        && request.resource.data.updatedAt == request.time;
+    }
+
     match /inventory/{itemId} {
       // Any signed-in user (guest or admin) can browse, add, and edit
-      // supply items. Only admins can delete (avoid accidental wipes).
+      // supply items. Admins and the item creator can delete.
       allow read, list: if signedIn();
       allow create: if signedIn()
-        && request.resource.data.name is string
-        && request.resource.data.name.size() > 0
-        && request.resource.data.name.size() <= 100
-        && request.resource.data.category in ['hygiene', 'food', 'household', 'other']
-        && request.resource.data.status in ['stocked', 'low', 'out']
-        && request.resource.data.note is string
-        && request.resource.data.note.size() <= 200
+        && validInventoryFields()
         && request.resource.data.createdBy == request.auth.uid
-        && request.resource.data.updatedBy == request.auth.uid
-        && request.resource.data.createdAt == request.time
-        && request.resource.data.updatedAt == request.time;
+        && request.resource.data.createdByName is string
+        && request.resource.data.createdByName.size() <= 100
+        && request.resource.data.createdAt == request.time;
       allow update: if signedIn()
-        && request.resource.data.name is string
-        && request.resource.data.name.size() > 0
-        && request.resource.data.name.size() <= 100
-        && request.resource.data.category in ['hygiene', 'food', 'household', 'other']
-        && request.resource.data.status in ['stocked', 'low', 'out']
-        && request.resource.data.note is string
-        && request.resource.data.note.size() <= 200
-        && request.resource.data.updatedBy == request.auth.uid
-        && request.resource.data.updatedAt == request.time
-        // createdAt/createdBy must remain immutable
+        && validInventoryFields()
+        // createdAt / createdBy / createdByName must remain immutable
         && request.resource.data.createdAt == resource.data.createdAt
-        && request.resource.data.createdBy == resource.data.createdBy;
-      allow delete: if isAdmin();
+        && request.resource.data.createdBy == resource.data.createdBy
+        && request.resource.data.createdByName == resource.data.createdByName;
+      allow delete: if isAdmin()
+        || (signedIn() && resource.data.createdBy == request.auth.uid);
     }
   }
 }

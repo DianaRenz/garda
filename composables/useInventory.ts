@@ -1,6 +1,6 @@
 import {
   collection, doc,
-  query, orderBy, onSnapshot, serverTimestamp, Timestamp,
+  query, orderBy, limit, onSnapshot, serverTimestamp, Timestamp,
   addDoc, updateDoc, deleteDoc,
 } from "firebase/firestore";
 
@@ -17,9 +17,9 @@ export const SUPPLY_CATEGORIES: SupplyCategory[] = [
 export const SUPPLY_STATUSES: SupplyStatus[] = ["stocked", "low", "out"];
 
 export const CATEGORY_ICONS: Record<SupplyCategory, string> = {
-  hygiene:   "fluent:bottle-tonic-24-regular",
+  hygiene:   "fluent:drop-24-regular",
   food:      "fluent:food-24-regular",
-  household: "fluent:home-24-regular",
+  household: "fluent:broom-24-regular",
   other:     "fluent:box-24-regular",
 };
 
@@ -85,7 +85,7 @@ export const useInventory = () => {
   const { userData } = useUserProfile();
 
   const subscribe = () => {
-    const q = query(collection($db, "inventory"), orderBy("createdAt", "desc"));
+    const q = query(collection($db, "inventory"), orderBy("createdAt", "desc"), limit(200));
     return onSnapshot(
       q,
       (snap) => {

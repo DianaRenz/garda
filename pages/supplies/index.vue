@@ -81,15 +81,20 @@
                     @click="openEdit(item)"
                   >
                     <!-- Status — tap to cycle, stops propagation -->
-                    <VBtn
-                      :icon="statusIcons[item.status]"
-                      :color="statusColors[item.status]"
-                      variant="text"
-                      size="small"
-                      :loading="busyId === item.id"
-                      :aria-label="$t(`supplies.statuses.${item.status}`)"
-                      @click.stop="cycle(item)"
-                    />
+                    <VTooltip :text="'→ ' + $t(`supplies.statuses.${cycleStatus(item.status)}`)" location="top">
+                      <template #activator="{ props: tp }">
+                        <VBtn
+                          v-bind="tp"
+                          :icon="statusIcons[item.status]"
+                          :color="statusColors[item.status]"
+                          variant="text"
+                          density="comfortable"
+                          :loading="busyId === item.id"
+                          :aria-label="$t(`supplies.statuses.${item.status}`)"
+                          @click.stop="cycle(item)"
+                        />
+                      </template>
+                    </VTooltip>
 
                     <div class="flex-grow-1" style="min-width: 0">
                       <div class="text-body-1" style="overflow-wrap: anywhere">{{ item.name }}</div>
@@ -97,8 +102,10 @@
                         {{ item.note }}
                       </div>
                       <div class="text-caption text-medium-emphasis mt-1" style="opacity: 0.7">
-                        {{ $t('supplies.updatedBy', { name: item.updatedByName || '—' }) }}
-                        ·
+                        <template v-if="userRole === 'admin'">
+                          {{ $t('supplies.updatedBy', { name: item.updatedByName || '—' }) }}
+                          ·
+                        </template>
                         {{ formatDate(item.updatedAt) }}
                       </div>
                     </div>
@@ -114,6 +121,16 @@
     </VRow>
 
     <InventoryAddSheet v-model="sheetOpen" :existing-item="editingItem" />
+
+    <VSnackbar
+      :model-value="!!errorMsg"
+      color="error"
+      timeout="4000"
+      location="bottom"
+      @update:model-value="errorMsg = null"
+    >
+      {{ errorMsg }}
+    </VSnackbar>
   </VContainer>
 </template>
 
@@ -124,9 +141,9 @@ import {
   STATUS_COLORS,
   SUPPLY_CATEGORIES,
   sortItems,
+  cycleStatus,
   type SupplyCategory,
   type SupplyItem,
-  type SupplyStatus,
 } from "~/composables/useInventory";
 
 definePageMeta({ layout: "default" });
@@ -136,12 +153,16 @@ useHead({
 });
 
 const { items, subscribe, cycleItemStatus } = useInventory();
+const { fetchProfile } = useUserProfile();
 const { formatDate } = useBookings();
+const { userRole } = useAuth();
+const { t } = useI18n();
 
 const loading = ref(true);
 const sheetOpen = ref(false);
 const editingItem = ref<SupplyItem | null>(null);
 const busyId = ref<string | null>(null);
+const errorMsg = ref<string | null>(null);
 
 type StatusFilter = "all" | "toBuy" | "inStock";
 type CategoryFilter = SupplyCategory | "all";
@@ -201,10 +222,11 @@ const openEdit = (item: SupplyItem) => {
 
 const cycle = async (item: SupplyItem) => {
   busyId.value = item.id;
+  errorMsg.value = null;
   try {
     await cycleItemStatus(item);
   } catch {
-    // Surfaced via the snapshot listener if it propagates; for one-tap we stay quiet.
+    errorMsg.value = t("common.error");
   } finally {
     busyId.value = null;
   }
@@ -213,9 +235,11 @@ const cycle = async (item: SupplyItem) => {
 let unsubscribe: (() => void) | null = null;
 
 onMounted(async () => {
-  if (import.meta.server) return;
   const user = await useAuthGuard();
   if (!user) return;
+  // Pull profile so updatedByName uses the friendly name (guests) instead
+  // of falling back to email when the user adds/updates an item.
+  await fetchProfile(user.uid, user.email).catch(() => {});
   unsubscribe = subscribe();
   loading.value = false;
 });
