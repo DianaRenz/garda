@@ -4,8 +4,8 @@
       <VAppBarTitle>
         <NuxtLink to="/" class="text-decoration-none text-high-emphasis font-weight-bold">Garda</NuxtLink>
       </VAppBarTitle>
-      <!-- Guest nav tabs (also shown to admin so they can preview guest pages) -->
-      <template v-if="user">
+      <!-- Guest nav tabs — desktop only -->
+      <template v-if="user && !mobile">
         <VBtn
           v-for="item in guestNav"
           :key="item.to"
@@ -15,8 +15,8 @@
           :active="route.path === item.to"
           :aria-label="$t(item.label)"
         >
-          <VIcon :icon="item.icon" :start="!mobile" />
-          <span v-if="!mobile">{{ $t(item.label) }}</span>
+          <VIcon :icon="item.icon" start />
+          <span>{{ $t(item.label) }}</span>
         </VBtn>
       </template>
 
@@ -85,6 +85,21 @@
     <VMain>
       <slot />
     </VMain>
+
+    <!-- Mobile bottom navigation -->
+    <VBottomNavigation v-if="user && mobile" grow border="t">
+      <VBtn
+        v-for="item in guestNav"
+        :key="item.to"
+        :to="item.to"
+        :active="route.path === item.to"
+        :aria-label="$t(item.label)"
+      >
+        <VIcon :icon="item.icon" />
+        <span class="text-caption">{{ $t(item.label) }}</span>
+      </VBtn>
+    </VBottomNavigation>
+
     <VFooter app class="d-flex justify-center text-caption py-3" border="t">
       <NuxtLink to="/impressum" class="text-medium-emphasis text-decoration-none mx-2">
         {{ $t('footer.impressum') }}
