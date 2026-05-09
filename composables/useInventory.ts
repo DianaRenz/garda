@@ -19,7 +19,7 @@ export const SUPPLY_STATUSES: SupplyStatus[] = ["stocked", "low", "out"];
 export const CATEGORY_ICONS: Record<SupplyCategory, string> = {
   hygiene:   "fluent:bottle-tonic-24-regular",
   food:      "fluent:food-24-regular",
-  household: "fluent:home-24-regular",
+  household: "fluent:wash-shield-24-regular",
   other:     "fluent:box-24-regular",
 };
 

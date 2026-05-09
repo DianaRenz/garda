@@ -218,6 +218,11 @@ service cloud.firestore {
       // supply items. Only admins can delete (avoid accidental wipes).
       allow read, list: if signedIn();
       allow create: if signedIn()
+        && hasOnly(request.resource.data, [
+          'name', 'category', 'status', 'note',
+          'createdAt', 'createdBy', 'createdByName',
+          'updatedAt', 'updatedBy', 'updatedByName'
+        ])
         && request.resource.data.name is string
         && request.resource.data.name.size() > 0
         && request.resource.data.name.size() <= 100
@@ -227,9 +232,18 @@ service cloud.firestore {
         && request.resource.data.note.size() <= 200
         && request.resource.data.createdBy == request.auth.uid
         && request.resource.data.updatedBy == request.auth.uid
+        && request.resource.data.createdByName is string
+        && request.resource.data.createdByName.size() <= 100
+        && request.resource.data.updatedByName is string
+        && request.resource.data.updatedByName.size() <= 100
         && request.resource.data.createdAt == request.time
         && request.resource.data.updatedAt == request.time;
       allow update: if signedIn()
+        && hasOnly(request.resource.data, [
+          'name', 'category', 'status', 'note',
+          'createdAt', 'createdBy', 'createdByName',
+          'updatedAt', 'updatedBy', 'updatedByName'
+        ])
         && request.resource.data.name is string
         && request.resource.data.name.size() > 0
         && request.resource.data.name.size() <= 100
@@ -238,10 +252,13 @@ service cloud.firestore {
         && request.resource.data.note is string
         && request.resource.data.note.size() <= 200
         && request.resource.data.updatedBy == request.auth.uid
+        && request.resource.data.updatedByName is string
+        && request.resource.data.updatedByName.size() <= 100
         && request.resource.data.updatedAt == request.time
-        // createdAt/createdBy must remain immutable
+        // createdAt / createdBy / createdByName must remain immutable
         && request.resource.data.createdAt == resource.data.createdAt
-        && request.resource.data.createdBy == resource.data.createdBy;
+        && request.resource.data.createdBy == resource.data.createdBy
+        && request.resource.data.createdByName == resource.data.createdByName;
       allow delete: if isAdmin();
     }
   }

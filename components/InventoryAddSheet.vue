@@ -17,6 +17,8 @@
               id="supply-name"
               autocomplete="off"
               autofocus
+              counter="100"
+              maxlength="100"
             />
           </div>
 
