@@ -81,15 +81,20 @@
                     @click="openEdit(item)"
                   >
                     <!-- Status — tap to cycle, stops propagation -->
-                    <VBtn
-                      :icon="statusIcons[item.status]"
-                      :color="statusColors[item.status]"
-                      variant="text"
-                      size="small"
-                      :loading="busyId === item.id"
-                      :aria-label="$t(`supplies.statuses.${item.status}`)"
-                      @click.stop="cycle(item)"
-                    />
+                    <VTooltip :text="'→ ' + $t(`supplies.statuses.${cycleStatus(item.status)}`)" location="top">
+                      <template #activator="{ props: tp }">
+                        <VBtn
+                          v-bind="tp"
+                          :icon="statusIcons[item.status]"
+                          :color="statusColors[item.status]"
+                          variant="text"
+                          density="comfortable"
+                          :loading="busyId === item.id"
+                          :aria-label="$t(`supplies.statuses.${item.status}`)"
+                          @click.stop="cycle(item)"
+                        />
+                      </template>
+                    </VTooltip>
 
                     <div class="flex-grow-1" style="min-width: 0">
                       <div class="text-body-1" style="overflow-wrap: anywhere">{{ item.name }}</div>
@@ -97,8 +102,10 @@
                         {{ item.note }}
                       </div>
                       <div class="text-caption text-medium-emphasis mt-1" style="opacity: 0.7">
-                        {{ $t('supplies.updatedBy', { name: item.updatedByName || '—' }) }}
-                        ·
+                        <template v-if="userRole === 'admin'">
+                          {{ $t('supplies.updatedBy', { name: item.updatedByName || '—' }) }}
+                          ·
+                        </template>
                         {{ formatDate(item.updatedAt) }}
                       </div>
                     </div>
@@ -134,6 +141,7 @@ import {
   STATUS_COLORS,
   SUPPLY_CATEGORIES,
   sortItems,
+  cycleStatus,
   type SupplyCategory,
   type SupplyItem,
 } from "~/composables/useInventory";
@@ -147,6 +155,7 @@ useHead({
 const { items, subscribe, cycleItemStatus } = useInventory();
 const { fetchProfile } = useUserProfile();
 const { formatDate } = useBookings();
+const { userRole } = useAuth();
 const { t } = useI18n();
 
 const loading = ref(true);
@@ -226,7 +235,6 @@ const cycle = async (item: SupplyItem) => {
 let unsubscribe: (() => void) | null = null;
 
 onMounted(async () => {
-  if (import.meta.server) return;
   const user = await useAuthGuard();
   if (!user) return;
   // Pull profile so updatedByName uses the friendly name (guests) instead

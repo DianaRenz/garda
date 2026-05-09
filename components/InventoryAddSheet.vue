@@ -74,7 +74,7 @@
 
           <div class="d-flex ga-2 mt-6 flex-wrap">
             <VBtn
-              v-if="existingItem && userRole === 'admin'"
+              v-if="canDelete"
               color="error"
               variant="text"
               prepend-icon="fluent:delete-24-regular"
@@ -98,21 +98,22 @@
       </VCardText>
     </VCard>
 
-    <VDialog v-model="confirmDelete" max-width="360">
-      <VCard rounded="lg">
-        <VCardText class="pa-5">
-          <p class="text-body-1">{{ $t('supplies.form.deleteConfirm') }}</p>
-        </VCardText>
-        <VCardActions class="px-5 pb-5 pt-0">
-          <VBtn variant="text" @click="confirmDelete = false">{{ $t('supplies.form.cancel') }}</VBtn>
-          <VSpacer />
-          <VBtn color="error" variant="tonal" :loading="deleting" @click="doDelete">
-            {{ $t('supplies.form.delete') }}
-          </VBtn>
-        </VCardActions>
-      </VCard>
-    </VDialog>
   </VBottomSheet>
+
+  <VDialog v-model="confirmDelete" max-width="360">
+    <VCard rounded="lg">
+      <VCardText class="pa-5">
+        <p class="text-body-1">{{ $t('supplies.form.deleteConfirm') }}</p>
+      </VCardText>
+      <VCardActions class="px-5 pb-5 pt-0">
+        <VBtn variant="text" @click="confirmDelete = false">{{ $t('supplies.form.cancel') }}</VBtn>
+        <VSpacer />
+        <VBtn color="error" variant="tonal" :loading="deleting" @click="doDelete">
+          {{ $t('supplies.form.delete') }}
+        </VBtn>
+      </VCardActions>
+    </VCard>
+  </VDialog>
 </template>
 
 <script setup lang="ts">
@@ -143,7 +144,13 @@ const model = computed({
 
 const { addItem, updateItem, deleteItem } = useInventory();
 const { ruleRequired } = useFormRules();
-const { userRole } = useAuth();
+const { user, userRole } = useAuth();
+
+const canDelete = computed(() => {
+  if (!props.existingItem) return false;
+  if (userRole.value === "admin") return true;
+  return props.existingItem.createdBy === user.value?.uid;
+});
 
 const categories = SUPPLY_CATEGORIES;
 const statuses = SUPPLY_STATUSES;
