@@ -380,6 +380,29 @@ Firestore модель обновлена: `sections.{key}.text` = `{ ru, en, de
 
 ---
 
+### Фаза 13 — Запасы / supplies (завершено)
+Совместный список бытовых вещей в квартире (туалетная бумага, кофе, чистящее…) — кто что использовал, что заканчивается, что нужно купить. Любой залогиненный (гость/админ) может добавить и обновить, удалять может только админ.
+
+- [x] `composables/useInventory.ts` — модель `SupplyItem` (name/category/status/note + audit fields), статусы `stocked/low/out`, категории `hygiene/food/household/other`. Чистые helpers `cycleStatus` (тап-цикл stocked → low → out → stocked) и `sortItems` (out → low → stocked, ties по имени) — экспортированы для тестов. CRUD: `subscribe`, `addItem`, `updateItem`, `updateStatus`, `cycleItemStatus`, `deleteItem`. Имя автора подтягивается из `useUserProfile`.
+- [x] `firestore.rules` — `/inventory/{id}`: read/list/create/update любому signedIn, delete только admin. Полная валидация полей при create и update; `createdAt/createdBy` immutable после создания.
+- [x] `pages/supplies/index.vue` — header + add-button + два ряда фильтров (статус: all/toBuy/inStock; категория: all + 4 категории), список сгруппирован по категории, тап на статус-иконку циклит, тап на строку открывает редактирование. `noindex,nofollow`.
+- [x] `components/InventoryAddSheet.vue` — bottom sheet для add/edit, выбор категории и статуса как чипы, заметка с counter 200, для админа — кнопка delete с confirm-диалогом.
+- [x] `layouts/default.vue` — `/supplies` в `guestNav`.
+- [x] `layouts/admin.vue` — `/supplies` в `guestViewItems` (раздел «Просмотр как гость»).
+- [x] `pages/apartment.vue` — кнопка-линк рядом с кнопкой гида.
+- [x] i18n — `supplies.{title,subtitle,addBtn,empty,emptyFiltered,form,filters,categories,statuses,updatedBy,createdBy}` во всех трёх локалях.
+- [x] Тесты — `tests/inventory.test.ts` (9 тестов): cycleStatus покрытие всех статусов и цикл, sortItems по статусу и имени, immutability, пустой ввод, проверка констант.
+
+**Свой текст на любом языке.** Имена items пишут пользователи руками — не переводятся. Категории и UI — локализованы.
+
+**Не сделано (potential follow-ups):**
+- Фото предметов
+- Pre-trip нотификации «нужно купить перед приездом»
+- Repeat-purchase patterns / автоподсказки
+- Связка с cost-sharing (PayPal): «купил X, прошу возместить»
+
+---
+
 ## ToDo
 
 ### Фаза 12 — Корректная email-верификация (откладывается)

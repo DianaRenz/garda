@@ -391,5 +391,45 @@
     "light": "Hell",
     "dark": "Dunkel",
     "auto": "Systemvorgabe"
+  },
+  "supplies": {
+    "title": "Vorräte",
+    "subtitle": "Was in der Wohnung ist und was nachgekauft werden muss. Jeder kann etwas eintragen oder aktualisieren.",
+    "addBtn": "Hinzufügen",
+    "empty": "Noch nichts hier. Trag das erste ein.",
+    "emptyFiltered": "Keine Einträge zu den gewählten Filtern.",
+    "form": {
+      "title": "Neuer Eintrag",
+      "editTitle": "Bearbeiten",
+      "name": "Bezeichnung",
+      "namePlaceholder": "z.B. Toilettenpapier",
+      "category": "Kategorie",
+      "status": "Status",
+      "note": "Notiz (optional)",
+      "notePlaceholder": "z.B. noch 2 Rollen",
+      "save": "Speichern",
+      "cancel": "Abbrechen",
+      "delete": "Löschen",
+      "deleteConfirm": "Diesen Eintrag löschen? Das kann nicht rückgängig gemacht werden.",
+      "saveError": "Konnte nicht gespeichert werden. Bitte erneut versuchen."
+    },
+    "filters": {
+      "all": "Alle",
+      "toBuy": "Einzukaufen",
+      "inStock": "Vorhanden"
+    },
+    "categories": {
+      "hygiene": "Hygiene",
+      "food": "Lebensmittel",
+      "household": "Haushalt",
+      "other": "Sonstiges"
+    },
+    "statuses": {
+      "stocked": "Vorhanden",
+      "low": "Wird knapp",
+      "out": "Leer"
+    },
+    "updatedBy": "aktualisiert von {name}",
+    "createdBy": "eingetragen von {name}"
   }
 }

@@ -391,5 +391,45 @@
     "light": "Light",
     "dark": "Dark",
     "auto": "Match system"
+  },
+  "supplies": {
+    "title": "Supplies",
+    "subtitle": "What's in the apartment, what needs buying. Anyone can add or update.",
+    "addBtn": "Add",
+    "empty": "Nothing yet. Add the first item.",
+    "emptyFiltered": "Nothing matches the current filters.",
+    "form": {
+      "title": "New item",
+      "editTitle": "Edit",
+      "name": "Name",
+      "namePlaceholder": "e.g. toilet paper",
+      "category": "Category",
+      "status": "Status",
+      "note": "Note (optional)",
+      "notePlaceholder": "e.g. 2 rolls left",
+      "save": "Save",
+      "cancel": "Cancel",
+      "delete": "Delete",
+      "deleteConfirm": "Delete this item? This cannot be undone.",
+      "saveError": "Could not save. Please try again."
+    },
+    "filters": {
+      "all": "All",
+      "toBuy": "To buy",
+      "inStock": "In stock"
+    },
+    "categories": {
+      "hygiene": "Hygiene",
+      "food": "Food",
+      "household": "Household",
+      "other": "Other"
+    },
+    "statuses": {
+      "stocked": "Stocked",
+      "low": "Running low",
+      "out": "Out"
+    },
+    "updatedBy": "updated by {name}",
+    "createdBy": "added by {name}"
   }
 }
