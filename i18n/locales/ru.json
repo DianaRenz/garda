@@ -12,7 +12,8 @@
     "menu": "Меню",
     "expandMenu": "Развернуть меню",
     "collapseMenu": "Свернуть меню",
-    "guestView": "Просмотр как гость"
+    "guestView": "Просмотр как гость",
+    "language": "Язык"
   },
   "home": {
     "hero": {

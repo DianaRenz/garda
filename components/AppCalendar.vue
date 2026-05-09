@@ -26,7 +26,10 @@
           'cal-cell--clickable': (showNames && !!cell.booking) || (clickable && cell.isCurrentMonth),
         }"
         :style="cellStyle(cell)"
+        :role="((showNames && !!cell.booking) || (clickable && cell.isCurrentMonth)) ? 'button' : undefined"
+        :tabindex="((showNames && !!cell.booking) || (clickable && cell.isCurrentMonth)) ? 0 : undefined"
         @click="handleCellClick(cell)"
+        @keydown.enter="handleCellClick(cell)"
       >
         <span
           class="text-caption"
@@ -184,8 +187,13 @@ const cellStyle = (cell: typeof cells.value[0]) => {
 .cal-cell--clickable {
   cursor: pointer;
 }
-.cal-cell--clickable:hover {
+.cal-cell--clickable:hover,
+.cal-cell--clickable:focus-visible {
   filter: brightness(0.93);
+}
+.cal-cell--clickable:focus-visible {
+  outline: 2px solid rgb(var(--v-theme-primary));
+  outline-offset: -2px;
 }
 .cal-name {
   font-size: 11px;

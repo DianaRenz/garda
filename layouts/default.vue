@@ -27,7 +27,7 @@
         <!-- Language dropdown -->
         <VMenu>
           <template #activator="{ props }">
-            <VBtn v-bind="props" variant="text" size="small" append-icon="fluent:chevron-down-20-regular">
+            <VBtn v-bind="props" variant="text" size="small" append-icon="fluent:chevron-down-20-regular" :aria-label="$t('nav.language')">
               {{ locale.toUpperCase() }}
             </VBtn>
           </template>
@@ -82,8 +82,21 @@
         </VBtn>
       </template>
     </VAppBar>
-    <VMain>
-      <slot />
+    <VMain :style="user && mobile ? 'padding-bottom: 56px' : undefined">
+      <div class="d-flex flex-column" style="min-height: 100%">
+        <div class="flex-grow-1">
+          <slot />
+        </div>
+        <footer class="d-flex justify-center text-caption py-3" style="border-top: thin solid rgba(var(--v-border-color), var(--v-border-opacity))">
+          <NuxtLink to="/impressum" class="text-medium-emphasis text-decoration-none mx-2">
+            {{ $t('footer.impressum') }}
+          </NuxtLink>
+          <span class="text-medium-emphasis" aria-hidden="true">·</span>
+          <NuxtLink to="/datenschutz" class="text-medium-emphasis text-decoration-none mx-2">
+            {{ $t('footer.datenschutz') }}
+          </NuxtLink>
+        </footer>
+      </div>
     </VMain>
 
     <!-- Mobile bottom navigation -->
@@ -94,21 +107,12 @@
         :to="item.to"
         :active="route.path === item.to"
         :aria-label="$t(item.label)"
+        stacked
       >
         <VIcon :icon="item.icon" />
-        <span class="text-caption">{{ $t(item.label) }}</span>
+        <span class="text-caption text-truncate" style="max-width: 100%; line-height: 1.2">{{ $t(item.label) }}</span>
       </VBtn>
     </VBottomNavigation>
-
-    <VFooter app class="d-flex justify-center text-caption py-3" border="t">
-      <NuxtLink to="/impressum" class="text-medium-emphasis text-decoration-none mx-2">
-        {{ $t('footer.impressum') }}
-      </NuxtLink>
-      <span class="text-medium-emphasis" aria-hidden="true">·</span>
-      <NuxtLink to="/datenschutz" class="text-medium-emphasis text-decoration-none mx-2">
-        {{ $t('footer.datenschutz') }}
-      </NuxtLink>
-    </VFooter>
   </VApp>
 </template>
 

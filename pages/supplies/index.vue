@@ -78,7 +78,10 @@
                   <VDivider v-if="i > 0" />
                   <div
                     class="d-flex align-center ga-3 px-3 py-3 supplies-row"
+                    role="button"
+                    tabindex="0"
                     @click="openEdit(item)"
+                    @keydown.enter="openEdit(item)"
                   >
                     <!-- Status — tap to cycle, stops propagation -->
                     <VTooltip :text="'→ ' + $t(`supplies.statuses.${cycleStatus(item.status)}`)" location="top">
@@ -254,7 +257,12 @@ onUnmounted(() => {
   cursor: pointer;
   transition: background-color 0.12s;
 }
-.supplies-row:hover {
+.supplies-row:hover,
+.supplies-row:focus-visible {
   background-color: rgba(var(--v-theme-on-surface), 0.04);
+}
+.supplies-row:focus-visible {
+  outline: 2px solid rgb(var(--v-theme-primary));
+  outline-offset: -2px;
 }
 </style>
