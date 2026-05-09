@@ -212,5 +212,37 @@ service cloud.firestore {
       allow read: if true;
       allow write: if isAdmin();
     }
+
+    match /inventory/{itemId} {
+      // Any signed-in user (guest or admin) can browse, add, and edit
+      // supply items. Only admins can delete (avoid accidental wipes).
+      allow read, list: if signedIn();
+      allow create: if signedIn()
+        && request.resource.data.name is string
+        && request.resource.data.name.size() > 0
+        && request.resource.data.name.size() <= 100
+        && request.resource.data.category in ['hygiene', 'food', 'household', 'other']
+        && request.resource.data.status in ['stocked', 'low', 'out']
+        && request.resource.data.note is string
+        && request.resource.data.note.size() <= 200
+        && request.resource.data.createdBy == request.auth.uid
+        && request.resource.data.updatedBy == request.auth.uid
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.updatedAt == request.time;
+      allow update: if signedIn()
+        && request.resource.data.name is string
+        && request.resource.data.name.size() > 0
+        && request.resource.data.name.size() <= 100
+        && request.resource.data.category in ['hygiene', 'food', 'household', 'other']
+        && request.resource.data.status in ['stocked', 'low', 'out']
+        && request.resource.data.note is string
+        && request.resource.data.note.size() <= 200
+        && request.resource.data.updatedBy == request.auth.uid
+        && request.resource.data.updatedAt == request.time
+        // createdAt/createdBy must remain immutable
+        && request.resource.data.createdAt == resource.data.createdAt
+        && request.resource.data.createdBy == resource.data.createdBy;
+      allow delete: if isAdmin();
+    }
   }
 }

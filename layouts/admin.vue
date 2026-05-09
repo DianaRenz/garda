@@ -120,6 +120,7 @@ const guestViewItems = [
   { to: "/apartment", icon: "fluent:home-24-regular",            titleKey: "apartment.title" },
   { to: "/calendar",  icon: "fluent:calendar-24-regular",        titleKey: "nav.calendar" },
   { to: "/guide",     icon: "fluent:book-24-regular",            titleKey: "nav.guide" },
+  { to: "/supplies",  icon: "fluent:box-checkmark-24-regular",   titleKey: "supplies.title" },
   { to: "/photos",    icon: "fluent:image-multiple-24-regular",  titleKey: "photos.title" },
 ]
 </script>

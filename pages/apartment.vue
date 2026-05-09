@@ -166,9 +166,20 @@
             min-height="44"
             prepend-icon="fluent:book-24-regular"
             to="/guide"
-            class="mb-8"
+            class="mb-3"
           >
             {{ $t('apartment.guideBtn') }}
+          </VBtn>
+
+          <VBtn
+            variant="outlined"
+            block
+            min-height="44"
+            prepend-icon="fluent:box-checkmark-24-regular"
+            to="/supplies"
+            class="mb-8"
+          >
+            {{ $t('supplies.title') }}
           </VBtn>
 
           <!-- Apartment info -->
