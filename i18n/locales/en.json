@@ -328,7 +328,13 @@
     },
     "checkout": {
       "title": "Checkout checklist",
-      "description": "Please make sure everything on the list is done before you leave."
+      "description": "Please make sure everything on the list is done before you leave.",
+      "baseItems": [
+        "Switch off the fridge, defrost it, and leave the door open — otherwise mould grows from the leftover humidity",
+        "Close all windows and balcony doors",
+        "Take out the trash",
+        "Check you haven't forgotten anything (chargers, documents, food in the fridge)"
+      ]
     },
     "hikes": {
       "title": "Hiking nearby",
@@ -359,6 +365,8 @@
     "sections": "Guide sections",
     "sectionText": "Text",
     "sectionPhotos": "Photos",
+    "checkoutExtrasTitle": "Additional checkout items",
+    "checkoutExtrasHint": "Universal items (defrost the fridge, close the windows, take out the trash, don't forget your stuff) are built in. Add any apartment-specific reminders here.",
     "checkoutPlaceholder": "New checklist item",
     "language": "Content language"
   },

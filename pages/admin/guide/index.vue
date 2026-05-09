@@ -68,8 +68,11 @@
 
       <VDivider class="my-8" />
 
-      <!-- Checkout checklist -->
-      <h2 class="text-h6 font-weight-bold mb-4">{{ $t('guide.checkout.title') }}</h2>
+      <!-- Checkout checklist (admin extras only — base items are hardcoded in i18n) -->
+      <h2 class="text-h6 font-weight-bold mb-1">{{ $t('adminGuide.checkoutExtrasTitle') }}</h2>
+      <p class="text-body-2 text-medium-emphasis mb-4">
+        {{ $t('adminGuide.checkoutExtrasHint') }}
+      </p>
 
       <VList density="compact">
         <VListItem

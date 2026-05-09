@@ -229,7 +229,7 @@ import { GUIDE_SECTION_KEYS, GUIDE_SECTION_ICONS } from '~/composables/useGuide'
 definePageMeta({ layout: "default" });
 const { guide, fetchGuide, getSectionText, getCheckoutItems } = useGuide();
 const { apartment, fetchApartment } = useApartment();
-const { t, locale } = useI18n();
+const { t, tm, locale } = useI18n();
 
 const loading = ref(true);
 const checked = ref<boolean[]>([]);
@@ -244,7 +244,13 @@ const copyAddress = async () => {
   setTimeout(() => { addressCopied.value = false; }, 2000);
 };
 
-const currentCheckoutItems = computed(() => getCheckoutItems(locale.value));
+// Hardcoded universal items (i18n) + apartment-specific extras (admin-edited via /admin/guide).
+// Base items are facts true for any apartment (defrost fridge, close windows, take out
+// trash, don't forget your stuff); extras are apartment-specific additions on top.
+const currentCheckoutItems = computed<string[]>(() => [
+  ...((tm('guide.checkout.baseItems') as unknown as string[]) ?? []),
+  ...getCheckoutItems(locale.value),
+]);
 
 watch(currentCheckoutItems, (items) => {
   checked.value = items.map(() => false);

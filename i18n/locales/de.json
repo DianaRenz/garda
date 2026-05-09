@@ -328,7 +328,13 @@
     },
     "checkout": {
       "title": "Abreise-Checkliste",
-      "description": "Bitte stellen Sie vor der Abreise sicher, dass alles auf der Liste erledigt ist."
+      "description": "Bitte stellen Sie vor der Abreise sicher, dass alles auf der Liste erledigt ist.",
+      "baseItems": [
+        "Kühlschrank ausschalten, abtauen und Tür offen lassen — sonst bildet sich Schimmel durch die Restfeuchte",
+        "Alle Fenster und Balkontüren schließen",
+        "Müll rausbringen",
+        "Schauen, dass nichts vergessen wurde (Ladekabel, Dokumente, Lebensmittel im Kühlschrank)"
+      ]
     },
     "hikes": {
       "title": "Wandern in der Nähe",
@@ -359,6 +365,8 @@
     "sections": "Guide-Abschnitte",
     "sectionText": "Text",
     "sectionPhotos": "Fotos",
+    "checkoutExtrasTitle": "Zusätzliche Punkte zur Abreise-Checkliste",
+    "checkoutExtrasHint": "Universelle Punkte (Kühlschrank abtauen, Fenster schließen, Müll rausbringen, nichts vergessen) sind bereits eingebaut. Hier können Sie wohnungsspezifische Erinnerungen ergänzen.",
     "checkoutPlaceholder": "Neuer Checklisten-Punkt",
     "language": "Inhaltssprache"
   },
