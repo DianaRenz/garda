@@ -18,6 +18,28 @@ import { resolveTheme, __resetForTests } from "~/composables/useThemeMode";
 
 const STORAGE_KEY = "garda.theme";
 
+const store = new Map<string, string>();
+const storageMock = {
+  getItem: (key: string) => store.get(key) ?? null,
+  setItem: (key: string, value: string) => {
+    store.set(key, value);
+  },
+  removeItem: (key: string) => {
+    store.delete(key);
+  },
+  clear: () => store.clear(),
+  get length() {
+    return store.size;
+  },
+  key: (index: number) => [...store.keys()][index] ?? null,
+};
+
+const resetBrowserGlobals = () => {
+  vi.unstubAllGlobals();
+  store.clear();
+  vi.stubGlobal("localStorage", storageMock);
+};
+
 type MqListener = (e: { matches: boolean }) => void;
 
 const mockMatchMedia = (initialDark: boolean) => {
@@ -48,8 +70,7 @@ const mockMatchMedia = (initialDark: boolean) => {
 
 describe("resolveTheme", () => {
   beforeEach(() => {
-    vi.unstubAllGlobals();
-    localStorage.clear();
+    resetBrowserGlobals();
   });
 
   it("returns the literal mode for explicit choices", () => {
@@ -71,8 +92,7 @@ describe("resolveTheme", () => {
 
 describe("useThemeMode", () => {
   beforeEach(async () => {
-    vi.unstubAllGlobals();
-    localStorage.clear();
+    resetBrowserGlobals();
     __resetForTests();
     themeName.value = "light";
     // useState('theme-mode') is shared across tests in the Nuxt test runtime,
@@ -129,7 +149,7 @@ describe("useThemeMode", () => {
   it("does not crash if localStorage throws on setItem", async () => {
     mockMatchMedia(false);
     const setItem = vi
-      .spyOn(Storage.prototype, "setItem")
+      .spyOn(storageMock, "setItem")
       .mockImplementation(() => {
         throw new Error("quota exceeded");
       });
