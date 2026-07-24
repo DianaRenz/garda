@@ -8,27 +8,28 @@
     "deploy": "nuxt generate && firebase deploy --only hosting",
     "reset": "rm -rf .nuxt node_modules .output package-lock.json && npm install",
     "preview": "nuxt preview",
+    "update-deps": "npx npm-check-updates -u",
     "postinstall": "nuxt prepare",
     "test": "vitest run",
     "test:watch": "vitest",
     "typecheck": "nuxt typecheck"
   },
   "devDependencies": {
-    "@iconify/vue": "^5.0.0",
+    "@iconify/vue": "^5.0.1",
     "@nuxt/test-utils": "^4.0.3",
-    "@vite-pwa/nuxt": "^0.10.6",
-    "@vue/test-utils": "^2.4.9",
-    "happy-dom": "^20.9.0",
-    "nuxt": "4.4.2",
-    "sass": "^1.99.0",
-    "vitest": "^4.1.5",
-    "vue-tsc": "^3.2.7",
-    "vuetify": "^4.0.5"
+    "@vite-pwa/nuxt": "^1.1.1",
+    "@vue/test-utils": "^2.4.11",
+    "happy-dom": "^20.11.1",
+    "nuxt": "4.5.0",
+    "sass": "^1.101.7",
+    "vitest": "^4.1.10",
+    "vue-tsc": "^3.3.8",
+    "vuetify": "^4.1.6"
   },
   "dependencies": {
     "@emailjs/browser": "^4.4.1",
-    "@nuxtjs/i18n": "^10.2.4",
-    "firebase": "^12.12.1",
+    "@nuxtjs/i18n": "^10.5.0",
+    "firebase": "^12.16.0",
     "vite-plugin-vuetify": "^2.1.3"
   }
 }
