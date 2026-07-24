@@ -74,6 +74,24 @@
         {{ $t('adminGuide.checkoutExtrasHint') }}
       </p>
 
+      <!-- Read-only preview of hardcoded base items so admin sees what's already
+           covered before adding extras (avoids accidental duplicates). -->
+      <h3 class="text-subtitle-2 text-medium-emphasis mb-2">
+        {{ $t('adminGuide.checkoutBuiltInTitle') }}
+      </h3>
+      <VList density="compact" class="mb-4 rounded-lg" style="background: rgba(var(--v-theme-on-surface), 0.04)">
+        <VListItem v-for="(item, i) in baseCheckoutItems" :key="`base-${i}`">
+          <template #prepend>
+            <VIcon icon="fluent:lock-closed-16-regular" size="14" class="mr-2" style="opacity: 0.5" />
+          </template>
+          <VListItemTitle class="text-body-2 text-medium-emphasis">{{ item }}</VListItemTitle>
+        </VListItem>
+      </VList>
+
+      <h3 class="text-subtitle-2 text-medium-emphasis mb-2">
+        {{ $t('adminGuide.checkoutEditableTitle') }}
+      </h3>
+
       <VList density="compact">
         <VListItem
           v-for="(item, i) in checkoutItems[editLocale]"
@@ -148,6 +166,7 @@ const {
 
 const { GUIDE_SECTION_KEYS, GUIDE_SECTION_ICONS, GUIDE_LOCALES } = await import('~/composables/useGuide');
 const { t } = useI18n();
+const baseCheckoutItems = useCheckoutBaseItems();
 
 const loading = ref(true);
 const editLocale = ref<GuideLocale>('ru');

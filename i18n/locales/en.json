@@ -333,7 +333,7 @@
         "Switch off the fridge, defrost it, and leave the door open — otherwise mould grows from the leftover humidity",
         "Close all windows and balcony doors",
         "Take out the trash",
-        "Check you haven't forgotten anything (chargers, documents, food in the fridge)"
+        "Don't forget your things — chargers, documents, food from the fridge"
       ]
     },
     "hikes": {
@@ -366,7 +366,9 @@
     "sectionText": "Text",
     "sectionPhotos": "Photos",
     "checkoutExtrasTitle": "Additional checkout items",
-    "checkoutExtrasHint": "Universal items (defrost the fridge, close the windows, take out the trash, don't forget your stuff) are built in. Add any apartment-specific reminders here.",
+    "checkoutExtrasHint": "Universal items are built into the app. Add only apartment-specific reminders here.",
+    "checkoutBuiltInTitle": "Built-in (cannot be edited)",
+    "checkoutEditableTitle": "Apartment-specific (you can edit)",
     "checkoutPlaceholder": "New checklist item",
     "language": "Content language"
   },

@@ -333,7 +333,7 @@
         "Kühlschrank ausschalten, abtauen und Tür offen lassen — sonst bildet sich Schimmel durch die Restfeuchte",
         "Alle Fenster und Balkontüren schließen",
         "Müll rausbringen",
-        "Schauen, dass nichts vergessen wurde (Ladekabel, Dokumente, Lebensmittel im Kühlschrank)"
+        "Persönliche Sachen prüfen — Ladekabel, Dokumente, Lebensmittel aus dem Kühlschrank nicht vergessen"
       ]
     },
     "hikes": {
@@ -366,7 +366,9 @@
     "sectionText": "Text",
     "sectionPhotos": "Fotos",
     "checkoutExtrasTitle": "Zusätzliche Punkte zur Abreise-Checkliste",
-    "checkoutExtrasHint": "Universelle Punkte (Kühlschrank abtauen, Fenster schließen, Müll rausbringen, nichts vergessen) sind bereits eingebaut. Hier können Sie wohnungsspezifische Erinnerungen ergänzen.",
+    "checkoutExtrasHint": "Universelle Punkte sind bereits in der App eingebaut. Hier nur wohnungsspezifische Erinnerungen ergänzen.",
+    "checkoutBuiltInTitle": "Eingebaut (nicht editierbar)",
+    "checkoutEditableTitle": "Wohnungsspezifisch (editierbar)",
     "checkoutPlaceholder": "Neuer Checklisten-Punkt",
     "language": "Inhaltssprache"
   },

@@ -224,12 +224,13 @@
 </template>
 
 <script setup lang="ts">
-import { GUIDE_SECTION_KEYS, GUIDE_SECTION_ICONS } from '~/composables/useGuide';
+import { GUIDE_SECTION_KEYS, GUIDE_SECTION_ICONS, mergeCheckoutItems } from '~/composables/useGuide';
 
 definePageMeta({ layout: "default" });
 const { guide, fetchGuide, getSectionText, getCheckoutItems } = useGuide();
 const { apartment, fetchApartment } = useApartment();
-const { t, tm, locale } = useI18n();
+const { t, locale } = useI18n();
+const baseCheckoutItems = useCheckoutBaseItems();
 
 const loading = ref(true);
 const checked = ref<boolean[]>([]);
@@ -247,14 +248,27 @@ const copyAddress = async () => {
 // Hardcoded universal items (i18n) + apartment-specific extras (admin-edited via /admin/guide).
 // Base items are facts true for any apartment (defrost fridge, close windows, take out
 // trash, don't forget your stuff); extras are apartment-specific additions on top.
-const currentCheckoutItems = computed<string[]>(() => [
-  ...((tm('guide.checkout.baseItems') as unknown as string[]) ?? []),
-  ...getCheckoutItems(locale.value),
-]);
+const currentCheckoutItems = computed<string[]>(() =>
+  mergeCheckoutItems(baseCheckoutItems.value, getCheckoutItems(locale.value))
+);
 
-watch(currentCheckoutItems, (items) => {
-  checked.value = items.map(() => false);
-});
+// Resync `checked` only when the list LENGTH changes (admin added or removed an
+// item). Pure locale switches don't change length, so guests keep their progress
+// when toggling RU/EN/DE mid-session.
+watch(
+  () => currentCheckoutItems.value.length,
+  (newLen) => {
+    if (newLen > checked.value.length) {
+      checked.value = [
+        ...checked.value,
+        ...Array(newLen - checked.value.length).fill(false),
+      ];
+    } else if (newLen < checked.value.length) {
+      checked.value = checked.value.slice(0, newLen);
+    }
+  },
+  { immediate: true }
+);
 
 const galleryCategoryLabels = computed(() => ({
   apartment: t('guide.gallery.apartment'),

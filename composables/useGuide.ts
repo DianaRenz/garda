@@ -2,6 +2,7 @@ import { doc, getDoc, setDoc, updateDoc, serverTimestamp } from "firebase/firest
 import type { Timestamp } from "firebase/firestore";
 import { ref as storageRef, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
 import { arrayUnion, arrayRemove } from "firebase/firestore";
+import type { ComputedRef } from "vue";
 
 export const GUIDE_LOCALES = ["ru", "en", "de"] as const;
 export type GuideLocale = (typeof GUIDE_LOCALES)[number];
@@ -227,4 +228,32 @@ export const useGuide = () => {
     addSectionPhoto,
     removeSectionPhoto,
   };
+};
+
+/**
+ * Pure helper — merges hardcoded base items (always first, in code order)
+ * with apartment-specific extras (admin-edited, in admin-defined order).
+ * Order matters: the fridge / mould warning lives in base[0], so it
+ * always renders at the top of the checklist.
+ */
+export const mergeCheckoutItems = (base: string[], extras: string[]): string[] =>
+  [...base, ...extras];
+
+/**
+ * Reactive accessor for the hardcoded base checkout list (i18n).
+ * Returns a typed string[] with runtime defensive filtering — guards
+ * against malformed messages (e.g. accidental object/array nesting).
+ * Re-evaluates on locale change.
+ */
+export const useCheckoutBaseItems = (): ComputedRef<string[]> => {
+  const { tm } = useI18n();
+  return computed(() => {
+    // tm() return type is a deep i18n MessageType — cast through unknown,
+    // then runtime-validate the shape so a malformed message can't crash UI.
+    const raw = tm("guide.checkout.baseItems") as unknown;
+    if (!Array.isArray(raw)) return [];
+    return (raw as unknown[]).filter(
+      (x): x is string => typeof x === "string" && x.length > 0
+    );
+  });
 };
