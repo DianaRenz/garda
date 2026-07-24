@@ -3,6 +3,38 @@
     <h1 class="text-h5 font-weight-bold mb-6">{{ $t('settings.title') }}</h1>
     <VAlert v-if="error" type="error" variant="tonal" closable class="mb-4" @click:close="error = ''">{{ error }}</VAlert>
 
+    <!-- Apartment info -->
+    <h2 class="text-h6 font-weight-bold mb-4">{{ $t('settings.title') }}</h2>
+    <div class="mt-1">
+      <label class="label text-grey-darken-2">{{ $t('settings.description') }}</label>
+      <VTextarea v-model="apartmentForm.description" rows="3" auto-grow />
+    </div>
+    <div class="mt-1">
+      <label class="label text-grey-darken-2">{{ $t('settings.address') }}</label>
+      <VTextField v-model="apartmentForm.address" prepend-inner-icon="fluent:location-24-regular" />
+    </div>
+    <div class="mt-1">
+      <label class="label text-grey-darken-2">{{ $t('settings.directions') }}</label>
+      <VTextarea v-model="apartmentForm.directions" rows="3" auto-grow />
+    </div>
+    <div class="mt-1">
+      <label class="label text-grey-darken-2">{{ $t('settings.rules') }}</label>
+      <VTextarea v-model="apartmentForm.rules" rows="4" auto-grow />
+    </div>
+    <div class="mt-4 mb-8">
+      <VBtn
+        class="gradient primary"
+        :loading="apartmentSaving"
+        :disabled="!apartmentDirty"
+        prepend-icon="fluent:save-24-regular"
+        @click="saveApartmentInfo"
+      >
+        {{ apartmentSaved ? $t('settings.saved') : $t('settings.save') }}
+      </VBtn>
+    </div>
+
+    <VDivider class="my-8" />
+
     <h2 class="text-h6 font-weight-bold mb-4">{{ $t('invite.title') }}</h2>
     <p class="text-body-2 text-medium-emphasis mb-4">{{ $t('invite.expires') }}</p>
 
@@ -146,11 +178,27 @@ const paypalSaved = ref(false);
 
 const paypalDirty = computed(() => paypalLink.value !== initialPaypalLink.value);
 
+// Apartment info (description/address/directions/rules)
+const apartmentForm = reactive({ description: "", address: "", directions: "", rules: "" });
+const initialApartmentForm = ref({ ...apartmentForm });
+const apartmentSaving = ref(false);
+const apartmentSaved = ref(false);
+
+const apartmentDirty = computed(
+  () => JSON.stringify(apartmentForm) !== JSON.stringify(initialApartmentForm.value)
+);
+
 onMounted(async () => {
   await fetchApartment().catch(() => {});
   const current = apartment.value?.paypalLink ?? "";
   paypalLink.value = current;
   initialPaypalLink.value = current;
+
+  apartmentForm.description = apartment.value?.description ?? "";
+  apartmentForm.address = apartment.value?.address ?? "";
+  apartmentForm.directions = apartment.value?.directions ?? "";
+  apartmentForm.rules = apartment.value?.rules ?? "";
+  initialApartmentForm.value = { ...apartmentForm };
 });
 
 const savePaypal = async () => {
@@ -167,6 +215,26 @@ const savePaypal = async () => {
     error.value = t('common.error');
   } finally {
     paypalSaving.value = false;
+  }
+};
+
+const saveApartmentInfo = async () => {
+  apartmentSaving.value = true;
+  apartmentSaved.value = false;
+  try {
+    await saveApartment({
+      description: apartmentForm.description.trim(),
+      address: apartmentForm.address.trim(),
+      directions: apartmentForm.directions.trim(),
+      rules: apartmentForm.rules.trim(),
+    });
+    initialApartmentForm.value = { ...apartmentForm };
+    apartmentSaved.value = true;
+    setTimeout(() => (apartmentSaved.value = false), 2000);
+  } catch {
+    error.value = t('common.error');
+  } finally {
+    apartmentSaving.value = false;
   }
 };
 </script>

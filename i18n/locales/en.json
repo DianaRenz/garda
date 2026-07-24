@@ -341,6 +341,7 @@
     },
     "areaTitle": "About the area",
     "mapBtn": "Apartment on map",
+    "dangerousRoadWarning": "Warning: Google Maps sometimes suggests a narrow, dangerous mountain road toward Malcesine as a shortcut — please don't take it by car, it's only suitable for bicycles. Stick to the main road instead.",
     "empty": "No information added yet"
   },
   "photos": {

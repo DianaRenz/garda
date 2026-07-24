@@ -72,6 +72,17 @@
                       />
                     </VBtn>
                   </div>
+                  <!-- Dangerous road warning (directions section only) -->
+                  <VAlert
+                    v-if="key === 'directions'"
+                    type="error"
+                    variant="tonal"
+                    density="compact"
+                    icon="fluent:warning-24-filled"
+                    class="mb-3"
+                  >
+                    {{ $t('guide.dangerousRoadWarning') }}
+                  </VAlert>
                   <div
                     v-if="getSectionText(key, locale)"
                     class="text-body-2 text-medium-emphasis"
