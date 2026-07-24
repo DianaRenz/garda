@@ -53,8 +53,7 @@
                   <!-- Address (directions section only) -->
                   <div
                     v-if="key === 'directions' && apartment?.address"
-                    class="d-flex align-center rounded-lg pa-3 mb-3"
-                    style="background: rgba(var(--v-theme-on-surface), 0.05)"
+                    class="d-flex align-center"
                   >
                     <span class="text-body-2 flex-grow-1">{{ apartment.address }}</span>
                     <VBtn
@@ -72,33 +71,16 @@
                       />
                     </VBtn>
                   </div>
-                  <!-- Dangerous road warning (directions section only) -->
-                  <template v-if="key === 'directions'">
-                    <VAlert
-                      type="error"
-                      variant="tonal"
-                      density="compact"
-                      icon="fluent:warning-24-filled"
-                      class="mb-3"
-                    >
-                      {{ $t('guide.dangerousRoadWarning') }}
-                    </VAlert>
-                    <div class="map-embed-wrap mb-3">
-                      <iframe
-                        :src="dangerousRoadMapUrl"
-                        :title="$t('guide.dangerousRoadMapTitle')"
-                        loading="lazy"
-                        referrerpolicy="strict-origin-when-cross-origin"
-                        allowfullscreen
-                      />
-                    </div>
-                  </template>
+
                   <div
                     v-if="getSectionText(key, locale)"
                     class="text-body-2 text-medium-emphasis"
                     style="white-space:pre-line"
                   >
                     {{ getSectionText(key, locale) }}
+                  </div>
+                  <div v-if="key === 'directions'" class="text-body-2 text-medium-emphasis">
+                    {{ $t('guide.gallery.apartment') }} 29
                   </div>
                   <VBtn
                     v-if="key === 'directions'"
@@ -150,6 +132,33 @@
           <h2 class="text-body-2 font-weight-medium text-medium-emphasis mb-3 mt-8">
             {{ $t('guide.areaTitle') }}
           </h2>
+          <VCard variant="outlined" rounded="lg" class="mb-4">
+            <VCardText class="pa-4">
+              <div class="d-flex align-center ga-3 mb-3">
+                <VIcon icon="fluent:warning-24-filled" size="22" color="error" />
+                <span class="text-body-1 font-weight-bold">
+                  {{ $t('guide.dangerousRoadMapTitle') }}
+                </span>
+              </div>
+              <VAlert
+                type="error"
+                variant="tonal"
+                density="compact"
+                class="mb-3"
+              >
+                {{ $t('guide.dangerousRoadWarning') }}
+              </VAlert>
+              <div class="map-embed-wrap">
+                <iframe
+                  :src="dangerousRoadMapUrl"
+                  :title="$t('guide.dangerousRoadMapTitle')"
+                  loading="lazy"
+                  referrerpolicy="strict-origin-when-cross-origin"
+                  allowfullscreen
+                />
+              </div>
+            </VCardText>
+          </VCard>
           <VCard variant="outlined" rounded="lg" class="mb-4">
             <VCardText class="pa-4">
               <div class="d-flex align-center ga-3 mb-3">
@@ -266,7 +275,6 @@ const copyAddress = async () => {
 };
 
 // Google Maps embed showing the dangerous shortcut road near Malcesine
-// that some navigation apps suggest — paired with the text warning above
 // so guests can see exactly which road to avoid.
 const dangerousRoadMapUrl =
   "https://www.google.com/maps/embed?pb=!1m24!1m8!1m3!1d47716.49521920944!2d10.741329!3d45.7037203!3m2!1i1024!2i768!4f13.1!4m13!3e0!4m5!1s0x4781f670c7d7c2d7%3A0x988a7a5e125b6002!2sVia%20Prada%2C%2025%2C%2037010%20Prada%20VR%2C%20Italien!3m2!1d45.678866199999995!2d10.778741199999999!4m5!1s0x47821fbacdbc6b61%3A0x8656833a169eb7eb!2zSnVuZSBCZWFjaCBSZXN0YXVyYW50ICYgQmFyLCBWaWEgR2FyZGVzYW5hLCA1NiwgMzcwMTAgQXNzZW56YSBWUiwg0JjRgtCw0LvQuNGP!3m2!1d45.7283605!2d10.781551499999999!5e1!3m2!1sru!2sde!4v1784879144234!5m2!1sru!2sde";
