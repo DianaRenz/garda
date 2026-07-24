@@ -73,16 +73,26 @@
                     </VBtn>
                   </div>
                   <!-- Dangerous road warning (directions section only) -->
-                  <VAlert
-                    v-if="key === 'directions'"
-                    type="error"
-                    variant="tonal"
-                    density="compact"
-                    icon="fluent:warning-24-filled"
-                    class="mb-3"
-                  >
-                    {{ $t('guide.dangerousRoadWarning') }}
-                  </VAlert>
+                  <template v-if="key === 'directions'">
+                    <VAlert
+                      type="error"
+                      variant="tonal"
+                      density="compact"
+                      icon="fluent:warning-24-filled"
+                      class="mb-3"
+                    >
+                      {{ $t('guide.dangerousRoadWarning') }}
+                    </VAlert>
+                    <div class="map-embed-wrap mb-3">
+                      <iframe
+                        :src="dangerousRoadMapUrl"
+                        :title="$t('guide.dangerousRoadMapTitle')"
+                        loading="lazy"
+                        referrerpolicy="strict-origin-when-cross-origin"
+                        allowfullscreen
+                      />
+                    </div>
+                  </template>
                   <div
                     v-if="getSectionText(key, locale)"
                     class="text-body-2 text-medium-emphasis"
@@ -255,6 +265,12 @@ const copyAddress = async () => {
   setTimeout(() => { addressCopied.value = false; }, 2000);
 };
 
+// Google Maps embed showing the dangerous shortcut road near Malcesine
+// that some navigation apps suggest — paired with the text warning above
+// so guests can see exactly which road to avoid.
+const dangerousRoadMapUrl =
+  "https://www.google.com/maps/embed?pb=!1m24!1m8!1m3!1d47716.49521920944!2d10.741329!3d45.7037203!3m2!1i1024!2i768!4f13.1!4m13!3e0!4m5!1s0x4781f670c7d7c2d7%3A0x988a7a5e125b6002!2sVia%20Prada%2C%2025%2C%2037010%20Prada%20VR%2C%20Italien!3m2!1d45.678866199999995!2d10.778741199999999!4m5!1s0x47821fbacdbc6b61%3A0x8656833a169eb7eb!2zSnVuZSBCZWFjaCBSZXN0YXVyYW50ICYgQmFyLCBWaWEgR2FyZGVzYW5hLCA1NiwgMzcwMTAgQXNzZW56YSBWUiwg0JjRgtCw0LvQuNGP!3m2!1d45.7283605!2d10.781551499999999!5e1!3m2!1sru!2sde!4v1784879144234!5m2!1sru!2sde";
+
 const currentCheckoutItems = computed(() => getCheckoutItems(locale.value));
 
 watch(currentCheckoutItems, (items) => {
@@ -299,3 +315,22 @@ onMounted(async () => {
   loading.value = false;
 });
 </script>
+
+<style scoped>
+/* Responsive Google Maps embed — fixed 4:3 aspect ratio matching the
+   Google-provided embed dimensions (600x450), scales to container width. */
+.map-embed-wrap {
+  position: relative;
+  width: 100%;
+  padding-top: 75%;
+  border-radius: 8px;
+  overflow: hidden;
+}
+.map-embed-wrap iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+</style>
